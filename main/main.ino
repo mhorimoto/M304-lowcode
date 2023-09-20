@@ -14,7 +14,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "Kansui Ver1.32";
+char *pgname = "M304 Ver1.32";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
