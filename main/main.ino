@@ -14,7 +14,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver1.32";
+char *pgname = "M304 Ver2.00";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -24,8 +24,8 @@ irrM304 irr_m;
 
 LCDd lcdd(RS,RW,ENA,DB0,DB1,DB2,DB3,DB4,DB5,DB6,DB7);
 EthernetUDP UDP16520;
-//EthernetUDP UECS_UDP16529;
-//EthernetUDP UECS_UDP16521;
+EthernetUDP UECS_UDP16529;
+EthernetUDP UECS_UDP16521;
 //EthernetServer UECSlogserver(80);
 //EthernetClient UECSclient;
 IPAddress broadcastIP;
