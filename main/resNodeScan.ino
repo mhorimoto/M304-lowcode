@@ -74,11 +74,11 @@ boolean UECSresNodeScan() {
                                 &UECSccm_PAGE[0],'\"',&pageNum,&progPos)) {
       startPos+=progPos;
       //check close tag
-      if ( !(UECSFindPGMChar(&UECSbuffer[startPos],&UECSccm_CCMSCANCLOSE2[0],&progPos))) {
+      if ( !(UECSFindPGMChar(&UECSbuffer[startPos],&UECSccm_CCMSCANCLOSE2[0],&progPos)) ) {
         return false;
       }
       //format of page number abridged type
-    } else if ( UECSFindPGMChar(&UECSbuffer[startPos],&UECSccm_CCMSCANCLOSE0[0],&progPos))  {
+    } else if ( UECSFindPGMChar(&UECSbuffer[startPos],&UECSccm_CCMSCANCLOSE0[0],&progPos) ) {
       pageNum=1;
     } else {
       return false;
@@ -89,63 +89,85 @@ boolean UECSresNodeScan() {
     UDPAddPGMCharToBuffer(&(UECSccm_UECSVER_E10[0]));
     UDPAddPGMCharToBuffer(&(UECSccm_CCMNUM[0]));
 	
-	//count enabled ccm
-	short enabledCCMNum=0;
-	short returnCCMID=-1;
-		for(i = 0; i < U_MAX_CCM; i++)
-		{
-	    if(U_ccmList[i].ccmLevel != NONE)
-	    	{
-	    	enabledCCMNum++;
-	    	if(enabledCCMNum==pageNum){returnCCMID=i;}
-	    	}
-	    
-	    
-	    }
-	    
-
-	
-	if(enabledCCMNum==0 || returnCCMID<0){return false;}//page num over
-	
-	UDPAddValueToBuffer(pageNum);
-	UDPAddPGMCharToBuffer(&(UECSccm_TOTAL[0]));
-	UDPAddValueToBuffer(enabledCCMNum);
-    UDPAddPGMCharToBuffer(&(UECSccm_CLOSETAG[0]));
-	UDPAddValueToBuffer(1);//Column number is always 1
-    UDPAddPGMCharToBuffer(&(UECSccm_CCMNO[0]));
-	UDPAddValueToBuffer(pageNum);//page number = ccm number
-	
-	
-	for(i=0;i<3;i++)
-	{
-	 UDPAddPGMCharToBuffer(UECSattrChar[i]);
-	 UDPAddValueToBuffer(U_ccmList[returnCCMID].baseAttribute[i]);
-	}
-	 UDPAddPGMCharToBuffer(UECSattrChar[AT_PRIO]);
-	 UDPAddValueToBuffer(U_ccmList[returnCCMID].baseAttribute[AT_PRIO]);
-
-	 
-	 UDPAddPGMCharToBuffer(&(UECSccm_CAST[0]));
-	 UDPAddValueToBuffer(U_ccmList[returnCCMID].decimal);
-	 UDPAddPGMCharToBuffer(&(UECSccm_UNIT[0]));                          
-	 UDPAddPGMCharToBuffer((U_ccmList[returnCCMID].unit));
-	 UDPAddPGMCharToBuffer(&(UECSccm_SR[0]));
-     if(U_ccmList[returnCCMID].sender){
-     	 		UDPAddPGMCharToBuffer(UECSTxtPartS);
-              }
-              else{
-     	 		UDPAddPGMCharToBuffer(UECSTxtPartR);
-              }              
-	 UDPAddPGMCharToBuffer(&(UECSccm_LV[0]));                          
-	 UDPAddPGMCharToBuffer((UECSCCMLEVEL[U_ccmList[returnCCMID].ccmLevel]));
-	 UDPAddPGMCharToBuffer(&(UECSccm_CLOSETAG[0]));
-	 UDPAddCharToBuffer(U_ccmList[returnCCMID].typeStr);
-	 UDPAddPGMCharToBuffer(&(UECSccm_CCMRESCLOSE[0]));  
-    
-    return true;
+    //count enabled ccm
+    short enabledCCMNum=0;
+    short returnCCMID=-1;
+    for ( i=0; i < U_MAX_CCM; i++ ) {
+      if ( U_ccmList[i].ccmLevel != NONE ) {
+        enabledCCMNum++;
+        if ( enabledCCMNum==pageNum ) {
+          returnCCMID=i;
+        }
+      }
     }
-    
-    return false;
-  
-  
+    if ( enabledCCMNum==0 || returnCCMID<0 ) {
+      return false;
+    }//page num over
+    UDPAddValueToBuffer(pageNum);
+    UDPAddPGMCharToBuffer(&(UECSccm_TOTAL[0]));
+    UDPAddValueToBuffer(enabledCCMNum);
+    UDPAddPGMCharToBuffer(&(UECSccm_CLOSETAG[0]));
+    UDPAddValueToBuffer(1);//Column number is always 1
+    UDPAddPGMCharToBuffer(&(UECSccm_CCMNO[0]));
+    UDPAddValueToBuffer(pageNum);//page number = ccm number
+    for ( i=0;i<3;i++ )	{
+      UDPAddPGMCharToBuffer(UECSattrChar[i]);
+      UDPAddValueToBuffer(U_ccmList[returnCCMID].baseAttribute[i]);
+    }
+    UDPAddPGMCharToBuffer(UECSattrChar[AT_PRIO]);
+    UDPAddValueToBuffer(U_ccmList[returnCCMID].baseAttribute[AT_PRIO]);
+    UDPAddPGMCharToBuffer(&(UECSccm_CAST[0]));
+    UDPAddValueToBuffer(U_ccmList[returnCCMID].decimal);
+    UDPAddPGMCharToBuffer(&(UECSccm_UNIT[0]));                          
+    UDPAddPGMCharToBuffer((U_ccmList[returnCCMID].unit));
+    UDPAddPGMCharToBuffer(&(UECSccm_SR[0]));
+    if ( U_ccmList[returnCCMID].sender ) {
+      UDPAddPGMCharToBuffer(UECSTxtPartS);
+    } else {
+      UDPAddPGMCharToBuffer(UECSTxtPartR);
+    }              
+    UDPAddPGMCharToBuffer(&(UECSccm_LV[0]));                          
+    UDPAddPGMCharToBuffer((UECSCCMLEVEL[U_ccmList[returnCCMID].ccmLevel]));
+    UDPAddPGMCharToBuffer(&(UECSccm_CLOSETAG[0]));
+    UDPAddCharToBuffer(U_ccmList[returnCCMID].typeStr);
+    UDPAddPGMCharToBuffer(&(UECSccm_CCMRESCLOSE[0]));  
+    return true;
+  }
+  return false;
 }
+
+bool UECSFindPGMChar(char* targetBuffer,const char *_romword_startStr,int *lastPos) {
+  *lastPos=0;
+  int startPos=-1;
+  int _targetBuffersize=strlen(targetBuffer);
+  int _startStrsize=strlen_P(_romword_startStr);
+  if ( _targetBuffersize<_startStrsize ) {
+    return false;
+  }
+  int i,j;
+  //-------------start string check
+  unsigned char startchr=pgm_read_byte(&_romword_startStr[0]);
+  for ( i=0;i<_targetBuffersize-_startStrsize+1;i++ ) {
+    //not hit
+    if ( targetBuffer[i]!=startchr ) {
+      continue;
+    }
+    //if hit 1 chr ,more check
+    for ( j=0;j<_startStrsize;j++ ) {
+      if ( targetBuffer[i+j]!=pgm_read_byte(&_romword_startStr[j]) ) {
+        break;
+      }//not hit!
+    }
+    //hit all chr
+    if ( j==_startStrsize ) {
+      startPos=i;
+      break;
+    }
+  }
+  if ( startPos<0 ) {
+    return false;
+  }
+  *lastPos = startPos + _startStrsize;
+  return true;
+}
+
