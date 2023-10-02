@@ -14,7 +14,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.00";
+char *pgname = "M304 Ver2.00D3";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -38,6 +38,7 @@ int rlyttl[8];
 bool cf,fsf=true;
 byte ip[4] = { 192,168,0,177 };
 char lbf[81];
+char uecsbuf[600];
 extern bool debugMsgFlag(int);
 
 
@@ -80,6 +81,7 @@ void setup(void) {
     }
   }
   UDP16520.begin(16520);
+  UECS_UDP16529.begin(16529);
   for (j=0;j<20;j++) {
     ccm_type[j] = 0;
   }
@@ -95,7 +97,7 @@ void setup(void) {
     }
   }
   sendUECSpacket(0,"2048"); // setup completed 0x800
-
+  Serial.begin(115200);
 }
 
 
@@ -106,10 +108,12 @@ void loop(void) {
   static int prvsec;
   extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
   extern void opeSCH(void),opeRTC(void),opeNET(void),opeRUN(int,int);
+  extern void UECSupdate16529port(void) ;
   uint8_t InputDataButtom(int,int,int,int,uint8_t,int mi='0',int mx='9');
   tmElements_t tm;
  
   wdt_reset();
+  UECSupdate16529port() ;
   if (digitalRead(SW_SAFE)==0) {
     lcdd.setLine(0,1,"  EEPROM Operation  ");
     lcdd.LineWrite(0,1);

@@ -1,18 +1,32 @@
 //----------------------------------
-void UECSupdate16529port( UECSTEMPCCM* _tempCCM){
+//void UECSupdate16529port( UECSTEMPCCM* _tempCCM){
+void UECSupdate16529port(void) {
+  extern char uecsbuf[];
+  extern void xmldecode(char *);
+  
   int packetSize = UECS_UDP16529.parsePacket();
-  if (packetSize) {
-    ClearMainBuffer();
-    _tempCCM->address = UECS_UDP16529.remoteIP();   
-    UECSbuffer[UECS_UDP16529.read(UECSbuffer, BUF_SIZE-1)]='\0';
-    UDPFilterToBuffer();
-    if (UECSresNodeScan()) {
-      UECS_UDP16529.beginPacket(_tempCCM->address, 16529);
-      UECS_UDP16529.write(UECSbuffer);
-      if (UECS_UDP16529.endPacket()==0) {
-        UECSresetEthernet(); //when udpsend failed,reset ethernet status
-      }
-    }     
+  if (packetSize>10) {
+    UECS_UDP16529.read(uecsbuf,600-1);
+    Serial.print("UDP16529 size=");
+    Serial.println(packetSize);
+    Serial.print("UDP16529 IP=");
+    Serial.println(UECS_UDP16529.remoteIP()) ;
+    Serial.print("REMOTE PORT=");
+    Serial.println(UECS_UDP16529.remotePort());
+    Serial.print("TEXT=");
+    Serial.println(uecsbuf);
+    xmldecode(&uecsbuf[0]);
+    // ClearMainBuffer();
+    // _tempCCM->address = UECS_UDP16529.remoteIP();   
+    // UECSbuffer[UECS_UDP16529.read(UECSbuffer, BUF_SIZE-1)]='\0';
+    // UDPFilterToBuffer();
+    // if (UECSresNodeScan()) {
+    //   UECS_UDP16529.beginPacket(_tempCCM->address, 16529);
+    //   UECS_UDP16529.write(UECSbuffer);
+    //   if (UECS_UDP16529.endPacket()==0) {
+    //     UECSresetEthernet(); //when udpsend failed,reset ethernet status
+    //   }
+    // }     
   }
 }
 
@@ -26,7 +40,7 @@ boolean UECSresNodeScan() {
   int i;
   int progPos = 0;
   int startPos = 0;
-	
+#ifdef GOGO
   if ( ! UECSFindPGMChar(UECSbuffer,&UECSccm_XMLHEADER[0],&progPos) ) {
     return false;
   }
@@ -133,6 +147,7 @@ boolean UECSresNodeScan() {
     UDPAddPGMCharToBuffer(&(UECSccm_CCMRESCLOSE[0]));  
     return true;
   }
+#endif
   return false;
 }
 
@@ -141,6 +156,7 @@ bool UECSFindPGMChar(char* targetBuffer,const char *_romword_startStr,int *lastP
   int startPos=-1;
   int _targetBuffersize=strlen(targetBuffer);
   int _startStrsize=strlen_P(_romword_startStr);
+#ifdef GOGO
   if ( _targetBuffersize<_startStrsize ) {
     return false;
   }
@@ -169,5 +185,6 @@ bool UECSFindPGMChar(char* targetBuffer,const char *_romword_startStr,int *lastP
   }
   *lastPos = startPos + _startStrsize;
   return true;
+#endif
 }
 
