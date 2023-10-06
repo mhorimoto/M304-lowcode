@@ -1,8 +1,9 @@
-
-//int c;
-//yxml_ret_t r;
-//yxml_t yx[1];
-char stack[32];
+#define ELE_UECS      0b00000001
+#define ELE_NODESCAN  0b00000010
+#define ELE_CCMSCAN   0b00000100
+#define ELE_DATA      0b00001000
+#define ELE_REQUEST   0b00010000
+#define ELE_SEARCH    0b00100000
 
 void y_printchar(char c) {
   if(c == '\x7F' || (c >= 0 && c < 0x20)) {
@@ -13,7 +14,7 @@ void y_printchar(char c) {
     Serial.print(c); 
 }
 
-void y_printstring(const char *str) {
+void y_printstring(char *str) {
   while(*str) {
     y_printchar(*str);
     str++;
@@ -84,14 +85,75 @@ void y_printres(yxml_t *yx, yxml_ret_t r) {
 }
 
 void xmldecode(char *xml) {
-  yxml_t *yx;
+  byte element,attr;
+  char *attr_val;
+  static char stack[32];
+  yxml_t yx[1];
   yxml_ret_t r;
-  yxml_init(yx, stack, sizeof(stack));
 
+  element = 0;
+  attr = 0;
+  yxml_init(yx, stack, sizeof(stack));
   while (*xml) {
     r = yxml_parse(yx, *xml);
-    y_printres(yx, r);
+    switch(r) {
+    case YXML_OK:
+      break;
+    case YXML_ELEMSTART:
+      element = chooseElement(yx->elem);
+      Serial.print("element=");
+      Serial.println(element);
+      switch(element) {
+      case ELE_UECS:
+      case ELE_NODESCAN:
+      case ELE_CCMSCAN:
+      case ELE_DATA:
+      case ELE_REQUEST:
+      case ELE_SEARCH:
+        break;
+      default:
+        Serial.println("UNKNOWN ELEMENT");
+        return;
+      }
+    case YXML_ELEMEND:
+      break;
+    case YXML_ATTRSTART:
+      Serial.println("Attrstart");
+      switch(element) {
+      case ELE_UECS:
+        Serial.println("ELE_UECS");
+        Serial.println(yx->attr);
+      }
+      break;
+    case YXML_ATTREND:
+    case YXML_PICONTENT:
+    case YXML_CONTENT:
+    case YXML_ATTRVAL:
+      if ((element==ELE_UECS)&&(attr==ATTR_VER)) {
+        attr_val = yx->data;
+        Serial.println(attr_val);
+      }
+      break;
+    case YXML_PISTART:
+    case YXML_PIEND:
+    default:
+      break;
+    }
     xml++;
   }
   y_printtoken(yx, yxml_eof(yx) < 0 ? "error\n" : "ok\n");
+}
+
+byte chooseElement(char *ce) {
+  if (!strcmp(ce,"UECS"))     return(ELE_UECS);
+  if (!strcmp(ce,"NODESCAN")) return(ELE_NODESCAN);
+  if (!strcmp(ce,"CCMSCAN"))  return(ELE_CCMSCAN);
+  if (!strcmp(ce,"DATA"))     return(ELE_DATA);
+  if (!strcmp(ce,"REQUEST"))  return(ELE_REQUEST);
+  if (!strcmp(ce,"SEARCH"))   return(ELE_SEARCH);
+  return(0);  
+}
+
+byte chooseAttr(char *ca) {
+  
 }
