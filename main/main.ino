@@ -1,6 +1,8 @@
 #include <M304.h>
 #include <avr/wdt.h>
+#include <avr/pgmspace.h>
 #include <yxml.h>
+#include <string.h>
 
 #if _M304_H_V < 110
 #pragma message("Library M304 is old.")
@@ -15,13 +17,55 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.00D9";
+char *pgname = "M304 Ver2.00Dj";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
 };
 
 irrM304 irr_m;
+
+#define ELE_UECS      0b00000001
+#define ELE_NODESCAN  0b00000010
+#define ELE_CCMSCAN   0b00000100
+#define ELE_DATA      0b00001000
+#define ELE_REQUEST   0b00010000
+#define ELE_SEARCH    0b00100000
+
+#define ATTR_VER      1
+#define ATTR_PAGE     2
+#define ATTR_TYPE     3
+#define ATTR_ROOM     4
+#define ATTR_REGION   5
+#define ATTR_ORDER    6
+#define ATTR_PRIORITY 7
+
+#define LEN_UECSXML_VER     20
+#define LEN_UECSXML_TYPE    20
+#define LEN_UECSXML_TEXTVAL 20
+#define LEN_UECSXML_BUFFER  512
+
+char uecsbuf[LEN_UECSXML_BUFFER+1];
+const char xmlhead[] PROGMEM = "<?xml version=\"1.0\"?><UECS ver=\"1.00-E10\">$";
+const char res_xmlnode1[] PROGMEM = "<NODE><NAME>$";
+const char res_xmlnode2[] PROGMEM = "</NAME><VENDER>$";
+const char res_xmlnode3[] PROGMEM = "</VENDER><UECSID>$";
+const char res_xmlnode4[] PROGMEM = "</UECSID><IP>$";
+const char res_xmlnode5[] PROGMEM = "</IP><MAC>$";
+const char res_xmlnode6[] PROGMEM = "</MAC></NODE></UECS>$";
+
+
+typedef struct st_UECSXML {
+  byte element;
+  char ver[LEN_UECSXML_VER+1];
+  char type[LEN_UECSXML_TYPE+1];
+  byte page,room,region,priority;
+  int  order;
+  char textval[LEN_UECSXML_TEXTVAL+1];
+  float fval;
+};
+
+st_UECSXML uecsxmldata,*ptr_uecsxmldata;
 
 LCDd lcdd(RS,RW,ENA,DB0,DB1,DB2,DB3,DB4,DB5,DB6,DB7);
 EthernetUDP UDP16520;
@@ -39,7 +83,6 @@ int rlyttl[8];
 bool cf,fsf=true;
 byte ip[4] = { 192,168,0,177 };
 char lbf[81];
-char uecsbuf[600];
 extern bool debugMsgFlag(int);
 
 
@@ -47,6 +90,8 @@ void setup(void) {
   int w,j;
   char ccm_type[21];
   m304Init();
+  clear_uecsbuf();
+  ptr_uecsxmldata = &uecsxmldata;
   lcdd.begin(20,4);
   if (Ethernet.begin(st_m.mac)==0) {
     lcdd.setLine(0,2,"NO NET MODE");
@@ -474,6 +519,64 @@ void sendUECSpacket(int id,char *v) {
   UDP16520.beginPacket(broadcastIP, 16520);
   UDP16520.write(t);
   UDP16520.endPacket();
+}
+
+int copyFromUECSID(char *dest) {
+  int a,r;
+  char b[13];
+  a = 0;
+  sprintf(b,"%02X%02X%02X%02X%02X%02X",atmem.read(a),
+          atmem.read(a+1),atmem.read(a+2),atmem.read(a+3),atmem.read(a+4),atmem.read(a+5));
+  for (a=0;a<12;a++) {
+    *dest = b[a];
+    dest++;
+  }
+  return(a);
+}
+
+int ip2chars(char *dest,IPAddress ip) {
+  char ibuf[16];
+  int i1,i2,i3,i4,r;
+  i1 = ip & 0xff;
+  i2 = (ip & 0xff00) >> 8;
+  i3 = (ip & 0xff0000) >> 16;
+  i4 = (ip & 0xff000000) >> 24;
+  sprintf(ibuf,"%d.%d.%d.%d",i1,i2,i3,i4);
+  r = copyFromRAM(dest,ibuf);
+  return(r);
+}
+
+int copyFromRAM(char *dest,char *src) {
+  int i,l;
+  l = strlen(src);
+  for (i=0;i<l;i++) {
+    *dest = *src;
+    dest++;
+    src++;
+  }
+  return(i);
+}
+
+
+int copyFromPROGMEM(char *dest,const char *src) {
+  int i,l;
+  char c;
+
+  for(i=0;i<50;i++) {
+    c = pgm_read_byte_near(src);
+    if (c=='$') break;
+    *dest = c;
+    dest++;
+    src++;
+  }
+  return(i);
+}
+
+void clear_uecsbuf(void) {
+  int i;
+  for (i=0;i<LEN_UECSXML_BUFFER;i++) {
+    uecsbuf[i] = NULL;
+  }
 }
 
 void configure_wdt(void) {

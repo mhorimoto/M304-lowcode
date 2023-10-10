@@ -1,12 +1,15 @@
+#include <M304.h>
 //----------------------------------
 //void UECSupdate16529port( UECSTEMPCCM* _tempCCM){
 void UECSupdate16529port(void) {
   extern char uecsbuf[];
-  extern void xmldecode(char *);
+  extern bool xmldecode(char *);
+  extern st_UECSXML *ptr_uecsxmldata;
   
   int packetSize = UECS_UDP16529.parsePacket();
   if (packetSize>10) {
     UECS_UDP16529.read(uecsbuf,600-1);
+    uecsbuf[packetSize] = NULL;
     Serial.print("UDP16529 size=");
     Serial.println(packetSize);
     Serial.print("UDP16529 IP=");
@@ -15,21 +18,68 @@ void UECSupdate16529port(void) {
     Serial.println(UECS_UDP16529.remotePort());
     Serial.print("TEXT=");
     Serial.println(uecsbuf);
-    xmldecode(&uecsbuf[0]);
-    // ClearMainBuffer();
-    // _tempCCM->address = UECS_UDP16529.remoteIP();   
-    // UECSbuffer[UECS_UDP16529.read(UECSbuffer, BUF_SIZE-1)]='\0';
-    // UDPFilterToBuffer();
-    // if (UECSresNodeScan()) {
-    //   UECS_UDP16529.beginPacket(_tempCCM->address, 16529);
-    //   UECS_UDP16529.write(UECSbuffer);
-    //   if (UECS_UDP16529.endPacket()==0) {
-    //     UECSresetEthernet(); //when udpsend failed,reset ethernet status
-    //   }
-    // }     
+    if (xmldecode(&uecsbuf[0])) {
+      if (ptr_uecsxmldata->element==ELE_NODESCAN) {
+        res_nodescan(UECS_UDP16529.remoteIP(),UECS_UDP16529.remotePort());
+        //        debug_uecsxmldata();
+      }
+    } else {
+      Serial.println("YXML ERROR");
+    }
   }
 }
 
+
+void res_nodescan(IPAddress ripa, unsigned int rport) {
+  int cfp; // copyFromPROGMEM next pointer
+  char buf[80];
+  extern int copyFromPROGMEM(char *,const char *);
+  extern int ip2chars(char *,IPAddress);
+  
+  extern const char xmlhead[],res_xmlnode1[];
+
+  sprintf(buf,"%02X%02X%02X%02X%02X%02X",st_m.mac[0],st_m.mac[1],st_m.mac[2],st_m.mac[3],st_m.mac[4],st_m.mac[5]);
+  clear_uecsbuf();
+  cfp = copyFromPROGMEM(&uecsbuf[0],&xmlhead[0]);
+  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode1[0]);
+  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode2[0]);
+  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode3[0]);
+  cfp += copyFromUECSID(&uecsbuf[cfp]);
+  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode4[0]);
+  cfp += ip2chars(&uecsbuf[cfp],st_m.ip);
+  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode5[0]);
+  cfp += copyFromRAM(&uecsbuf[cfp],&buf[0]);
+  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode6[0]);
+
+  UECS_UDP16529.beginPacket(ripa, rport);
+  UECS_UDP16529.write(uecsbuf);
+  UECS_UDP16529.endPacket();
+  Serial.print("uecsbuf=");
+  Serial.println(uecsbuf);
+}
+
+void debug_uecsxmldata(void) {
+  Serial.print("ELEMENT=");
+  Serial.println(ptr_uecsxmldata->element);
+  Serial.print("VER=");
+  Serial.println(ptr_uecsxmldata->ver);
+  Serial.print("TYPE=");
+  Serial.println(ptr_uecsxmldata->type);
+  Serial.print("PAGE=");
+  Serial.println(ptr_uecsxmldata->page);
+  Serial.print("ROOM=");
+  Serial.println(ptr_uecsxmldata->room);
+  Serial.print("REGION=");
+  Serial.println(ptr_uecsxmldata->region);
+  Serial.print("ORDER=");
+  Serial.println(ptr_uecsxmldata->order);
+  Serial.print("PRIORITY=");
+  Serial.println(ptr_uecsxmldata->priority);
+  Serial.print("TEXTVAL=");
+  Serial.println(ptr_uecsxmldata->textval);
+  Serial.print("FVAL=");
+  Serial.println(ptr_uecsxmldata->fval);
+}
 
 
 /********************************/

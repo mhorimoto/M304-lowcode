@@ -1,9 +1,12 @@
-#define ELE_UECS      0b00000001
-#define ELE_NODESCAN  0b00000010
-#define ELE_CCMSCAN   0b00000100
-#define ELE_DATA      0b00001000
-#define ELE_REQUEST   0b00010000
-#define ELE_SEARCH    0b00100000
+// typedef struct st_UECSXML {
+//   byte element;
+//   char ver[21];
+//   char type[21];
+//   byte page,room,region,priority;
+//   int  order;
+//   char textval[21];
+//   float fval;
+// };
 
 void y_printchar(char c) {
   if(c == '\x7F' || (c >= 0 && c < 0x20)) {
@@ -84,16 +87,19 @@ void y_printres(yxml_t *yx, yxml_ret_t r) {
   indata = nextdata;
 }
 
-void xmldecode(char *xml) {
+bool xmldecode(char *xml) {
   byte element,attr;
-  char *attr_val;
+  char *attr_val,aval[100];
   static char stack[32];
   yxml_t yx[1];
   yxml_ret_t r;
+  extern st_UECSXML *ptr_uecsxmldata;
 
+  attr_val = &aval[0];
   element = 0;
   attr = 0;
   yxml_init(yx, stack, sizeof(stack));
+  uecsxmldata_init();
   while (*xml) {
     r = yxml_parse(yx, *xml);
     switch(r) {
@@ -101,15 +107,16 @@ void xmldecode(char *xml) {
       break;
     case YXML_ELEMSTART:
       element = chooseElement(yx->elem);
-      Serial.print("element=");
-      Serial.println(element);
       switch(element) {
       case ELE_UECS:
       case ELE_NODESCAN:
       case ELE_CCMSCAN:
-      case ELE_DATA:
-      case ELE_REQUEST:
       case ELE_SEARCH:
+        ptr_uecsxmldata->element = element;
+        break;
+      case ELE_DATA:
+        break;
+      case ELE_REQUEST:
         break;
       default:
         Serial.println("UNKNOWN ELEMENT");
@@ -118,21 +125,49 @@ void xmldecode(char *xml) {
     case YXML_ELEMEND:
       break;
     case YXML_ATTRSTART:
-      Serial.println("Attrstart");
-      switch(element) {
-      case ELE_UECS:
-        Serial.println("ELE_UECS");
-        Serial.println(yx->attr);
-      }
+      attr = chooseAttr(yx->attr);
       break;
     case YXML_ATTREND:
+      *attr_val = NULL;
+      if ((element==ELE_UECS)&&(attr==ATTR_VER)) {
+        //        Serial.println("UECS-VER");
+        //        Serial.println(aval);
+        strncpy(ptr_uecsxmldata->ver,aval,LEN_UECSXML_VER);
+      } else if ((element==ELE_CCMSCAN)&&(attr==ATTR_PAGE)) {
+        Serial.println("CCMSCAN-PAGE");
+        //        Serial.println(aval);
+        ptr_uecsxmldata->page = (byte)(atoi(aval));
+      } else if (element==ELE_SEARCH) {
+        switch(attr) {
+        case ATTR_TYPE:
+          Serial.println("SEARCH-TYPE");
+          //          Serial.println(aval);
+          strncpy(ptr_uecsxmldata->type,aval,LEN_UECSXML_TYPE);
+          break;
+        case ATTR_ROOM:
+          Serial.println("SEARCH-ROOM");
+          //        Serial.println(aval);
+          ptr_uecsxmldata->room = (byte)(atoi(aval));
+          break;
+        case ATTR_REGION:
+          Serial.println("SEARCH-REGION");
+          //        Serial.println(aval);
+          ptr_uecsxmldata->region = (byte)(atoi(aval));
+          break;
+        case ATTR_ORDER:
+          Serial.println("SEARCH-ORDER");
+          //          Serial.println(aval);
+          ptr_uecsxmldata->order = (int)(atoi(aval));
+          break;
+        }
+      }
+      attr_val = &aval[0];
+      break;
     case YXML_PICONTENT:
     case YXML_CONTENT:
     case YXML_ATTRVAL:
-      if ((element==ELE_UECS)&&(attr==ATTR_VER)) {
-        attr_val = yx->data;
-        Serial.println(attr_val);
-      }
+      *attr_val = *yx->data;
+      attr_val++;
       break;
     case YXML_PISTART:
     case YXML_PIEND:
@@ -141,7 +176,11 @@ void xmldecode(char *xml) {
     }
     xml++;
   }
-  y_printtoken(yx, yxml_eof(yx) < 0 ? "error\n" : "ok\n");
+  if (yxml_eof(yx) < 0) {
+    return(false);
+  } else {
+    return(true);
+  }
 }
 
 byte chooseElement(char *ce) {
@@ -155,5 +194,31 @@ byte chooseElement(char *ce) {
 }
 
 byte chooseAttr(char *ca) {
-  
+  if (!strcmp(ca,"ver"))      return(ATTR_VER);
+  if (!strcmp(ca,"page"))     return(ATTR_PAGE);
+  if (!strcmp(ca,"type"))     return(ATTR_TYPE);
+  if (!strcmp(ca,"room"))     return(ATTR_ROOM);
+  if (!strcmp(ca,"region"))   return(ATTR_REGION);
+  if (!strcmp(ca,"order"))    return(ATTR_ORDER);
+  if (!strcmp(ca,"priority")) return(ATTR_PRIORITY);  
+  return(0);
 }
+
+void uecsxmldata_init(void) {
+  extern st_UECSXML *ptr_uecsxmldata;
+  int i;
+  
+  ptr_uecsxmldata->element = 0;
+  for (i=0;i<21;i++) {
+    ptr_uecsxmldata->ver[i] = NULL;
+    ptr_uecsxmldata->type[i] = NULL;
+    ptr_uecsxmldata->textval[i] = NULL;
+  }
+  ptr_uecsxmldata->page = 255;
+  ptr_uecsxmldata->room = 255;
+  ptr_uecsxmldata->region = 255;
+  ptr_uecsxmldata->priority = 255;
+  ptr_uecsxmldata->order = 0;
+  ptr_uecsxmldata->fval=0.0;
+}
+    
