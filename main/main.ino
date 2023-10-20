@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.00Dj";
+char *pgname = "M304 Ver2.00DM3";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -44,6 +44,9 @@ irrM304 irr_m;
 #define LEN_UECSXML_TYPE    20
 #define LEN_UECSXML_TEXTVAL 20
 #define LEN_UECSXML_BUFFER  512
+
+//#define VENDER_NAME         0x40
+//#define NODE_NAME           0x50
 
 char uecsbuf[LEN_UECSXML_BUFFER+1];
 const char xmlhead[] PROGMEM = "<?xml version=\"1.0\"?><UECS ver=\"1.00-E10\">$";
@@ -87,15 +90,32 @@ extern bool debugMsgFlag(int);
 
 
 void setup(void) {
+  extern int mask2cidr(IPAddress);
   int w,j;
   char ccm_type[21];
+  IPAddress hostip,subnet,gateway,dns;
   m304Init();
   clear_uecsbuf();
   ptr_uecsxmldata = &uecsxmldata;
   lcdd.begin(20,4);
-  if (Ethernet.begin(st_m.mac)==0) {
-    lcdd.setLine(0,2,"NO NET MODE");
+  if (is_dhcp()) {
+    if (Ethernet.begin(st_m.mac)==0) {
+      lcdd.setLine(0,2,"NO NET MODE");
+      lcdd.LineWrite(0,2);
+      st_m.dhcpflag = true;
+    }
+  } else {
+    Serial.begin(115200);
+    st_m.ip     = getIPAddressFromEEPROM(FIXED_IPADDRESS);
+    st_m.subnet = getIPAddressFromEEPROM(FIXED_NETMASK);
+    st_m.gw     = getIPAddressFromEEPROM(FIXED_DEFGW);
+    st_m.dns    = getIPAddressFromEEPROM(FIXED_DNS);
+    st_m.cidr   = mask2cidr(st_m.subnet);
+    st_m.dhcpflag = false;
+    lcdd.setLine(0,2,"STATIC IP ADDRESS");
     lcdd.LineWrite(0,2);
+    Ethernet.begin(st_m.mac,st_m.ip,st_m.dns,st_m.gw,st_m.subnet);
+    st_m.dhcpflag = false;
   }
   configure_wdt();
   msgRun1st();
@@ -521,6 +541,30 @@ void sendUECSpacket(int id,char *v) {
   UDP16520.endPacket();
 }
 
+int copyFromNAMEVENDER(char *dest,char *src) {
+  int a,r,l;
+  char b[17],bb;
+  r = 0;
+  for(a=src;a<(src+16);a++) {
+    bb = atmem.read(a);
+    if (isPrintable(bb)) {
+      b[r] = bb;
+    } else {
+      b[r] = '*';
+      if (bb==(char)NULL) {
+        //        b[r] = bb;
+        break;
+      }
+    }
+    r++;
+  }
+  for (a=0;a<r;a++) {
+    *dest = b[a];
+    dest++;
+  }
+  return(r);
+}
+
 int copyFromUECSID(char *dest) {
   int a,r;
   char b[13];
@@ -577,6 +621,21 @@ void clear_uecsbuf(void) {
   for (i=0;i<LEN_UECSXML_BUFFER;i++) {
     uecsbuf[i] = NULL;
   }
+}
+
+boolean is_dhcp(void) {
+  byte f;
+  f = atmem.read(FIX_DHCP_FLAG);
+  if (f==0x00) {
+    return(false);
+  }
+  return(true);
+}
+
+IPAddress getIPAddressFromEEPROM(int a) {
+  IPAddress r;
+  r = IPAddress(atmem.read(a),atmem.read(a+1),atmem.read(a+2),atmem.read(a+3));
+  return(r);
 }
 
 void configure_wdt(void) {

@@ -36,20 +36,22 @@ void res_nodescan(IPAddress ripa, unsigned int rport) {
   extern int copyFromPROGMEM(char *,const char *);
   extern int ip2chars(char *,IPAddress);
   
-  extern const char xmlhead[],res_xmlnode1[];
+  //  extern const char xmlhead[]; // ,res_xmlnode1[];
 
   sprintf(buf,"%02X%02X%02X%02X%02X%02X",st_m.mac[0],st_m.mac[1],st_m.mac[2],st_m.mac[3],st_m.mac[4],st_m.mac[5]);
   clear_uecsbuf();
-  cfp = copyFromPROGMEM(&uecsbuf[0],&xmlhead[0]);
-  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode1[0]);
-  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode2[0]);
-  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode3[0]);
-  cfp += copyFromUECSID(&uecsbuf[cfp]);
-  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode4[0]);
-  cfp += ip2chars(&uecsbuf[cfp],st_m.ip);
-  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode5[0]);
-  cfp += copyFromRAM(&uecsbuf[cfp],&buf[0]);
-  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode6[0]);
+  cfp = copyFromPROGMEM(&uecsbuf[0],&xmlhead[0]);          // <?xml version=\"1.0\"?><UECS v
+  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode1[0]);  // <NODE><NAME>
+  cfp += copyFromNAMEVENDER(&uecsbuf[cfp],NODE_NAME);      // NAME
+  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode2[0]);  // </NAME><VENDER>
+  cfp += copyFromNAMEVENDER(&uecsbuf[cfp],VENDER_NAME);    // VENDER
+  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode3[0]);  // </VENDER><UECSID>
+  cfp += copyFromUECSID(&uecsbuf[cfp]);                    // UECSID
+  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode4[0]);  // </UECSID><IP>
+  cfp += ip2chars(&uecsbuf[cfp],st_m.ip);                  // IPAddress
+  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode5[0]);  // </IP><MAC>
+  cfp += copyFromRAM(&uecsbuf[cfp],&buf[0]);               // MACAddress
+  cfp += copyFromPROGMEM(&uecsbuf[cfp],&res_xmlnode6[0]);  // </MAC></NODE></UECS>
 
   UECS_UDP16529.beginPacket(ripa, rport);
   UECS_UDP16529.write(uecsbuf);

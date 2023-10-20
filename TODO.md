@@ -35,3 +35,10 @@ Phase-2までのプログラムをWebサーバからダウンロード出来る�
   灌水間隔を0とし、灌水時間を1以上の数値を書き込むことで実現する。
 * COMPLETED(1.3.0 2023/06/13) UECS cndパケットなどを送信する
 * COMPLETED(1.3.0 2023/06/13) ライブラリM304-libをArduinoライブラリ管理に反映させたい。
+
+## Coding
+
+* main.inoで定義されている res_xmlnode1[]などの名称を内容がわかる命名に変更したい。
+  res_xmlnode1 = res_NODE_NAME みたいに
+* NAMEとVENDERの出力を行う。
+
