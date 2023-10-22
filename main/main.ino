@@ -4,8 +4,8 @@
 #include <yxml.h>
 #include <string.h>
 
-#if _M304_H_V < 110
-#pragma message("Library M304 is old.")
+#if _M304_H_V < 134
+#pragma message("Library M304 is old. Version 1.34 or higher is required.")
 #else
 uint8_t mcusr_mirror __attribute__ ((section (".noinit")));
 void get_mcusr(void)     \
@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.00DM3";
+char *pgname = "M304 Ver2.10D";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -139,7 +139,7 @@ void setup(void) {
   j = digitalRead(SW_SAFE);
   if (j==LOW) {
     for(w=0;w<0x7;w++) {
-      if (ccm_type[w]!=atmem.read(w+0x106)) {
+      if (ccm_type[w]!=atmem.read(w+0x106)) {  // CCMTABLE
         initEEPROM_UECS();
         w = 8;
         break;
@@ -155,7 +155,7 @@ void setup(void) {
   j = digitalRead(SW_SAFE);
   if (j==LOW) {
     for(w=0;w<0x7;w++) {
-      if (ccm_type[w]!=atmem.read(w+0x106)) {
+      if (ccm_type[w]!=atmem.read(w+0x106)) {  // CCMTABLE
         initEEPROM_UECS();
         w = 8;
         break;
@@ -487,12 +487,12 @@ void initEEPROM_UECS(void) {
     } else {
       sprintf(ccm_type,"Irriopr.%d",k);
     }
-    if (k==0) {
+    if (k==0) {              // CCMTABLE
       a = 0x100;
     } else {
       a += 0x20;
     }
-    atmem.write(a,enable);
+    atmem.write(a,enable);              // CCMTABLE
     atmem.write(a+1,room);
     atmem.write(a+2,region);
     atmem.write(a+3,(order&0xff));
@@ -515,7 +515,7 @@ void sendUECSpacket(int id,char *v) {
   for(x=0;x<256;x++) {
     t[x] = (char)NULL;
   }
-  a = 0x100+(id*0x20);
+  a = 0x100+(id*0x20);    // CCMTABLE
   xmlDT = CCMFMT;
   enable = atmem.read(a);
   if (enable==false) {

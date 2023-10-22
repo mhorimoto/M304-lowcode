@@ -47,8 +47,8 @@ void timeDecision(int id,int curhr,int curmn) {
   
   for(startmin=sttime;startmin<edtime;startmin+=(inmntm+dumntm)) {
     if (startmin==curtim) {
-      s[0] = atmem.read(addr+14);
-      s[1] = atmem.read(addr+15);
+      s[0] = atmem.read(addr+RLY_L);
+      s[1] = atmem.read(addr+RLY_H);
       for(i=0;i<4;i++) {
 	j = (s[0]>>(i*2))&0x3;
 	k = (s[1]>>(i*2))&0x3;
