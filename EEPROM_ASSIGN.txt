@@ -1,0 +1,52 @@
+# Extended EEPROM Assignment
+
+## LOW CORE
+0000H 999999    UECS-ID
+0006H XXXXXX    MAC Address
+000CH X         Static os DHCP flag
+000DH-000FH     Reserved
+0010H XXXX      Fixed IP Address
+0014H XXXX      Fixed Netmask
+0018H XXXX      Fixed Default Gateway
+001CH XXXX      Fixed DNS
+0020H-003FH     Reserved
+0040H AAAAAAAAAAAAAAA0  Vender Name
+0050H AAAAAAAAAAAAAAA0  Node Name
+0080H X                 Debug Message available
+
+## CCM (for cnd) Table
+0FC0H byte     0x01      Valid
+0FC1H byte     X         ROOM
+0FC2H byte     X         REGION
+0FC3H uint16_t XX        ORDER
+0FC5H byte     X         PRIORITY
+0FC6H byte     0         LV (=A-1S-0)
+0FC7H byte     0         CAST
+0FC8H byte     'S'       SR
+0FC9H char[20] "cnd"0    CCMTYPE ASCIZ
+0FDDH char[10] 0         UNIT (NULL)
+
+## CCM Table
+1000H CCM_TABLE 64bytes/1CCM
+
+xx00H byte     X         Valid Flag
+xx01H byte     X         ROOM
+xx02H byte     X         REGION
+xx03H uint16_t XX        ORDER
+xx05H byte     X         PRIORITY
+xx06H byte     9         LV
+xx07H byte     9         CAST
+xx08H byte     A         SR
+xx09H char[20] AAAAAAAAAAAAAAAAAAAA   CCMTYPE
+xx1DH char[10] AAAAAAAAAA             UNIT
+xx27H byte     X                      STHR Start of time (Hour)
+xx28H byte     X                      STMN Start of time (Minute)
+xx29H byte     X                      EDHR End of time (Hour)
+xx2AH byte     X                      EDMN End of time (Minute)
+xx2BH byte     X                      INMN Interval time (minutes)
+xx2CH byte     X                      DUMN During time (minutes)
+xx2DH byte     X                      RLY_L Relay Low side
+xx2EH byte     X                      RLY_H Relay High side
+xx2FH                                 Reserved
+xx30H-xx3FH                           Reserved
+

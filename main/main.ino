@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.10D";
+char *pgname = "M304 Ver2.12D";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -74,7 +74,7 @@ LCDd lcdd(RS,RW,ENA,DB0,DB1,DB2,DB3,DB4,DB5,DB6,DB7);
 EthernetUDP UDP16520;
 EthernetUDP UECS_UDP16529;
 EthernetUDP UECS_UDP16521;
-//EthernetServer UECSlogserver(80);
+EthernetServer httpd(80);
 //EthernetClient UECSclient;
 IPAddress broadcastIP;
 
@@ -162,6 +162,7 @@ void setup(void) {
       }
     }
   }
+  httpd.begin();
   sendUECSpacket(0,"2048"); // setup completed 0x800
   Serial.begin(115200);
 }
@@ -173,12 +174,16 @@ void loop(void) {
   static char pca;
   static int prvsec;
   extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
-  extern void opeSCH(void),opeRTC(void),opeNET(void),opeRUN(int,int);
+  extern void opeSCH(void),opeRTC(void),opeNET(void),opeRUN(int,int),opeHttpd(void);
   extern void UECSupdate16529port(void) ;
   uint8_t InputDataButtom(int,int,int,int,uint8_t,int mi='0',int mx='9');
   tmElements_t tm;
- 
+
+  EthernetClient httpClient = httpd.available();
   wdt_reset();
+  if ( httpClient ) {
+    opeHttpd();
+  }
   UECSupdate16529port() ;
   if (digitalRead(SW_SAFE)==0) {
     lcdd.setLine(0,1,"  EEPROM Operation  ");
