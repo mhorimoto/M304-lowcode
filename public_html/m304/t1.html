@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <title>サンプル</title>
+  </head>
+  <body>
+    
+    <p>サンプルページです。</p>
+    
+    <div>
+      <label><input type="checkbox" id="saveCheckbox">朝食</label>
+    </div>
+
+    <p id="msg"></p>
+
+    <script>
+      function valueChange(event){
+	  if (saveCheckbox.checked){
+	      msg.innerText = '「朝食」が選択されました';
+	  }else{
+	      msg.innerText = '「朝食」が解除されました';
+	  }
+      }
+      let saveCheckbox = document.getElementById('saveCheckbox');
+      saveCheckbox.addEventListener('change', valueChange);
+      let msg = document.getElementById('msg');
+    </script>
+  </body>
+</html>
