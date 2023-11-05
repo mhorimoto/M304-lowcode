@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.12D";
+char *pgname = "M304 Ver2.1hD";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -174,7 +174,7 @@ void loop(void) {
   static char pca;
   static int prvsec;
   extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
-  extern void opeSCH(void),opeRTC(void),opeNET(void),opeRUN(int,int),opeHttpd(void);
+  extern void opeSCH(void),opeRTC(void),opeNET(void),opeRUN(int,int),opeHttpd(EthernetClient);
   extern void UECSupdate16529port(void) ;
   uint8_t InputDataButtom(int,int,int,int,uint8_t,int mi='0',int mx='9');
   tmElements_t tm;
@@ -182,7 +182,7 @@ void loop(void) {
   EthernetClient httpClient = httpd.available();
   wdt_reset();
   if ( httpClient ) {
-    opeHttpd();
+    opeHttpd(httpClient);
   }
   UECSupdate16529port() ;
   if (digitalRead(SW_SAFE)==0) {
