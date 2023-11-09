@@ -29,7 +29,7 @@
 ## CCM Table
 1000H CCM_TABLE 64bytes/1CCM
 
-xx00H byte     X         Valid Flag
+xx00H byte     X         Valid Flag (0x01:valid, 0xff:invalid)
 xx01H byte     X         ROOM
 xx02H byte     X         REGION
 xx03H uint16_t XX        ORDER

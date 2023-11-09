@@ -1,3 +1,4 @@
+# 旧版 OLD version
 ## UECS IDなどを記録するメモリマップ (IDmap)
 
 0x000〜0x07f

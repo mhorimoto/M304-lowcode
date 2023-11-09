@@ -30,25 +30,25 @@ void timeDecision(int id,int curhr,int curmn) {
   char t[81];
   extern int rlyttl[];
   
-  addr = LC_SCH_START+(id*0x10);
-  sthr   = (int)atmem.read(addr+STHR);
-  stmn   = (int)atmem.read(addr+STMN);
+  addr = LC_SCH_START+(id*0x40);
+  sthr   = (int)atmem.read(addr+LC_STHR);
+  stmn   = (int)atmem.read(addr+LC_STMN);
   if (sthr>24) return ERROR;
   sttime = sthr * 60 + stmn;
-  edhr   = (int)atmem.read(addr+EDHR);
-  edmn   = (int)atmem.read(addr+EDMN);
+  edhr   = (int)atmem.read(addr+LC_EDHR);
+  edmn   = (int)atmem.read(addr+LC_EDMN);
   if (edhr>24) return ERROR;
   edtime = edhr * 60 + edmn;
-  inmntm = (int)atmem.read(addr+INMN);
-  dumntm = (int)atmem.read(addr+DUMN);
+  inmntm = (int)atmem.read(addr+LC_INMN);
+  dumntm = (int)atmem.read(addr+LC_DUMN);
   if ((inmntm+dumntm)==0) return; // If either is 0, the process is aborted and returns.
   
   curtim = curhr*60+curmn;
   
   for(startmin=sttime;startmin<edtime;startmin+=(inmntm+dumntm)) {
     if (startmin==curtim) {
-      s[0] = atmem.read(addr+RLY_L);
-      s[1] = atmem.read(addr+RLY_H);
+      s[0] = atmem.read(addr+LC_RLY_L);
+      s[1] = atmem.read(addr+LC_RLY_H);
       for(i=0;i<4;i++) {
 	j = (s[0]>>(i*2))&0x3;
 	k = (s[1]>>(i*2))&0x3;

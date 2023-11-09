@@ -139,7 +139,7 @@ void setup(void) {
   j = digitalRead(SW_SAFE);
   if (j==LOW) {
     for(w=0;w<0x7;w++) {
-      if (ccm_type[w]!=atmem.read(w+0x106)) {  // CCMTABLE
+      if (ccm_type[w]!=atmem.read(w+0x106)) {  // CCMTABLE *ATODEMIRU*
         initEEPROM_UECS();
         w = 8;
         break;
@@ -155,7 +155,7 @@ void setup(void) {
   j = digitalRead(SW_SAFE);
   if (j==LOW) {
     for(w=0;w<0x7;w++) {
-      if (ccm_type[w]!=atmem.read(w+0x106)) {  // CCMTABLE
+      if (ccm_type[w]!=atmem.read(w+0x106)) {  // CCMTABLE *ATODEMIRU*
         initEEPROM_UECS();
         w = 8;
         break;
@@ -493,19 +493,33 @@ void initEEPROM_UECS(void) {
       sprintf(ccm_type,"Irriopr.%d",k);
     }
     if (k==0) {              // CCMTABLE
-      a = 0x100;
+      a = LC_SCH_START;
     } else {
-      a += 0x20;
+      a += 0x40;
     }
-    atmem.write(a,enable);              // CCMTABLE
-    atmem.write(a+1,room);
-    atmem.write(a+2,region);
-    atmem.write(a+3,(order&0xff));
-    atmem.write(a+4,(order>>8)&0xff);
-    atmem.write(a+5,priority);
+    atmem.write(a+LC_VALID,enable);              // CCMTABLE *ATODEMIRU*
+    atmem.write(a+LC_ROOM,room);
+    atmem.write(a+LC_REGION,region);
+    atmem.write(a+LC_ORDER,(order&0xff));
+    atmem.write(a+LC_ORDER+1,(order>>8)&0xff);
+    atmem.write(a+LC_PRIORTY,priority);
+    atmem.write(a+LC_LV,LV_A1M0);
+    atmem.write(a+LC_CAST,0);
+    atmem.write(a+LC_SR,'S');
     for (j=0;j<20;j++) {
-      atmem.write(a+6+j,ccm_type[j]);
+      atmem.write(a+LC_CCMTYPE+j,ccm_type[j]);
     }
+    for (j=0;j<10;j++) {
+      atmem.write(a+LC_UNIT+j,0);
+    }
+    atmem.write(a+LC_STHR,0);
+    atmem.write(a+LC_STMN,0);
+    atmem.write(a+LC_EDHR,0);
+    atmem.write(a+LC_EDMN,0);
+    atmem.write(a+LC_INMN,0);
+    atmem.write(a+LC_DUMN,0);
+    atmem.write(a+LC_RLY_L,0);
+    atmem.write(a+LC_RLY_H,0);
   }
 }
 
@@ -520,20 +534,20 @@ void sendUECSpacket(int id,char *v) {
   for(x=0;x<256;x++) {
     t[x] = (char)NULL;
   }
-  a = 0x100+(id*0x20);    // CCMTABLE
+  a = LC_SCH_START+(id*0x40);    // CCMTABLE
   xmlDT = CCMFMT;
-  enable = atmem.read(a);
-  if (enable==false) {
+  enable = atmem.read(a+LC_VALID);
+  if (enable!=1) {
     return;
   }
-  room = atmem.read(a+1);
-  region = atmem.read(a+2);
-  ordl = atmem.read(a+3);
-  ordh = atmem.read(a+4);
+  room = atmem.read(a+LC_ROOM);
+  region = atmem.read(a+LC_REGION);
+  ordl = atmem.read(a+LC_ORDER);
+  ordh = atmem.read(a+LC_ORDER+1);
   order = (ordh<<8)+ordl;
-  priority = atmem.read(a+5);
+  priority = atmem.read(a+LC_PRIORITY);
   for (j=0;j<20;j++) {
-    ccm_type[j] = atmem.read(a+6+j);
+    ccm_type[j] = atmem.read(a+LC_CCMTYPE+j);
   }
   sprintf(t,xmlDT,ccm_type,room,region,
           order,priority,v,itoaddr(st_m.ip));
@@ -573,7 +587,7 @@ int copyFromNAMEVENDER(char *dest,char *src) {
 int copyFromUECSID(char *dest) {
   int a,r;
   char b[13];
-  a = 0;
+  a = LC_UECS_ID;
   sprintf(b,"%02X%02X%02X%02X%02X%02X",atmem.read(a),
           atmem.read(a+1),atmem.read(a+2),atmem.read(a+3),atmem.read(a+4),atmem.read(a+5));
   for (a=0;a<12;a++) {

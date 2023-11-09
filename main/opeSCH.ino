@@ -139,18 +139,18 @@ void opeSCH(void) {
         rly[y]|=x<<((3-z)*2);
       }
     }
-    addr = 0x1000+id*0x10;
+    addr = LC_SCH_START+id*LC_SCH_REC_SIZE;
     if ((sthr==0)&&(stmn==0)&&(edhr==0)&&(edmn==0)||(dumn==0)) {
-      atmem.write(addr,0xff);
+      atmem.write(addr+LC_VALID,0xff);
     } else {
-      atmem.write(addr   ,sthr);
-      atmem.write(addr+1 ,stmn);
-      atmem.write(addr+2 ,edhr);
-      atmem.write(addr+3 ,edmn);
-      atmem.write(addr+4 ,inmn);
-      atmem.write(addr+5 ,dumn);
-      atmem.write(addr+14,rly[0]);
-      atmem.write(addr+15,rly[1]);
+      atmem.write(addr+LC_STHR,sthr);
+      atmem.write(addr+LC_STMN,stmn);
+      atmem.write(addr+LC_EDHR,edhr);
+      atmem.write(addr+LC_EDMN,edmn);
+      atmem.write(addr+LC_INMN,inmn);
+      atmem.write(addr+LC_DUMN ,dumn);
+      atmem.write(addr+LC_RLY_L,rly[0]);
+      atmem.write(addr+LC_RLY_H,rly[1]);
     }
     sprintf(eebuf,"EEPROM %04XH %02X%02X,%02X%02X,%02X%02X,%02X%02X",
             id,sthr,stmn,edhr,edmn,inmn,dumn,rly[0],rly[1]);
@@ -180,15 +180,15 @@ void getSCHData(int p,int id) {
   unsigned int addr;
   byte sthr,stmn,edhr,edmn,inmn,dumn,rly[2],rlyb[2];
   char lcdbuf[21];
-  addr = 0x1000+id*0x10;
-  sthr = atmem.read(addr);
-  stmn = atmem.read(addr+1);
-  edhr = atmem.read(addr+2);
-  edmn = atmem.read(addr+3);
-  inmn = atmem.read(addr+4);
-  dumn = atmem.read(addr+5);
-  rly[0] = atmem.read(addr+14);
-  rly[1] = atmem.read(addr+15);
+  addr = LC_SCH_START+id*LC_REC_SIZE;
+  sthr = atmem.read(addr+LC_STHR);
+  stmn = atmem.read(addr+LC_STMN);
+  edhr = atmem.read(addr+LC_EDHR);
+  edmn = atmem.read(addr+LC_EDMN);
+  inmn = atmem.read(addr+LC_INMN);
+  dumn = atmem.read(addr+LC_DUMN);
+  rly[0] = atmem.read(addr+LC_RLY_L);
+  rly[1] = atmem.read(addr+LC_RLY_H);
   if ((sthr==0xff)||((sthr==0)&&(stmn==0)&&(edhr==0)&&(edmn==0))) {
     sthr = 0;
     stmn = 0;
