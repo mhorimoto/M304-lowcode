@@ -180,7 +180,7 @@ void getSCHData(int p,int id) {
   unsigned int addr;
   byte sthr,stmn,edhr,edmn,inmn,dumn,rly[2],rlyb[2];
   char lcdbuf[21];
-  addr = LC_SCH_START+id*LC_REC_SIZE;
+  addr = LC_SCH_START+id*LC_SCH_REC_SIZE;
   sthr = atmem.read(addr+LC_STHR);
   stmn = atmem.read(addr+LC_STMN);
   edhr = atmem.read(addr+LC_EDHR);

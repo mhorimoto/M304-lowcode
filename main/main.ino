@@ -502,7 +502,7 @@ void initEEPROM_UECS(void) {
     atmem.write(a+LC_REGION,region);
     atmem.write(a+LC_ORDER,(order&0xff));
     atmem.write(a+LC_ORDER+1,(order>>8)&0xff);
-    atmem.write(a+LC_PRIORTY,priority);
+    atmem.write(a+LC_PRIORITY,priority);
     atmem.write(a+LC_LV,LV_A1M0);
     atmem.write(a+LC_CAST,0);
     atmem.write(a+LC_SR,'S');
