@@ -4,8 +4,8 @@
 #include <yxml.h>
 #include <string.h>
 
-#if _M304_H_V < 134
-#pragma message("Library M304 is old. Version 1.34 or higher is required.")
+#if _M304_H_V < 136
+#pragma message("Library M304 is old. Version 1.36 or higher is required.")
 #else
 uint8_t mcusr_mirror __attribute__ ((section (".noinit")));
 void get_mcusr(void)     \
@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.1hD";
+char *pgname = "M304 Ver2.2D";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -139,7 +139,7 @@ void setup(void) {
   j = digitalRead(SW_SAFE);
   if (j==LOW) {
     for(w=0;w<0x7;w++) {
-      if (ccm_type[w]!=atmem.read(w+0x106)) {  // CCMTABLE *ATODEMIRU*
+      if (ccm_type[w]!=atmem.read(LC_SCH_START+LC_CCMTYPE)) {  // CCMTABLE
         initEEPROM_UECS();
         w = 8;
         break;
@@ -148,20 +148,20 @@ void setup(void) {
   }
   UDP16520.begin(16520);
   UECS_UDP16529.begin(16529);
-  for (j=0;j<20;j++) {
-    ccm_type[j] = 0;
-  }
-  strcpy(ccm_type,"cnd.aMC");
-  j = digitalRead(SW_SAFE);
-  if (j==LOW) {
-    for(w=0;w<0x7;w++) {
-      if (ccm_type[w]!=atmem.read(w+0x106)) {  // CCMTABLE *ATODEMIRU*
-        initEEPROM_UECS();
-        w = 8;
-        break;
-      }
-    }
-  }
+  // for (j=0;j<20;j++) {
+  //   ccm_type[j] = 0;
+  // }
+  // strcpy(ccm_type,"cnd.aMC");
+  // j = digitalRead(SW_SAFE);
+  // if (j==LOW) {
+  //   for(w=0;w<0x7;w++) {
+  //     if (ccm_type[w]!=atmem.read(w+0x106)) {  // CCMTABLE *ATODEMIRU*
+  //       initEEPROM_UECS();
+  //       w = 8;
+  //       break;
+  //     }
+  //   }
+  // }
   httpd.begin();
   sendUECSpacket(0,"2048"); // setup completed 0x800
   Serial.begin(115200);
@@ -497,7 +497,7 @@ void initEEPROM_UECS(void) {
     } else {
       a += 0x40;
     }
-    atmem.write(a+LC_VALID,enable);              // CCMTABLE *ATODEMIRU*
+    atmem.write(a+LC_VALID,enable);
     atmem.write(a+LC_ROOM,room);
     atmem.write(a+LC_REGION,region);
     atmem.write(a+LC_ORDER,(order&0xff));
