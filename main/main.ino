@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.2.0";
+char *pgname = "M304 Ver2.2.1";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -44,9 +44,6 @@ irrM304 irr_m;
 #define LEN_UECSXML_TYPE    20
 #define LEN_UECSXML_TEXTVAL 20
 #define LEN_UECSXML_BUFFER  512
-
-//#define VENDER_NAME         0x40
-//#define NODE_NAME           0x50
 
 char uecsbuf[LEN_UECSXML_BUFFER+1];
 const char xmlhead[] PROGMEM = "<?xml version=\"1.0\"?><UECS ver=\"1.00-E10\">$";
@@ -148,20 +145,6 @@ void setup(void) {
   }
   UDP16520.begin(16520);
   UECS_UDP16529.begin(16529);
-  // for (j=0;j<20;j++) {
-  //   ccm_type[j] = 0;
-  // }
-  // strcpy(ccm_type,"cnd.aMC");
-  // j = digitalRead(SW_SAFE);
-  // if (j==LOW) {
-  //   for(w=0;w<0x7;w++) {
-  //     if (ccm_type[w]!=atmem.read(w+0x106)) {  // CCMTABLE *ATODEMIRU*
-  //       initEEPROM_UECS();
-  //       w = 8;
-  //       break;
-  //     }
-  //   }
-  // }
   httpd.begin();
   sendUECSpacket(0,"2048"); // setup completed 0x800
   Serial.begin(115200);

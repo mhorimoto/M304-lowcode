@@ -184,11 +184,6 @@ void getSCHData(int p,int id) {
   byte valid,sthr,stmn,edhr,edmn,inmn,dumn,rly[2],rlyb[2];
   char lcdbuf[21];
   addr = LC_SCH_START+id*LC_SCH_REC_SIZE;
-  //  Serial.begin(115200);
-  //  Serial.print("Enter getSCHData() with id=");
-  //  Serial.println(id);
-  //  Serial.print("addr=");
-  //  Serial.print(addr,HEX);
   valid= atmem.read(addr+LC_VALID);
   sthr = atmem.read(addr+LC_STHR);
   stmn = atmem.read(addr+LC_STMN);
@@ -198,34 +193,6 @@ void getSCHData(int p,int id) {
   dumn = atmem.read(addr+LC_DUMN);
   rly[0] = atmem.read(addr+LC_RLY_L);
   rly[1] = atmem.read(addr+LC_RLY_H);
-  //  Serial.print("  VALID=");
-  //  Serial.print(valid,HEX);
-  //  Serial.print("  STHR=");
-  //  Serial.println(sthr,HEX);
-  // Serial.print("  STMN=");
-  // Serial.print(stmn,HEX);
-  // Serial.print("  EDHR=");
-  // Serial.print(edhr,HEX);
-  // Serial.print("  EDMN=");
-  // Serial.print(edmn,HEX);
-  // Serial.print("  INMN=");
-  // Serial.print(inmn,HEX);
-  // Serial.print("  DUMN=");
-  // Serial.print(dumn,HEX);
-  // Serial.print("  RLYL=");
-  // Serial.print(rly[0],HEX);
-  // Serial.print("  RLYH=");
-  // Serial.print(rly[1],HEX);
-  // if ((sthr==0xff)||((sthr==0)&&(stmn==0)&&(edhr==0)&&(edmn==0))) {
-  //   sthr = 0;
-  //   stmn = 0;
-  //   edhr = 0;
-  //   edmn = 0;
-  //   inmn = 0;
-  //   dumn = 0;
-  //   rly[0] = 0;
-  //   rly[1] = 0;
-  //  }
   sprintf(lcdbuf,"%02d %02d:%02d %02d:%02d %02d-%02d",
 	  id,sthr,stmn,edhr,edmn,inmn,dumn);
   lcdd.setLine(p,1,lcdbuf);
