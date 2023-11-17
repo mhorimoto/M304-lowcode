@@ -16,8 +16,13 @@ void opeHttpd(EthernetClient ec) {
   while(ec.connected()) {
     if (ec.available()) {
       c = ec.read();
-      if (c==':') {
+      switch(c) {
+      case ':':
+      case '>':
         mode = 1;
+        continue;
+      case '<':
+        mode = 2;
         continue;
       }
       if (mode==1) {
