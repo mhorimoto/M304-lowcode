@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.2.0D";
+char *pgname = "M304 Ver2.2.2D";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];

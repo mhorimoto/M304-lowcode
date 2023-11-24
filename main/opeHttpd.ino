@@ -34,87 +34,88 @@ void opeHttpd(EthernetClient ec) {
           return;
         }
         htbuf[bufcnt] = (char)NULL;
-      }
-      if ( c=='\n' && currentLineIsBlank ) {
-        ec.println("HTTP/1.1 200 OK");
-        ec.println("Content-Type: text/html");
-        ec.println("Connection: close");
-        ec.println();
-        ec.println("<!DOCTYPE HTML>");
-        ec.println("<html>");
-        // output the value of each analog input pin
-        ec.print("<h1>M304</h1>");
-        ec.print("<p> is here.</p>htbuf=");
-        ec.println(htbuf);
-        strncpy(d,htbuf,2);
-        dlen = strtol(d,NULL,16);
-        chksum = dlen;
-                ec.print("dlen=");
-                ec.print(dlen);
-                ec.print("  chksum=");
-                ec.println(chksum,HEX);
-          
-        strncpy(d,&htbuf[2],4);
-        d[4]=(char)NULL;
-        daddr = strtol(d,NULL,16);
-        ec.print("addr=0x");
-        ec.println(daddr,HEX);
-        
-        strncpy(d,&htbuf[2],2);
-        d[2]=(char)NULL;
-        chksum += ((strtol(d,NULL,16))&0xff);
-                ec.print("addrh chksum=");
-                ec.println(chksum,HEX);
-        strncpy(d,&htbuf[4],2);
-        chksum += ((strtol(d,NULL,16))&0xff);
-                ec.print("addrL  chksum=");
-                ec.println(chksum,HEX);
-        
-                //        for (i=0;i<5;i++) d[i] = (char)0;
-        ec.print("dtype(d)=");
-        ec.println(d);
-        strncpy(d,&htbuf[6],2);
-        d[2]=(char)NULL;
-        ec.print("dtype(d)=");
-        ec.println(d);
-        dtype = strtol(d,NULL,16);
-        chksum += dtype;
-        chksum &= 0xff;
-                ec.print("dtype=");
-                ec.print(dtype);
-                ec.print("  chksum=");
-                ec.println(chksum,HEX);
-        ec.print("<p>");
-        ec.print(strlen(p_htbuf));
-        ec.print(" chars length=");
-        ec.print(dlen);
-        ec.print("bytes address=0x");
-        ec.println(daddr,HEX);
-        for (i=0;i<dlen;i++) {
-          strncpy(d,&htbuf[(i*2)+8],2);
-          d[2]=(char)NULL;
-          dbyte = strtol(d,NULL,16);
-          chksum += dbyte;
-          chksum &= 0xff;
-          ec.print(dbyte,HEX);
+      
+        if ( c=='\n' && currentLineIsBlank ) {
+          ec.println("HTTP/1.1 200 OK");
+          ec.println("Content-Type: text/html");
+          ec.println("Connection: close");
+          ec.println();
+          ec.println("<!DOCTYPE HTML>");
+          ec.println("<html>");
+          // output the value of each analog input pin
+          ec.print("<h1>M304</h1>");
+          ec.print("<p> is here.</p>htbuf=");
+          ec.println(htbuf);
+          strncpy(d,htbuf,2);
+          dlen = strtol(d,NULL,16);
+          chksum = dlen;
+          ec.print("dlen=");
+          ec.print(dlen);
           ec.print("  chksum=");
           ec.println(chksum,HEX);
-          if (mode==1) {
-            mod_EEPROM(daddr+i,dbyte,ec);
+          
+          strncpy(d,&htbuf[2],4);
+          d[4]=(char)NULL;
+          daddr = strtol(d,NULL,16);
+          ec.print("addr=0x");
+          ec.println(daddr,HEX);
+          
+          strncpy(d,&htbuf[2],2);
+          d[2]=(char)NULL;
+          chksum += ((strtol(d,NULL,16))&0xff);
+          ec.print("addrh chksum=");
+          ec.println(chksum,HEX);
+          strncpy(d,&htbuf[4],2);
+          chksum += ((strtol(d,NULL,16))&0xff);
+          ec.print("addrL  chksum=");
+          ec.println(chksum,HEX);
+          
+          //        for (i=0;i<5;i++) d[i] = (char)0;
+          ec.print("dtype(d)=");
+          ec.println(d);
+          strncpy(d,&htbuf[6],2);
+          d[2]=(char)NULL;
+          ec.print("dtype(d)=");
+          ec.println(d);
+          dtype = strtol(d,NULL,16);
+          chksum += dtype;
+          chksum &= 0xff;
+          ec.print("dtype=");
+          ec.print(dtype);
+          ec.print("  chksum=");
+          ec.println(chksum,HEX);
+          ec.print("<p>");
+          ec.print(strlen(p_htbuf));
+          ec.print(" chars length=");
+          ec.print(dlen);
+          ec.print("bytes address=0x");
+          ec.println(daddr,HEX);
+          for (i=0;i<dlen;i++) {
+            strncpy(d,&htbuf[(i*2)+8],2);
+            d[2]=(char)NULL;
+            dbyte = strtol(d,NULL,16);
+            chksum += dbyte;
+            chksum &= 0xff;
+            ec.print(dbyte,HEX);
+            ec.print("  chksum=");
+            ec.println(chksum,HEX);
+            if (mode==1) {
+              mod_EEPROM(daddr+i,dbyte,ec);
+            }
           }
+          strncpy(d,&htbuf[(i*2)+8],2);
+          d[2]=(char)NULL;
+          dbyte = strtol(d,NULL,16) ; //>> 8;
+          chksum += dbyte;
+          ec.println(dbyte,HEX);
+          ec.print("chksum=");
+          ec.println(chksum,HEX);
+          htbuf[(i*2)+10] = (char)0;
+          ec.print(p_htbuf);
+          ec.println("</p>");
+          ec.println("</html>");
+          break;
         }
-        strncpy(d,&htbuf[(i*2)+8],2);
-        d[2]=(char)NULL;
-        dbyte = strtol(d,NULL,16) ; //>> 8;
-        chksum += dbyte;
-        ec.println(dbyte,HEX);
-        ec.print("chksum=");
-        ec.println(chksum,HEX);
-        htbuf[(i*2)+10] = (char)0;
-        ec.print(p_htbuf);
-        ec.println("</p>");
-        ec.println("</html>");
-        break;
       }
     }
     if (c == '\n') {
