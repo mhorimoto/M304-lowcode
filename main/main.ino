@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.2.1";
+char *pgname = "M304 Ver2.2.1bug";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -148,6 +148,7 @@ void setup(void) {
   httpd.begin();
   sendUECSpacket(0,"2048"); // setup completed 0x800
   Serial.begin(115200);
+  Serial.println(pgname);
 }
 
 
