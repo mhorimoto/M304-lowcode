@@ -12,7 +12,7 @@ void opeRUN(int hr,int mn) {
   if (mn!=pmn) {
     pmn = mn;
     for(id=0;id<100;id++) {
-      a = LC_SCH_START+(id*0x10);
+      a = LC_SCH_START+(id*LC_SCH_REC_SIZE);
       if (atmem.read(a)!=0xff) {
 	timeDecision(id,hr,mn);
       }

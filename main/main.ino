@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.2.2D";
+char *pgname = "M304 Ver2.2.3D";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -44,9 +44,6 @@ irrM304 irr_m;
 #define LEN_UECSXML_TYPE    20
 #define LEN_UECSXML_TEXTVAL 20
 #define LEN_UECSXML_BUFFER  512
-
-//#define VENDER_NAME         0x40
-//#define NODE_NAME           0x50
 
 char uecsbuf[LEN_UECSXML_BUFFER+1];
 const char xmlhead[] PROGMEM = "<?xml version=\"1.0\"?><UECS ver=\"1.00-E10\">$";
@@ -135,36 +132,24 @@ void setup(void) {
   for (j=0;j<20;j++) {
     ccm_type[j] = 0;
   }
-  //  strcpy(ccm_type,"cnd.aMC");
+
+  //  Initialize the CCM table when the initialization switch is in the up position.
+  //  Very very dangerous
   j = digitalRead(SW_SAFE);
   if (j==LOW) {
-    for(w=0;w<0x7;w++) {
-      if (ccm_type[w]!=atmem.read(LC_SCH_START+LC_CCMTYPE)) {  // CCMTABLE
+    if ((atmem.read(LC_SEND_START)==0xff)&&(atmem.read(LC_SCH_START)==0xff)) {  // CCMTABLE
         initEEPROM_UECS();
-        w = 8;
-        break;
-      }
+	lcdd.setLine(0,3,"init EEPROM         ");
+	lcdd.LineWrite(0,3);
     }
   }
+
   UDP16520.begin(16520);
   UECS_UDP16529.begin(16529);
-  // for (j=0;j<20;j++) {
-  //   ccm_type[j] = 0;
-  // }
-  // strcpy(ccm_type,"cnd.aMC");
-  // j = digitalRead(SW_SAFE);
-  // if (j==LOW) {
-  //   for(w=0;w<0x7;w++) {
-  //     if (ccm_type[w]!=atmem.read(w+0x106)) {  // CCMTABLE *ATODEMIRU*
-  //       initEEPROM_UECS();
-  //       w = 8;
-  //       break;
-  //     }
-  //   }
-  // }
   httpd.begin();
   sendUECSpacket(0,"2048"); // setup completed 0x800
   Serial.begin(115200);
+  Serial.println(pgname);
 }
 
 
@@ -495,7 +480,7 @@ void initEEPROM_UECS(void) {
     if (k==0) {              // CCMTABLE
       a = LC_SCH_START;
     } else {
-      a += 0x40;
+      a += LC_SCH_REC_SIZE;
     }
     atmem.write(a+LC_VALID,enable);
     atmem.write(a+LC_ROOM,room);
@@ -505,7 +490,7 @@ void initEEPROM_UECS(void) {
     atmem.write(a+LC_PRIORITY,priority);
     atmem.write(a+LC_LV,LV_A1M0);
     atmem.write(a+LC_CAST,0);
-    atmem.write(a+LC_SR,'S');
+    atmem.write(a+LC_SR,'R');
     for (j=0;j<20;j++) {
       atmem.write(a+LC_CCMTYPE+j,ccm_type[j]);
     }

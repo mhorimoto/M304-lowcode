@@ -162,6 +162,10 @@ void opeSCH(void) {
   if (ic!=io) {
     if (io<100) {
       getSCHData(cposp,ic);
+      Serial.println("exited getSCHData()");
+      Serial.print("enter PageWrite(");
+      Serial.print(cposp);
+      Serial.println(")");
       lcdd.PageWrite(cposp);
     }
   }
@@ -183,49 +187,38 @@ void getSCHData(int p,int id) {
   unsigned int addr;
   byte valid,sthr,stmn,edhr,edmn,inmn,dumn,rly[2],rlyb[2];
   char lcdbuf[21];
+
+  Serial.print("getSCHData(p="); // debug 2.2.1
+  Serial.print(p); // debug 2.2.1
+  Serial.print(",id="); // debug 2.2.1
+  Serial.print(id); // debug 2.2.1
+  Serial.println(")"); // debug 2.2.1
+  
   addr = LC_SCH_START+id*LC_SCH_REC_SIZE;
-    Serial.begin(115200);
-    Serial.print("Enter getSCHData() with id=");
-    Serial.println(id);
-    Serial.print("addr=");
-    Serial.print(addr,HEX);
+  Serial.print("addr=0x"); // debug 2.2.1
+  Serial.println(addr,HEX); // debug 2.2.1
+
   valid= atmem.read(addr+LC_VALID);
-  sthr = atmem.read(addr+LC_STHR);
-  stmn = atmem.read(addr+LC_STMN);
-  edhr = atmem.read(addr+LC_EDHR);
-  edmn = atmem.read(addr+LC_EDMN);
-  inmn = atmem.read(addr+LC_INMN);
-  dumn = atmem.read(addr+LC_DUMN);
-  rly[0] = atmem.read(addr+LC_RLY_L);
-  rly[1] = atmem.read(addr+LC_RLY_H);
-    Serial.print("  VALID=");
-    Serial.print(valid,HEX);
-    Serial.print("  STHR=");
-    Serial.println(sthr,HEX);
-    Serial.print("  STMN=");
-    Serial.print(stmn,HEX);
-    Serial.print("  EDHR=");
-    Serial.print(edhr,HEX);
-    Serial.print("  EDMN=");
-    Serial.print(edmn,HEX);
-    Serial.print("  INMN=");
-    Serial.print(inmn,HEX);
-    Serial.print("  DUMN=");
-    Serial.print(dumn,HEX);
-    Serial.print("  RLYL=");
-    Serial.print(rly[0],HEX);
-    Serial.print("  RLYH=");
-    Serial.print(rly[1],HEX);
-  // if ((sthr==0xff)||((sthr==0)&&(stmn==0)&&(edhr==0)&&(edmn==0))) {
-  //   sthr = 0;
-  //   stmn = 0;
-  //   edhr = 0;
-  //   edmn = 0;
-  //   inmn = 0;
-  //   dumn = 0;
-  //   rly[0] = 0;
-  //   rly[1] = 0;
-  //  }
+  if (valid==1) { // debug 2.2.1
+    sthr = atmem.read(addr+LC_STHR);
+    stmn = atmem.read(addr+LC_STMN);
+    edhr = atmem.read(addr+LC_EDHR);
+    edmn = atmem.read(addr+LC_EDMN);
+    inmn = atmem.read(addr+LC_INMN);
+    dumn = atmem.read(addr+LC_DUMN);
+    rly[0] = atmem.read(addr+LC_RLY_L);
+    rly[1] = atmem.read(addr+LC_RLY_H);
+  } else { // debug 2.2.1
+    sthr = 0; // debug 2.2.1
+    stmn = 0; // debug 2.2.1
+    edhr = 0; // debug 2.2.1
+    edmn = 0; // debug 2.2.1
+    inmn = 0; // debug 2.2.1
+    dumn = 0; // debug 2.2.1
+    rly[0] = 0; // debug 2.2.1
+    rly[1] = 0; // debug 2.2.1
+  } // debug 2.2.1
+
   sprintf(lcdbuf,"%02d %02d:%02d %02d:%02d %02d-%02d",
 	  id,sthr,stmn,edhr,edmn,inmn,dumn);
   lcdd.setLine(p,1,lcdbuf);
@@ -241,4 +234,6 @@ void getSCHData(int p,int id) {
       x++;
     }
   }
+  Serial.println(lcdbuf); // debug 2.2.1
+  Serial.println("getSCHData exit"); // debug 2.2.1
 }

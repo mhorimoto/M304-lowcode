@@ -1,5 +1,10 @@
 # TO DO LIST
 
+  Version:2.2.3D
+  CCMテーブルのSend/Receiveの分けの変更を行う。
+  M304.hはしばらくの間、手元に置いておく。
+
+
   last modified: 19th Sept. 2023
   version 1.3までは、M304-Kansuiで作成した。その後、汎用性を目指して大きく改版することになった。low-code用としてHTMLソースコードと連携する事になる。
 
