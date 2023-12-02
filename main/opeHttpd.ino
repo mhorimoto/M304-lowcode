@@ -2,13 +2,13 @@
 
 void opeHttpd(EthernetClient ec) {
   boolean currentLineIsBlank = true;
-  char c,d[5],htbuf[HTTPBUFSIZ],*p_htbuf;
+  char c,d[5],htbuf[BUFSIZ],*p_htbuf,prnbuf[BUFSIZ];
   int  mode; // 0:ignore, 1:Store to EEPROM, 2:Fetch from EEPROM, 3:END ope
   int  bufcnt, i;
   int  dlen,daddr,dtype,chksum;
   byte dbyte;
   
-  mode = 0;
+  mode = MD_HT_IGNORE;
   bufcnt = 0;
   chksum = 0;
   p_htbuf = &htbuf[0];
@@ -16,16 +16,84 @@ void opeHttpd(EthernetClient ec) {
   while(ec.connected()) {
     if (ec.available()) {
       c = ec.read();
-      switch(c) {
-      case ':':
-      case '>':
-        mode = 1;
-        continue;
-      case '<':
-        mode = 2;
-        continue;
+      if (mode==MD_HT_IGNORE) {
+        switch(c) {
+        case ':':
+          mode = MD_HT_STORE;
+          continue;
+        case 'L':
+          mode = MD_HT_FETCH;
+          continue;
+        }
       }
-      if (mode==1) {
+      /* STORE ROUTINE */
+      if (mode==MD_HT_STORE) {
+        htbuf[bufcnt] = c;
+        bufcnt++;
+        if ( bufcnt > BUFSIZ ) {
+          ec.stop();
+          Serial.println("Buffer overflow");
+          return;
+        }
+        htbuf[bufcnt] = (char)NULL;
+      
+        if ( c=='\n' && currentLineIsBlank ) {
+          ec.println("HTTP/1.1 200 OK");
+          ec.println("Content-Type: text/html");
+          ec.println("Connection: close");
+          ec.println();
+          ec.println("<!DOCTYPE HTML>");
+          ec.println("<html>");
+
+          ec.print("<h1>M304</h1>");
+          ec.print("<p> is here.</p>htbuf=");
+          ec.println(htbuf);
+          strncpy(d,htbuf,2);
+          dlen = strtol(d,NULL,16);
+          chksum = dlen;
+          strncpy(d,&htbuf[2],4);
+          d[4]=(char)NULL;
+          daddr = strtol(d,NULL,16);
+
+          sprintf(prnbuf,"dlen=%d  chksum=0x%02X  addr=0x%04X",dlen,chksum,daddr);
+          ec.println(prnbuf);
+          
+          strncpy(d,&htbuf[2],2);
+          d[2]=(char)NULL;
+          chksum += ((strtol(d,NULL,16))&0xff);
+          strncpy(d,&htbuf[4],2);
+          chksum += ((strtol(d,NULL,16))&0xff);
+          strncpy(d,&htbuf[6],2);
+          d[2]=(char)NULL;
+          dtype = strtol(d,NULL,16);
+          chksum += dtype;
+          chksum &= 0xff;
+          sprintf(prnbuf,"dtype=%d  chksum=0x%02X  %d chars length=%d  bytes address=0x%04X\n",
+                  dtype,chksum,strlen(p_htbuf),dlen,daddr);
+          ec.print(prnbuf);
+          
+          for (i=0;i<dlen;i++) {
+            strncpy(d,&htbuf[(i*2)+8],2);
+            d[2]=(char)NULL;
+            dbyte = strtol(d,NULL,16);
+            chksum += dbyte;
+            chksum &= 0xff;
+            if (mode==MD_HT_STORE) {
+              mod_EEPROM(daddr+i,dbyte,ec);
+            }
+          }
+          strncpy(d,&htbuf[(i*2)+8],2);
+          d[2]=(char)NULL;
+          dbyte = strtol(d,NULL,16) ; //>> 8;
+          chksum += dbyte;
+          htbuf[(i*2)+10] = (char)0;
+          ec.print(p_htbuf);
+          ec.println("</p>");
+          ec.println("</html>");
+          break;
+        }
+      /* FETCH ROUTINE */
+      } else if (mode==MD_HT_FETCH) {
         htbuf[bufcnt] = c;
         bufcnt++;
         if ( bufcnt > HTTPBUFSIZ ) {
@@ -42,77 +110,14 @@ void opeHttpd(EthernetClient ec) {
           ec.println();
           ec.println("<!DOCTYPE HTML>");
           ec.println("<html>");
-          // output the value of each analog input pin
-          ec.print("<h1>M304</h1>");
+
+          ec.print("<h1>M304 FETCH</h1>");
           ec.print("<p> is here.</p>htbuf=");
           ec.println(htbuf);
-          strncpy(d,htbuf,2);
-          dlen = strtol(d,NULL,16);
-          chksum = dlen;
-          ec.print("dlen=");
-          ec.print(dlen);
-          ec.print("  chksum=");
-          ec.println(chksum,HEX);
-          
           strncpy(d,&htbuf[2],4);
           d[4]=(char)NULL;
           daddr = strtol(d,NULL,16);
-          ec.print("addr=0x");
-          ec.println(daddr,HEX);
-          
-          strncpy(d,&htbuf[2],2);
-          d[2]=(char)NULL;
-          chksum += ((strtol(d,NULL,16))&0xff);
-          ec.print("addrh chksum=");
-          ec.println(chksum,HEX);
-          strncpy(d,&htbuf[4],2);
-          chksum += ((strtol(d,NULL,16))&0xff);
-          ec.print("addrL  chksum=");
-          ec.println(chksum,HEX);
-          
-          //        for (i=0;i<5;i++) d[i] = (char)0;
-          ec.print("dtype(d)=");
-          ec.println(d);
-          strncpy(d,&htbuf[6],2);
-          d[2]=(char)NULL;
-          ec.print("dtype(d)=");
-          ec.println(d);
-          dtype = strtol(d,NULL,16);
-          chksum += dtype;
-          chksum &= 0xff;
-          ec.print("dtype=");
-          ec.print(dtype);
-          ec.print("  chksum=");
-          ec.println(chksum,HEX);
-          ec.print("<p>");
-          ec.print(strlen(p_htbuf));
-          ec.print(" chars length=");
-          ec.print(dlen);
-          ec.print("bytes address=0x");
-          ec.println(daddr,HEX);
-          for (i=0;i<dlen;i++) {
-            strncpy(d,&htbuf[(i*2)+8],2);
-            d[2]=(char)NULL;
-            dbyte = strtol(d,NULL,16);
-            chksum += dbyte;
-            chksum &= 0xff;
-            ec.print(dbyte,HEX);
-            ec.print("  chksum=");
-            ec.println(chksum,HEX);
-            if (mode==1) {
-              mod_EEPROM(daddr+i,dbyte,ec);
-            }
-          }
-          strncpy(d,&htbuf[(i*2)+8],2);
-          d[2]=(char)NULL;
-          dbyte = strtol(d,NULL,16) ; //>> 8;
-          chksum += dbyte;
-          ec.println(dbyte,HEX);
-          ec.print("chksum=");
-          ec.println(chksum,HEX);
-          htbuf[(i*2)+10] = (char)0;
-          ec.print(p_htbuf);
-          ec.println("</p>");
+          fetch_EEPROM(daddr,ec);
           ec.println("</html>");
           break;
         }
@@ -142,4 +147,25 @@ void mod_EEPROM(unsigned int addr,byte dt,EthernetClient ec) {
   ec.print(dt,HEX);
   ec.println("  Writen");
   return;
+}
+
+/*
+   1page fetch 1page=256bytes
+ */
+void fetch_EEPROM(unsigned int addr,EthernetClient ec) {
+  int x,y,a;
+  uint8_t d;
+  char prnbuf[BUFSIZ];
+  addr &= 0xff00;
+  ec.println("<pre>");
+  for (y=0;y<16;y++) {
+    sprintf(prnbuf,"0x%04X:",addr+y);
+    for (x=0;x<16;x++) {
+      a = addr + (y*16) + x;
+      d = atmem.read(a);
+      sprintf(prnbuf,"%s %02X",prnbuf,d);
+    }
+    ec.println(prnbuf);
+  }
+  ec.println("</pre>");
 }

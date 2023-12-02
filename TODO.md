@@ -1,5 +1,14 @@
 # TO DO LIST
 
+##  test-eeprom-001
+ 2nd Dec. 2023
+ ATMEM(EEPROM)から100レコード、3バイトを読み込むと200mSec要する。
+ 1バイトの場合には90mSecを要した。
+ そこで、RAMに当該する3バイトを事前に読込コピーして比較すると、
+ 0mSec(ミリ秒)未満の所要時間で済んだ。よって、setup()の段階でコピーしてRAMで比較することにする。
+
+## OUTLINE
+  30th Nov. 2023
   Version:2.2.3D
   CCMテーブルのSend/Receiveの分けの変更を行う。
   M304.hはしばらくの間、手元に置いておく。

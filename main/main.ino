@@ -4,8 +4,8 @@
 #include <yxml.h>
 #include <string.h>
 
-#if _M304_H_V < 136
-#pragma message("Library M304 is old. Version 1.36 or higher is required.")
+#if _M304_H_V < 137
+#pragma message("Library M304 is old. Version 1.3.7 or higher is required.")
 #else
 uint8_t mcusr_mirror __attribute__ ((section (".noinit")));
 void get_mcusr(void)     \
@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.2.3D";
+char *pgname = "M304 Ver2.3.0D";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -44,6 +44,9 @@ irrM304 irr_m;
 #define LEN_UECSXML_TYPE    20
 #define LEN_UECSXML_TEXTVAL 20
 #define LEN_UECSXML_BUFFER  512
+
+#define CCM_TBL_CNT_RX  100
+#define CCM_TBL_CNT_TX  50
 
 char uecsbuf[LEN_UECSXML_BUFFER+1];
 const char xmlhead[] PROGMEM = "<?xml version=\"1.0\"?><UECS ver=\"1.00-E10\">$";
@@ -85,10 +88,13 @@ byte ip[4] = { 192,168,0,177 };
 char lbf[81];
 extern bool debugMsgFlag(int);
 
+struct st_FAST_LOOKUP_BUFFER_FOR_CCMTBL {
+  uint8_t valid,lv;
+} flb_rx_ccm[CCM_TBL_CNT_RX],flb_tx_ccm[CCM_TBL_CNT_TX];
 
 void setup(void) {
   extern int mask2cidr(IPAddress);
-  int w,j;
+  int a,w,j;
   char ccm_type[21];
   IPAddress hostip,subnet,gateway,dns;
   m304Init();
@@ -144,6 +150,18 @@ void setup(void) {
     }
   }
 
+  // Read fast lookup buffer for CCM table
+  for (j=0;j<CCM_TBL_CNT_RX;j++) {
+    a = LC_SCH_START+(j*LC_SCH_REC_SIZE);
+    flb_rx_ccm[j].valid = atmem.read(a+LC_VALID);    
+    flb_rx_ccm[j].lv    = atmem.read(a+LC_LV);    
+  }
+  for (j=0;j<CCM_TBL_CNT_TX;j++) {
+    a = LC_SEND_START+(j*LC_SCH_REC_SIZE);
+    flb_tx_ccm[j].valid = atmem.read(a+LC_VALID);    
+    flb_tx_ccm[j].lv    = atmem.read(a+LC_LV);    
+  }
+  
   UDP16520.begin(16520);
   UECS_UDP16529.begin(16529);
   httpd.begin();

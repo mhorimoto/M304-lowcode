@@ -1,6 +1,6 @@
 #ifndef _M304_H_
 #define _M304_H_
-#define _M304_H_V  136
+#define _M304_H_V  137
 
 #include <avr/pgmspace.h>
 #include <LiquidCrystal.h>
@@ -23,6 +23,12 @@
 #define CHANGE_MAKE  2
 #define CHANGE_BREAK 3
 
+/*** Mode via httpd ***/
+
+#define MD_HT_IGNORE  0
+#define MD_HT_STORE   1
+#define MD_HT_FETCH   2
+#define MD_HT_END     3
 
 /*** CMODE ***/
 
