@@ -1,5 +1,9 @@
 # TO DO LIST
 
+## 3rd Dec. 2023
+ * CCMTYPEの比較の要があるRXのレコードのFAST_BUFFERにはCCMTYPEを入れておく。文字列比較なので速度性能上重要。
+ * DHCPモードでルーターが遅れて起動した場合に備えて、setup時にIPアドレスが取得できるまで繰り返すなどの方法が必要。
+
 ##  test-eeprom-001
  2nd Dec. 2023
  ATMEM(EEPROM)から100レコード、3バイトを読み込むと200mSec要する。
