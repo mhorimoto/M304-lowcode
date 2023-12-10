@@ -10,14 +10,16 @@ void UECSupdate16529port(void) {
   if (packetSize>10) {
     UECS_UDP16529.read(uecsbuf,600-1);
     uecsbuf[packetSize] = NULL;
-    Serial.print("UDP16529 size=");
-    Serial.println(packetSize);
-    Serial.print("UDP16529 IP=");
-    Serial.println(UECS_UDP16529.remoteIP()) ;
-    Serial.print("REMOTE PORT=");
-    Serial.println(UECS_UDP16529.remotePort());
-    Serial.print("TEXT=");
-    Serial.println(uecsbuf);
+    if (debugMsgFlag(SO_MSG)) {
+      Serial.print("UDP16529 size=");
+      Serial.println(packetSize);
+      Serial.print("UDP16529 IP=");
+      Serial.println(UECS_UDP16529.remoteIP()) ;
+      Serial.print("REMOTE PORT=");
+      Serial.println(UECS_UDP16529.remotePort());
+      Serial.print("TEXT=");
+      Serial.println(uecsbuf);
+    }
     if (xmldecode(&uecsbuf[0])) {
       if (ptr_uecsxmldata->element==ELE_NODESCAN) {
         res_nodescan(UECS_UDP16529.remoteIP(),UECS_UDP16529.remotePort());
@@ -88,11 +90,11 @@ void debug_uecsxmldata(void) {
 /* 16529 Response   *************/
 /********************************/
 
+#ifdef GOGO
 boolean UECSresNodeScan() {
   int i;
   int progPos = 0;
   int startPos = 0;
-#ifdef GOGO
   if ( ! UECSFindPGMChar(UECSbuffer,&UECSccm_XMLHEADER[0],&progPos) ) {
     return false;
   }
@@ -199,16 +201,16 @@ boolean UECSresNodeScan() {
     UDPAddPGMCharToBuffer(&(UECSccm_CCMRESCLOSE[0]));  
     return true;
   }
-#endif
   return false;
 }
+#endif
 
+#ifdef GOGO
 bool UECSFindPGMChar(char* targetBuffer,const char *_romword_startStr,int *lastPos) {
   *lastPos=0;
   int startPos=-1;
   int _targetBuffersize=strlen(targetBuffer);
   int _startStrsize=strlen_P(_romword_startStr);
-#ifdef GOGO
   if ( _targetBuffersize<_startStrsize ) {
     return false;
   }
@@ -237,6 +239,6 @@ bool UECSFindPGMChar(char* targetBuffer,const char *_romword_startStr,int *lastP
   }
   *lastPos = startPos + _startStrsize;
   return true;
-#endif
 }
 
+#endif
