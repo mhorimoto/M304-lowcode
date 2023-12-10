@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.3.1D";
+char *pgname = "M304 Ver2.3.2D";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -187,6 +187,7 @@ void loop(void) {
   if ( httpClient ) {
     opeHttpd(httpClient);
   }
+  UECSupdate16520port() ;
   UECSupdate16529port() ;
   if (digitalRead(SW_SAFE)==0) {
     lcdd.setLine(0,1,"  EEPROM Operation  ");
