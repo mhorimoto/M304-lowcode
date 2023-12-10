@@ -15,5 +15,32 @@ void UECSupdate16520port(void) {
       Serial.println(UDP16520.remotePort());
       Serial.print("TEXT=");
       Serial.println(uecsbuf);
+    if (xmldecode(&uecsbuf[0])) {
+      if (ptr_uecsxmldata->element==ELE_IP) {
+        ptr_uecsxmldata->ip = UDP16520.remoteIP();
+      }
+      Serial.print("Ver=");
+      Serial.println(ptr_uecsxmldata->ver);
+      Serial.print("Type=");
+      Serial.println(ptr_uecsxmldata->type);
+      Serial.print("TEXTVAL=");
+      Serial.println(ptr_uecsxmldata->textval);
+      Serial.print("Page=");
+      Serial.println(ptr_uecsxmldata->page);
+      Serial.print("ROOM=");
+      Serial.print(ptr_uecsxmldata->room);
+      Serial.print("  REGION=");
+      Serial.print(ptr_uecsxmldata->region);
+      Serial.print("  ORDER=");
+      Serial.print(ptr_uecsxmldata->order);
+      Serial.print("  PRIORITY=");
+      Serial.println(ptr_uecsxmldata->priority);
+      Serial.print("FVAL=");
+      Serial.println(ptr_uecsxmldata->fval);
+      Serial.print("IP=");
+      Serial.println(ptr_uecsxmldata->ip);
+    } else {
+      Serial.println("YXML ERROR");
+    }
   }
 }

@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.3.2D";
+char *pgname = "M304 Ver2.3.3D";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -31,6 +31,7 @@ irrM304 irr_m;
 #define ELE_DATA      0b00001000
 #define ELE_REQUEST   0b00010000
 #define ELE_SEARCH    0b00100000
+#define ELE_IP        0b01000000
 
 #define ATTR_VER      1
 #define ATTR_PAGE     2
@@ -66,6 +67,7 @@ typedef struct st_UECSXML {
   int  order;
   char textval[LEN_UECSXML_TEXTVAL+1];
   float fval;
+  IPAddress ip;
 };
 
 st_UECSXML uecsxmldata,*ptr_uecsxmldata;

@@ -112,9 +112,9 @@ bool xmldecode(char *xml) {
       case ELE_NODESCAN:
       case ELE_CCMSCAN:
       case ELE_SEARCH:
-        ptr_uecsxmldata->element = element;
-        break;
       case ELE_DATA:
+      case ELE_IP:
+        ptr_uecsxmldata->element = element;
         break;
       case ELE_REQUEST:
         break;
@@ -123,6 +123,23 @@ bool xmldecode(char *xml) {
         return;
       }
     case YXML_ELEMEND:
+      if (element==ELE_DATA) {
+        ptr_uecsxmldata->fval = atof(aval);
+      }
+      // Serial.print(element);
+      // Serial.println(" ELEMENT END");
+      // Serial.print("AVAL=");
+      // Serial.println(aval);
+      // Serial.print("TYPE=");
+      // Serial.print(ptr_uecsxmldata->type);
+      // Serial.print("  ROOM=");
+      // Serial.print(ptr_uecsxmldata->room);
+      // Serial.print("  REGION=");
+      // Serial.print(ptr_uecsxmldata->region);
+      // Serial.print("  ORDER=");
+      // Serial.print(ptr_uecsxmldata->order);
+      // Serial.print("  PRIORITY=");
+      // Serial.print(ptr_uecsxmldata->priority);
       break;
     case YXML_ATTRSTART:
       attr = chooseAttr(yx->attr);
@@ -130,34 +147,27 @@ bool xmldecode(char *xml) {
     case YXML_ATTREND:
       *attr_val = NULL;
       if ((element==ELE_UECS)&&(attr==ATTR_VER)) {
-        //        Serial.println("UECS-VER");
-        //        Serial.println(aval);
         strncpy(ptr_uecsxmldata->ver,aval,LEN_UECSXML_VER);
       } else if ((element==ELE_CCMSCAN)&&(attr==ATTR_PAGE)) {
         Serial.println("CCMSCAN-PAGE");
         //        Serial.println(aval);
         ptr_uecsxmldata->page = (byte)(atoi(aval));
-      } else if (element==ELE_SEARCH) {
+      } else if ((element==ELE_SEARCH)||(element==ELE_DATA)) {
         switch(attr) {
         case ATTR_TYPE:
-          Serial.println("SEARCH-TYPE");
-          //          Serial.println(aval);
           strncpy(ptr_uecsxmldata->type,aval,LEN_UECSXML_TYPE);
           break;
         case ATTR_ROOM:
-          Serial.println("SEARCH-ROOM");
-          //        Serial.println(aval);
           ptr_uecsxmldata->room = (byte)(atoi(aval));
           break;
         case ATTR_REGION:
-          Serial.println("SEARCH-REGION");
-          //        Serial.println(aval);
           ptr_uecsxmldata->region = (byte)(atoi(aval));
           break;
         case ATTR_ORDER:
-          Serial.println("SEARCH-ORDER");
-          //          Serial.println(aval);
           ptr_uecsxmldata->order = (int)(atoi(aval));
+          break;
+        case ATTR_PRIORITY:
+          ptr_uecsxmldata->priority = (byte)(atoi(aval));
           break;
         }
       }
@@ -168,6 +178,7 @@ bool xmldecode(char *xml) {
     case YXML_ATTRVAL:
       *attr_val = *yx->data;
       attr_val++;
+      *attr_val = NULL;
       break;
     case YXML_PISTART:
     case YXML_PIEND:
@@ -188,6 +199,7 @@ byte chooseElement(char *ce) {
   if (!strcmp(ce,"NODESCAN")) return(ELE_NODESCAN);
   if (!strcmp(ce,"CCMSCAN"))  return(ELE_CCMSCAN);
   if (!strcmp(ce,"DATA"))     return(ELE_DATA);
+  if (!strcmp(ce,"IP"))       return(ELE_IP);
   if (!strcmp(ce,"REQUEST"))  return(ELE_REQUEST);
   if (!strcmp(ce,"SEARCH"))   return(ELE_SEARCH);
   return(0);  
@@ -220,5 +232,5 @@ void uecsxmldata_init(void) {
   ptr_uecsxmldata->priority = 255;
   ptr_uecsxmldata->order = 0;
   ptr_uecsxmldata->fval=0.0;
+  ptr_uecsxmldata->ip = IPAddress(0,0,0,0);
 }
-    
