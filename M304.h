@@ -1,6 +1,6 @@
 #ifndef _M304_H_
 #define _M304_H_
-#define _M304_H_V  137
+#define _M304_H_V  138
 
 #include <avr/pgmspace.h>
 #include <LiquidCrystal.h>
@@ -128,7 +128,16 @@
 #define LC_SCH_REC_SIZE   0x40 // reserve to 0x3f step by 0x40
 #define LC_SEND_START 0x3000   // CCM for data sending (for example cnd.aMC)
 #define LC_SEND_REC_SIZE  0x40 // reserve to 0x3f step by 0x40
-
+#define LC_CMPOPE_START 0x5000 // Compare Operators
+#define LC_CMPOPE_REC_SIZE 0x20 //
+#define   LC_COPE_VALID    0x00
+#define   LC_COPE_ROOM     0x01
+#define   LC_COPE_REGION   0x02
+#define   LC_COPE_ORDER    0x03
+#define   LC_COPE_PRIORITY 0x05
+#define   LC_COPE_CCMTYPE  0x06
+#define   LC_COPE_OPE      0x1a
+#define   LC_COPE_FVAL     0x1b
 #define LC_END      0x7fff
 
 /*** LV define ***/
@@ -175,8 +184,32 @@ typedef struct uecsM304 {
   byte rly_l;        // 0x2d
   byte rly_h;        // 0x2e
   byte alignment;    // 0x2f
-  byte dummy[16];    // 0x30-0x3f
+  byte dummy[16];    // 0x30-0x3f   // relational operations are written here.
 };  // 64bytes/1unit
+
+/*** EEPROM Relational Operators DATA ***/
+typedef struct uecsM304cmpope {
+  byte valid;        // 0x00
+  byte room;         // 0x01
+  byte region;       // 0x02
+  uint16_t order;    // 0x03
+  byte priority;     // 0x05
+  char ccm_type[20]; // 0x06 ASCIZ
+  byte cmpope;       // 0x1a
+  float fval;        // 0x1b
+  // LAST            // 0x1f
+};  // 32bytes/1unit
+
+// Relational Operators
+
+#define R_NULL   0
+#define R_EQ     1  // == Equal
+#define R_GT     2  // >  Greater Than
+#define R_LT     3  // <  Less Than
+#define R_GE     4  // >= Greater Than Equal
+#define R_LE     5  // <= Less Than Equal
+#define R_AND    6  // &  Logical AND
+#define R_OR     7  // |  Logical OR
 
 
 /*  Cross Key Switch */

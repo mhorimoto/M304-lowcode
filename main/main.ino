@@ -4,8 +4,8 @@
 #include <yxml.h>
 #include <string.h>
 
-#if _M304_H_V < 137
-#pragma message("Library M304 is old. Version 1.3.7 or higher is required.")
+#if _M304_H_V < 138
+#pragma message("Library M304 is old. Version 1.3.8 or higher is required.")
 #else
 uint8_t mcusr_mirror __attribute__ ((section (".noinit")));
 void get_mcusr(void)     \
@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.3.3D";
+char *pgname = "M304 Ver2.3.4D";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -46,8 +46,8 @@ irrM304 irr_m;
 #define LEN_UECSXML_TEXTVAL 20
 #define LEN_UECSXML_BUFFER  512
 
-#define CCM_TBL_CNT_RX  100
-#define CCM_TBL_CNT_TX  50
+#define CCM_TBL_CNT_RX  30
+#define CCM_TBL_CNT_TX  30
 
 char uecsbuf[LEN_UECSXML_BUFFER+1];
 const char xmlhead[] PROGMEM = "<?xml version=\"1.0\"?><UECS ver=\"1.00-E10\">$";
