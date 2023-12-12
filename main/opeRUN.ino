@@ -8,7 +8,7 @@ void opeRUN(int hr,int mn) {
   char t[81],buf[8];
   extern int rlyttl[];
 
-  debugSerialOut(hr,mn,"Enter opeRUN()");
+  //  debugSerialOut(hr,mn,"Enter opeRUN()");
   if (mn!=pmn) {
     pmn = mn;
     for(id=0;id<100;id++) {
@@ -21,7 +21,7 @@ void opeRUN(int hr,int mn) {
       sendUECSpacket(r,itoa(rlyttl[r-1],buf,DEC));
     }
   }
-  debugSerialOut(hr,mn,"Exit opeRUN()");
+  //  debugSerialOut(hr,mn,"Exit opeRUN()");
 }
 
 void timeDecision(int id,int curhr,int curmn) {

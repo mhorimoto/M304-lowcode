@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.3.4D";
+char *pgname = "M304 Ver2.3.5D";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -47,7 +47,8 @@ irrM304 irr_m;
 #define LEN_UECSXML_BUFFER  512
 
 #define CCM_TBL_CNT_RX  30
-#define CCM_TBL_CNT_TX  30
+#define CCM_TBL_CNT_TX  10
+#define CCM_TBL_CNT_CMP 10
 
 char uecsbuf[LEN_UECSXML_BUFFER+1];
 const char xmlhead[] PROGMEM = "<?xml version=\"1.0\"?><UECS ver=\"1.00-E10\">$";
@@ -90,13 +91,18 @@ byte ip[4] = { 192,168,0,177 };
 char lbf[81];
 extern bool debugMsgFlag(int);
 
-struct st_FAST_LOOKUP_BUFFER_FOR_CCMTBL {
-  uint8_t valid,lv;
-} flb_rx_ccm[CCM_TBL_CNT_RX],flb_tx_ccm[CCM_TBL_CNT_TX];
+// 2.3.5D
+uecsM304  flb_rx_ccm[CCM_TBL_CNT_RX],flb_tx_ccm[CCM_TBL_CNT_TX];
+uecsM304cmpope flb_cmpope[CCM_TBL_CNT_CMP];
+
+// Remove 2.3.5D
+//struct st_FAST_LOOKUP_BUFFER_FOR_CCMTBL {
+//  uint8_t valid,lv;
+//} flb_rx_ccm[CCM_TBL_CNT_RX],flb_tx_ccm[CCM_TBL_CNT_TX];
 
 void setup(void) {
   extern int mask2cidr(IPAddress);
-  int a,w,j;
+  int a,w,j,k;
   char ccm_type[21];
   IPAddress hostip,subnet,gateway,dns;
   m304Init();
@@ -152,16 +158,14 @@ void setup(void) {
     }
   }
 
-  // Read fast lookup buffer for CCM table
+  // 2.3.5D Read fast lookup buffer for CCM table
   for (j=0;j<CCM_TBL_CNT_RX;j++) {
     a = LC_SCH_START+(j*LC_SCH_REC_SIZE);
-    flb_rx_ccm[j].valid = atmem.read(a+LC_VALID);    
-    flb_rx_ccm[j].lv    = atmem.read(a+LC_LV);    
+    copyFromLC_uecsM304(&flb_rx_ccm[j],a);
   }
   for (j=0;j<CCM_TBL_CNT_TX;j++) {
-    a = LC_SEND_START+(j*LC_SCH_REC_SIZE);
-    flb_tx_ccm[j].valid = atmem.read(a+LC_VALID);    
-    flb_tx_ccm[j].lv    = atmem.read(a+LC_LV);    
+    a = LC_SEND_START+(j*LC_SEND_REC_SIZE);
+    copyFromLC_uecsM304(&flb_tx_ccm[j],a);
   }
   
   UDP16520.begin(16520);
@@ -661,6 +665,36 @@ IPAddress getIPAddressFromEEPROM(int a) {
   IPAddress r;
   r = IPAddress(atmem.read(a),atmem.read(a+1),atmem.read(a+2),atmem.read(a+3));
   return(r);
+}
+
+// 2.3.5D
+void copyFromLC_uecsM304(uecsM304 *tg,int a) {
+  int i;
+  uint8_t ordl,ordh;
+  tg->valid    = atmem.read(a+LC_VALID);    
+  tg->room     = atmem.read(a+LC_ROOM);         // 0x01
+  tg->region   = atmem.read(a+LC_REGION);       // 0x02
+  ordl = atmem.read(a+LC_ORDER);
+  ordh = atmem.read(a+LC_ORDER+1);
+  tg->order    = (ordh<<8)+ordl;
+  tg->priority = atmem.read(a+LC_PRIORITY);     // 0x05
+  tg->lv       = atmem.read(a+LC_LV);    
+  tg->cast     = atmem.read(a+LC_CAST);         // 0x07
+  tg->sr       = atmem.read(a+LC_SR);           // 0x08
+  for (i=0;i<20;i++) {
+    tg->ccm_type[i] = atmem.read(a+LC_CCMTYPE+i); // 0x09 ASCIZ
+  }
+  for (i=0;i<10;i++) {
+    tg->unit[i] = atmem.read(a+LC_UNIT+i);      // 0x1d ASCIZ
+  }
+  tg->sthr     = atmem.read(a+LC_STHR);         // 0x27
+  tg->stmn     = atmem.read(a+LC_STMN);         // 0x28
+  tg->edhr     = atmem.read(a+LC_EDHR);         // 0x29
+  tg->edmn     = atmem.read(a+LC_EDMN);         // 0x2a
+  tg->inmn     = atmem.read(a+LC_INMN);         // 0x2b
+  tg->dumn     = atmem.read(a+LC_DUMN);         // 0x2c
+  tg->rly_l    = atmem.read(a+LC_RLY_L);        // 0x2d
+  tg->rly_h    = atmem.read(a+LC_RLY_H);        // 0x2e
 }
 
 void configure_wdt(void) {
