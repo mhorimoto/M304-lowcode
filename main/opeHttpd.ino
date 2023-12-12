@@ -1,8 +1,8 @@
-#define HTTPBUFSIZ  128
+#define HTTPBUFSIZ  512 // 2.3.6D
 
 void opeHttpd(EthernetClient ec) {
   boolean currentLineIsBlank = true;
-  char c,d[5],htbuf[BUFSIZ],*p_htbuf,prnbuf[BUFSIZ];
+  char c,d[5],htbuf[HTTPBUFSIZ],*p_htbuf,prnbuf[BUFSIZ];  // 2.3.6D
   int  mode; // 0:ignore, 1:Store to EEPROM, 2:Fetch from EEPROM, 3:END ope
   int  bufcnt, i;
   int  dlen,daddr,dtype,chksum;
@@ -30,9 +30,9 @@ void opeHttpd(EthernetClient ec) {
       if (mode==MD_HT_STORE) {
         htbuf[bufcnt] = c;
         bufcnt++;
-        if ( bufcnt > BUFSIZ ) {
+        if ( bufcnt > HTTPBUFSIZ ) {
           ec.stop();
-          Serial.println("Bov1"); // 2.3.5D
+          Serial.println(F("Bov1")); // 2.3.5D
           return;
         }
         htbuf[bufcnt] = (char)NULL;
@@ -98,7 +98,8 @@ void opeHttpd(EthernetClient ec) {
         bufcnt++;
         if ( bufcnt > HTTPBUFSIZ ) {
           ec.stop();
-          Serial.println("Bov2"); // 2.3.5D
+          Serial.print(bufcnt);
+          Serial.println(F(" Bov2")); // 2.3.5D
           return;
         }
         htbuf[bufcnt] = (char)NULL;
@@ -132,17 +133,16 @@ void opeHttpd(EthernetClient ec) {
   }
   delay(1);
   ec.stop();
-  // 2.3.5D
-  //  Serial.println("Clinet disconnected");
+  //  Serial.println(F("Clinet disconnected")); // 2.3.6D
 }
-// 2.3.5D
+// 2.3.6D
 void sendHTTPheader(EthernetClient ec) {
-  ec.println("HTTP/1.1 200 OK");
-  ec.println("Content-Type: text/html");
-  ec.println("Connection: close");
+  ec.println(F("HTTP/1.1 200 OK"));
+  ec.println(F("Content-Type: text/html"));
+  ec.println(F("Connection: close"));
   ec.println();
-  ec.println("<!DOCTYPE HTML>");
-  ec.println("<html>");
+  ec.println(F("<!DOCTYPE HTML>"));
+  ec.println(F("<html>"));
 }
 
 void mod_EEPROM(unsigned int addr,byte dt,EthernetClient ec) {
@@ -171,7 +171,7 @@ void fetch_EEPROM(unsigned int addr,EthernetClient ec) {
   addr &= 0xff00;
   ec.println("<pre>");
   for (y=0;y<16;y++) {
-    sprintf(prnbuf,"0x%04X:",addr+y);
+    sprintf(prnbuf,"0x%04X:",addr+(y*0x10));
     for (x=0;x<16;x++) {
       a = addr + (y*16) + x;
       d = atmem.read(a);
@@ -179,5 +179,5 @@ void fetch_EEPROM(unsigned int addr,EthernetClient ec) {
     }
     ec.println(prnbuf);
   }
-  ec.println("</pre>");
+  ec.println(F("</pre>"));
 }

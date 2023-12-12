@@ -17,7 +17,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.3.5D";
+char *pgname = "M304 Ver2.3.6D";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -90,21 +90,22 @@ bool cf,fsf=true;
 byte ip[4] = { 192,168,0,177 };
 char lbf[81];
 extern bool debugMsgFlag(int);
+extern void debugMsgOutput(int);
 
 // 2.3.5D
 uecsM304  flb_rx_ccm[CCM_TBL_CNT_RX],flb_tx_ccm[CCM_TBL_CNT_TX];
 uecsM304cmpope flb_cmpope[CCM_TBL_CNT_CMP];
 
-// Remove 2.3.5D
-//struct st_FAST_LOOKUP_BUFFER_FOR_CCMTBL {
-//  uint8_t valid,lv;
-//} flb_rx_ccm[CCM_TBL_CNT_RX],flb_tx_ccm[CCM_TBL_CNT_TX];
 
 void setup(void) {
   extern int mask2cidr(IPAddress);
+  extern boolean is_dhcp(void);
+  extern void clear_uecsbuf(void);
+  
   int a,w,j,k;
   char ccm_type[21];
   IPAddress hostip,subnet,gateway,dns;
+  
   m304Init();
   clear_uecsbuf();
   ptr_uecsxmldata = &uecsxmldata;
@@ -131,15 +132,7 @@ void setup(void) {
   configure_wdt();
   msgRun1st();
   wdt_reset();
-  if (debugMsgFlag(SO_MSG)) {
-    Serial.begin(115200);
-    Serial.println(st_m.gw);
-    Serial.println(st_m.ip);
-    Serial.println(st_m.dns);
-    Serial.println(st_m.subnet);
-    Serial.println(st_m.cidr);
-    Serial.println(broadcastIP);
-  }
+  debugMsgOutput(1); // st_m display
   for(w=0;w<8;w++) {
     rlyttl[w] = 0;
   }
@@ -163,10 +156,12 @@ void setup(void) {
     a = LC_SCH_START+(j*LC_SCH_REC_SIZE);
     copyFromLC_uecsM304(&flb_rx_ccm[j],a);
   }
+  debugMsgOutput(2); // rx_ccm display
   for (j=0;j<CCM_TBL_CNT_TX;j++) {
     a = LC_SEND_START+(j*LC_SEND_REC_SIZE);
     copyFromLC_uecsM304(&flb_tx_ccm[j],a);
   }
+  debugMsgOutput(3); // tx_ccm display
   
   UDP16520.begin(16520);
   UECS_UDP16529.begin(16529);
@@ -185,6 +180,7 @@ void loop(void) {
   extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
   extern void opeSCH(void),opeRTC(void),opeNET(void),opeRUN(int,int),opeHttpd(EthernetClient);
   extern void UECSupdate16529port(void) ;
+  extern void debugSerialOut(int,int,char*);
   uint8_t InputDataButtom(int,int,int,int,uint8_t,int mi='0',int mx='9');
   tmElements_t tm;
 
@@ -255,13 +251,13 @@ void loop(void) {
   case CMND:
     cf = false;
     if (fsf) {
-      debugSerialOut(cmode,cmenu,"Begin point CMND with fsf");
+      debugSerialOut(cmode,cmenu,"BpCMNDw/fsf");
       msgCmnd1st();
     }
     wdt_reset();
     ptr_crosskey = getCrossKey();
     if ((ptr_crosskey->longf==true)&&(ptr_crosskey->kpos & K_LEFT)) {
-      debugSerialOut(cmode,cmenu,"Begin point CMND with K_LEFT");
+      debugSerialOut(cmode,cmenu,"BpCMNDw/K_LEFT");
       cmode = RUN;
       fsf = true;
       ptr_crosskey->longf=false;
@@ -353,14 +349,14 @@ void PushEnter(int p) {
   if (!debugMsgFlag(SO_MSG)) {
     Serial.begin(115200);
   }
-  Serial.println("+--------------------+");
+  Serial.println(F("+--------------------+"));
   for (y=0;y<4;y++) {
     for (x=0;x<20;x++) {
       Serial.print(lcdd.CharRead(p,x,y));
     }
     Serial.println();
   }
-  Serial.println("+--------------------+");
+  Serial.println(F("+--------------------+"));
   if (!debugMsgFlag(SO_MSG)) {
     Serial.end();
   }
@@ -462,22 +458,6 @@ void msgCmnd1st(void) {
   ptr_crosskey->kpos=0;
 }
 
-void debugSerialOut(int a,int b,char *c) {
-  char t[80];
-  extern bool fsf;
-  if (debugMsgFlag(SO_MSG)) {
-    sprintf(t,"cmode=%d  cmenu=%d  fsf=%d  key=%s",a,b,fsf,c);
-    Serial.println(t);
-  }
-}
-
-char *itoaddr(IPAddress a) {
-  char ia[16],*iap;
-  iap = &ia[0];
-  sprintf(iap,"%d.%d.%d.%d",a[0],a[1],a[2],a[3]);
-  return(iap);
-}
-
 void initEEPROM_UECS(void) {
   int w,a,j,k;
   w = 9;      // cnd + RLY1..8
@@ -534,6 +514,7 @@ void initEEPROM_UECS(void) {
 }
 
 void sendUECSpacket(int id,char *v) {
+  extern char *itoaddr(IPAddress);
   char t[256];
   char *xmlDT;
   bool enable;
@@ -607,18 +588,6 @@ int copyFromUECSID(char *dest) {
   return(a);
 }
 
-int ip2chars(char *dest,IPAddress ip) {
-  char ibuf[16];
-  int i1,i2,i3,i4,r;
-  i1 = ip & 0xff;
-  i2 = (ip & 0xff00) >> 8;
-  i3 = (ip & 0xff0000) >> 16;
-  i4 = (ip & 0xff000000) >> 24;
-  sprintf(ibuf,"%d.%d.%d.%d",i1,i2,i3,i4);
-  r = copyFromRAM(dest,ibuf);
-  return(r);
-}
-
 int copyFromRAM(char *dest,char *src) {
   int i,l;
   l = strlen(src);
@@ -643,22 +612,6 @@ int copyFromPROGMEM(char *dest,const char *src) {
     src++;
   }
   return(i);
-}
-
-void clear_uecsbuf(void) {
-  int i;
-  for (i=0;i<LEN_UECSXML_BUFFER;i++) {
-    uecsbuf[i] = NULL;
-  }
-}
-
-boolean is_dhcp(void) {
-  byte f;
-  f = atmem.read(FIX_DHCP_FLAG);
-  if (f==0x00) {
-    return(false);
-  }
-  return(true);
 }
 
 IPAddress getIPAddressFromEEPROM(int a) {

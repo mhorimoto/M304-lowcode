@@ -3,7 +3,7 @@ all:
 
 main: main/main.touch
 
-main/main.touch: main/main.ino main/xmldecode.ino main/resNodeScan.ino main/opeRUN.ino main/opeEEPROM.ino main/opeNET.ino main/opeRTC.ino main/opeSCH.ino main/opeHttpd.ino main/recv16520.ino ~/Arduino/libraries/M304-lib/src/M304.cpp ~/Arduino/libraries/M304-lib/src/M304.h
+main/main.touch: main/main.ino main/xmldecode.ino main/resNodeScan.ino main/opeRUN.ino main/opeEEPROM.ino main/opeNET.ino main/opeRTC.ino main/opeSCH.ino main/opeHttpd.ino main/recv16520.ino main/common.ino ~/Arduino/libraries/M304-lib/src/M304.cpp ~/Arduino/libraries/M304-lib/src/M304.h
 	arduino-cli compile -b arduino:avr:mega main
 	touch main/main.touch
 

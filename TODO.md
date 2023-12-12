@@ -1,5 +1,10 @@
 # TO DO LIST
 
+## 13rd Dec. 2023
+  2.3.6D
+  opeHttpd.inoのF()マクロなどを使用する。53986/6355
+  common.inoを作成したので、これに汎用ルーティンは移行していく。
+  
 ## 12nd Dec. 2023
   2.3.5D
   ATMEMの内容をRAMにコピーするようにした。opeRUN.ino内のatmemによる読み込みはやめる。
