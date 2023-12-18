@@ -1,0 +1,176 @@
+# Low Core (EEPROM) Memory map
+# Version 1.00  19th Dec. 2023  M.Horimoto
+
+EEPROMの割付を説明する。
+
+EEPROMは大きく4ブロックに分かれる。
+
+(1) UECS IDを始めとした個体の識別情報を保存する。1レコード
+(2) 受信されるべきCCM属性を保存する。30レコード
+(3) 送信されるべきCCM属性を保存する。10レコード
+(4) 受信されて設定値と比較する方法を保存する。10レコード
+
+EEPROMの多くの初期値は0xffである。しかし、これを期待するものではない。
+
+
+## Block-A
+
+  個体識別情報
+
+typedef struct stM304 {
+  byte uecsid[6];           // 装置のUECS ID
+  byte macaddr[6];          // MAC Address
+  byte fix_dhcp_flag;       // DHCPか固定IPかの指定(0xff:DHCP,0x00:固定IP)
+  byte fixed_ipaddress[4];  // 固定IPの場合のIPアドレス
+  byte fixed_netmask[4];    // 固定IPの場合のネットマスク
+  byte fixed_defgw[4];      // 固定IPの場合のデフォルトゲートウェイ
+  byte fixed_dns[4];        // 固定IPの場合のDNSアドレス
+  char vender_name[16];     // ベンダー名 (ASCIZ文字列)
+  char node_name[16];       // ノード名 (ASCIZ文字列)
+}
+
+アドレス(番地)即値
+
+// stM304 Address
+#define LC_UECS_ID        0x0000
+#define LC_MAC            0x0006
+#define FIX_DHCP_FLAG     0x000c
+#define FIXED_IPADDRESS   0x0010
+#define FIXED_NETMASK     0x0014
+#define FIXED_DEFGW       0x0018
+#define FIXED_DNS         0x001c
+#define VENDER_NAME       0x0040
+#define NODE_NAME         0x0050
+
+## Block-B
+
+ 受信CCM情報
+
+typedef struct uecsM304 {
+  byte valid;        // 0x00  有効フラグ(0x01:有効、0xff:無効)
+  byte room;         // 0x01  ROOM
+  byte region;       // 0x02  REGION
+  uint16_t order;    // 0x03  ORDER (エンディアンに注意)
+  byte priority;     // 0x05  PRIORITY
+  byte lv;           // 0x06  LEVEL (後述)
+  byte cast;         // 0x07  小数点位置
+  char sr;           // 0x08  送受信マーク (R固定)
+  char ccm_type[20]; // 0x09  CCMType名 (ASCIZ文字列)
+  char unit[10];     // 0x1d  単位 (ASCIZ文字列)
+  byte sthr;         // 0x27  反映時間帯開始時間 (0〜23)
+  byte stmn;         // 0x28  反映時間帯開始分 (0〜59)
+  byte edhr;         // 0x29  反映時間帯終了時間 (0〜23)
+  byte edmn;         // 0x2a  反映時間帯終了分 (0〜59)
+  byte inmn;         // 0x2b  反映時間間隔 (0〜99)分
+  byte dumn;         // 0x2c  作用時間 (0~99)分 リレーがMAKEしている時間(分)
+  byte rly_l;        // 0x2d  RLY1〜4までのリレーのどれをMAKEするか
+  byte rly_h;        // 0x2e  RLY5〜8までのリレーのどれをMAKEするか (後述)
+  byte alignment;    // 0x2f
+  byte dummy[16];    // 0x30-0x3f   // relational operations are written here.
+};  // 64bytes/1unit
+
+dummyの部分に後述する条件部分の記述が反映される。現状検討中
+受信CCMは0x1000番地から0x40ステップで配置される。
+受信CCMは30レコード存在する。
+使う分だけ、valid=0x01とする。
+
+// アドレスとオフセット
+#define LC_SCH_START 0x1000
+#define   LC_VALID        0x00 // Valid Flag (0x01:valid, 0xff:invalid)
+#define   LC_ROOM         0x01
+#define   LC_REGION       0x02
+#define   LC_ORDER        0x03
+#define   LC_PRIORITY     0x05
+#define   LC_LV           0x06 // reference LV define
+#define   LC_CAST         0x07
+#define   LC_SR           0x08
+#define   LC_CCMTYPE      0x09 // char[20]
+#define   LC_UNIT         0x1d // char[10]
+#define   LC_STHR         0x27 // Start of time (Hour) and validation flag
+#define   LC_STMN         0x28 // Start of time (minute)
+#define   LC_EDHR         0x29 // End of time (hour)
+#define   LC_EDMN         0x2a // End of time (minute)
+#define   LC_INMN         0x2b // Interval time (mins)
+#define   LC_DUMN         0x2c // During time (mins)
+#define   LC_RLY_L        0x2d // RLY 1..4
+#define   LC_RLY_H        0x2e // RLY 5..8
+#define LC_SCH_REC_SIZE   0x40 // reserve to 0x3f step by 0x40
+
+### LV define
+
+#define LV_A1S0    1      // A-1S-0
+#define LV_A1S1    2      // A-1S-1
+#define LV_A10S0   3      // A-10S-0
+#define LV_A10S1   4      // A-10S-1
+#define LV_A1M0    5      // A-1M-0
+#define LV_A1M1    6      // A-1M-1
+#define LV_B0      7      // B-0
+#define LV_B1      8      // B-1
+#define LV_S1S0    9      // S-1S-0
+#define LV_S1M0   10      // S-1M-0
+
+### リレーの指定方法
+
+RLYあたり2bitを使ってMAKE/BREAK/DONT CARE/の３種類の操作を表現する。
+
+* 00: DON'T CARE
+* 01: NOT ASSIGNED
+* 10: BREAK
+* 11: MAKE
+
+ただし、現状で用いているのはBREAK/MAKEだけである
+
+
+## Block-C
+
+ 送信CCM情報
+
+Block-Bとメンバーは同じである。
+* sr は、S固定
+* rly_l,rly_hは、無視
+
+格納EEPROMアドレスは、
+#define LC_SEND_START 0x3000   // CCM for data sending
+後のオフセットは受信CCMと同じ
+
+
+## Block-D
+
+比較演算レコード
+
+/*** EEPROM Relational Operators DATA ***/
+typedef struct uecsM304cmpope {
+  byte valid;        // 0x00
+  byte room;         // 0x01
+  byte region;       // 0x02
+  uint16_t order;    // 0x03
+  byte priority;     // 0x05
+  char ccm_type[20]; // 0x06 比較すべき受信したCCMType (ASCIZ)
+  byte cmpope;       // 0x1a 比較演算子(後述)
+  float fval;        // 0x1b 比較設定値
+  // LAST            // 0x1f
+};  // 32bytes/1unit
+
+#define LC_CMPOPE_START 0x5000 // Compare Operators
+#define LC_CMPOPE_REC_SIZE 0x20 //
+#define   LC_COPE_VALID    0x00
+#define   LC_COPE_ROOM     0x01
+#define   LC_COPE_REGION   0x02
+#define   LC_COPE_ORDER    0x03
+#define   LC_COPE_PRIORITY 0x05
+#define   LC_COPE_CCMTYPE  0x06
+#define   LC_COPE_OPE      0x1a
+#define   LC_COPE_FVAL     0x1b
+
+// Relational Operators
+
+#define R_NULL   0
+#define R_EQ     1  // == Equal
+#define R_GT     2  // >  Greater Than
+#define R_LT     3  // <  Less Than
+#define R_GE     4  // >= Greater Than Equal
+#define R_LE     5  // <= Less Than Equal
+#define R_AND    6  // &  Logical AND
+#define R_OR     7  // |  Logical OR
+
+
