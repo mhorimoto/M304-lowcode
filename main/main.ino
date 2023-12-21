@@ -1,12 +1,14 @@
 #include <M304.h>
+
+#if _M304_H_V < 139
+#pragma message("Library M304 is old. Version 1.3.8 or higher is required.")
+#else
+
 #include <avr/wdt.h>
 #include <avr/pgmspace.h>
 #include <yxml.h>
 #include <string.h>
 
-#if _M304_H_V < 138
-#pragma message("Library M304 is old. Version 1.3.8 or higher is required.")
-#else
 uint8_t mcusr_mirror __attribute__ ((section (".noinit")));
 void get_mcusr(void)     \
   __attribute__((naked)) \
@@ -17,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.3.6D";
+char *pgname = "M304 Ver2.3.7D";
 
 typedef struct irrM304 {
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];

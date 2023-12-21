@@ -6,12 +6,14 @@ void opeHttpd(EthernetClient ec) {
   int  mode; // 0:ignore, 1:Store to EEPROM, 2:Fetch from EEPROM, 3:END ope
   int  bufcnt, i;
   int  dlen,daddr,dtype,chksum;
-  byte dbyte;
+  byte dbyte,flag2;
   
   mode = MD_HT_IGNORE;
   bufcnt = 0;
   chksum = 0;
+  flag2  = 0;
   p_htbuf = &htbuf[0];
+  wdt_reset();
   for (i=0;i<5;i++) d[i] = (char)0;
   while(ec.connected()) {
     if (ec.available()) {
@@ -94,8 +96,14 @@ void opeHttpd(EthernetClient ec) {
         }
       /* FETCH ROUTINE */
       } else if (mode==MD_HT_FETCH) {
-        htbuf[bufcnt] = c;
-        bufcnt++;
+	if (c==0x20) {
+	  htbuf[bufcnt] = (char)NULL;
+	  flag2 = 1;
+	}
+	if (flag2==0) {
+	  htbuf[bufcnt] = c;
+	  bufcnt++;
+	}
         if ( bufcnt > HTTPBUFSIZ ) {
           ec.stop();
           Serial.print(bufcnt);
@@ -103,7 +111,6 @@ void opeHttpd(EthernetClient ec) {
           return;
         }
         htbuf[bufcnt] = (char)NULL;
-      
         if ( c=='\n' && currentLineIsBlank ) {
 	  sendHTTPheader(ec); // 2.3.5D
 	  // ec.println("HTTP/1.1 200 OK");
@@ -121,18 +128,24 @@ void opeHttpd(EthernetClient ec) {
           daddr = strtol(d,NULL,16);
           fetch_EEPROM(daddr,ec);
           ec.println("</html>");
-          break;
+	  break;
         }
       }
     }
+    Serial.print("MF6 ");
+    Serial.println(bufcnt);
     if (c == '\n') {
       currentLineIsBlank = true;
     } else if (c != '\r') {
       currentLineIsBlank = false;
     }
+    Serial.println("MF7");
+    wdt_reset();
   }
-  delay(1);
+  delay(500);
+  wdt_reset();
   ec.stop();
+  Serial.println("MF8");
   //  Serial.println(F("Clinet disconnected")); // 2.3.6D
 }
 // 2.3.6D
