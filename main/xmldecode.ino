@@ -1,13 +1,3 @@
-// typedef struct st_UECSXML {
-//   byte element;
-//   char ver[21];
-//   char type[21];
-//   byte page,room,region,priority;
-//   int  order;
-//   char textval[21];
-//   float fval;
-// };
-
 void y_printchar(char c) {
   if(c == '\x7F' || (c >= 0 && c < 0x20)) {
     Serial.print("\\x");
@@ -119,27 +109,13 @@ bool xmldecode(char *xml) {
       case ELE_REQUEST:
         break;
       default:
-        Serial.println("UNKNOWN ELEMENT");
+        Serial.println(F("UNKNOWN ELEMENT"));
         return;
       }
     case YXML_ELEMEND:
       if (element==ELE_DATA) {
         ptr_uecsxmldata->fval = atof(aval);
       }
-      // Serial.print(element);
-      // Serial.println(" ELEMENT END");
-      // Serial.print("AVAL=");
-      // Serial.println(aval);
-      // Serial.print("TYPE=");
-      // Serial.print(ptr_uecsxmldata->type);
-      // Serial.print("  ROOM=");
-      // Serial.print(ptr_uecsxmldata->room);
-      // Serial.print("  REGION=");
-      // Serial.print(ptr_uecsxmldata->region);
-      // Serial.print("  ORDER=");
-      // Serial.print(ptr_uecsxmldata->order);
-      // Serial.print("  PRIORITY=");
-      // Serial.print(ptr_uecsxmldata->priority);
       break;
     case YXML_ATTRSTART:
       attr = chooseAttr(yx->attr);
@@ -149,8 +125,7 @@ bool xmldecode(char *xml) {
       if ((element==ELE_UECS)&&(attr==ATTR_VER)) {
         strncpy(ptr_uecsxmldata->ver,aval,LEN_UECSXML_VER);
       } else if ((element==ELE_CCMSCAN)&&(attr==ATTR_PAGE)) {
-        Serial.println("CCMSCAN-PAGE");
-        //        Serial.println(aval);
+        Serial.println(F("CCMSCAN-PAGE"));
         ptr_uecsxmldata->page = (byte)(atoi(aval));
       } else if ((element==ELE_SEARCH)||(element==ELE_DATA)) {
         switch(attr) {

@@ -32,17 +32,17 @@ void cmnd_setbyte(String p,int at) {
         v = EEPROM.read(addr);
         if (v!=d) {
           EEPROM.write(addr,d);
-          Serial.println("DONE");
+          Serial.println(F("DONE"));
         } else {
-          Serial.println("NO WRITE,SAME DATA");
+          Serial.println(F("NO WRITE,SAME DATA"));
         }
       } else { // AT24CX
         v = atmem.read(addr);
         if (v!=d) {
           atmem.write(addr,d);
-          Serial.println("DONE");
+          Serial.println(F("DONE"));
         } else {
-         Serial.println("NO WRITE,SAME DATA");
+          Serial.println(F("NO WRITE,SAME DATA"));
         }
       }
     } else {

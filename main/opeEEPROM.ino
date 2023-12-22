@@ -2,24 +2,33 @@
 //  Arduino と外付け AT24C256 の EEPROMを扱うユーティリティプログラム
 //
 
+const char str_opeEEPROM0[] PROGMEM = "CONSOLE OPERATION   ";
+const char str_opeEEPROM1[] PROGMEM = "Exit:LEFT Key push  ";
+
+const char *const str_opeEEPROM[] PROGMEM = {
+  str_opeEEPROM0,
+  str_opeEEPROM1
+};
 
 void opeEEPROM(void) {
   extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
   extern bool fsf;
-  char cha,cmnd[81],lbf[81],line3[]="Exit:LEFT Key push  ";
+  char cha,cmnd[81],lbf[81],line1[21];
   char *pgname = "M304jp EEPROM Ver2.00";
   bool reading,doing;
   String s;
   int  cp ;
   if (fsf) {
     fsf = false;
-    lcdd.setLine(0,3,"CONSOLE OPERATION   ");
+    strcpy_P(line1,(char *)pgm_read_word(&(str_opeEEPROM[0])));
+    lcdd.setLine(0,3,line1);
+    //    lcdd.setLine(0,3,"CONSOLE OPERATION   ");
     lcdd.LineWrite(0,3);
     Serial.begin(115200);
     Serial.println(pgname);
     sprintf(lbf,"Arduino EEPROM SIZE 0-%03XH(%d bytes)",EEPROM.length()-1,EEPROM.length());
     Serial.println(lbf);
-    Serial.println("AT24LC256 EEPROM SIZE 0-7FFFH(32,768bytes)");
+    Serial.println(F("AT24LC256 EEPROM SIZE 0-7FFFH(32,768bytes)"));
     cha = (char)NULL;
     cp  = 0;
     doing = true;
@@ -42,7 +51,8 @@ void opeEEPROM(void) {
         cmode = CMND;
         fsf = true;
         lcdd.clear();
-        lcdd.setLine(0,3,line3);
+        strcpy_P(line1,(char *)pgm_read_word(&(str_opeEEPROM[1])));
+        lcdd.setLine(0,3,line1);
         lcdd.LineWrite(0,3);
         return;
       }
@@ -83,7 +93,8 @@ void opeEEPROM(void) {
     } else if (s.indexOf("exit")==0) {
       doing = false;
       cmode = CMND;
-      lcdd.setLine(0,3,line3);
+      strcpy_P(line1,(char *)pgm_read_word(&(str_opeEEPROM[1])));
+      lcdd.setLine(0,3,line1);
       lcdd.LineWrite(0,3);
       return;
     }

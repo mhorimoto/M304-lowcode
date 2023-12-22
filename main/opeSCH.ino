@@ -1,16 +1,30 @@
+const char str_opeSCH0[] PROGMEM = "Set Timer           ";
+const char str_opeSCH1[] PROGMEM = " 0:BREAK  1:MAKE    ";
+const char str_opeSCH2[] PROGMEM = "RLY:00000000  OK=ENT";
+const char *const str_opeSCH[] PROGMEM = {
+  str_opeSCH0,
+  str_opeSCH1,
+  str_opeSCH2
+};
+
 void opeSCH(void) {
   int  x,z,y,w,hr,mi,mx,io,ic;
   unsigned int addr;
   byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
   char eebuf[32],lcdbuf[21];
   extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
+
   if (fsf) {
     fsf = false;
     cposp = 0;
     cposx = 0;
     cposy = 1;
-    lcdd.setLine(cposp,0,"Set Timer           ");
-    lcdd.setLine(cposp,3," 0:BREAK  1:MAKE    ");
+    strcpy_P(lcdbuf,(char *)pgm_read_word(&(str_opeSCH[0])));
+    //    lcdd.setLine(cposp,0,"Set Timer           ");
+    lcdd.setLine(cposp,0,lcdbuf);
+    strcpy_P(lcdbuf,(char *)pgm_read_word(&(str_opeSCH[1])));
+    //    lcdd.setLine(cposp,3," 0:BREAK  1:MAKE    ");
+    lcdd.setLine(cposp,3,lcdbuf);
     getSCHData(cposp,0);
     lcdd.PageWrite(cposp);
     lcdd.setCursor(cposx,cposy);
@@ -162,10 +176,10 @@ void opeSCH(void) {
   if (ic!=io) {
     if (io<100) {
       getSCHData(cposp,ic);
-      Serial.println("exited getSCHData()");
-      Serial.print("enter PageWrite(");
+      Serial.println(F("exited getSCHData()"));
+      Serial.print(F("enter PageWrite("));
       Serial.print(cposp);
-      Serial.println(")");
+      Serial.println(F(")"));
       lcdd.PageWrite(cposp);
     }
   }
@@ -188,14 +202,14 @@ void getSCHData(int p,int id) {
   byte valid,sthr,stmn,edhr,edmn,inmn,dumn,rly[2],rlyb[2];
   char lcdbuf[21];
 
-  Serial.print("getSCHData(p="); // debug 2.2.1
+  Serial.print(F("getSCHData(p=")); // debug 2.2.1
   Serial.print(p); // debug 2.2.1
-  Serial.print(",id="); // debug 2.2.1
+  Serial.print(F(",id=")); // debug 2.2.1
   Serial.print(id); // debug 2.2.1
-  Serial.println(")"); // debug 2.2.1
+  Serial.println(F(")")); // debug 2.2.1
   
   addr = LC_SCH_START+id*LC_SCH_REC_SIZE;
-  Serial.print("addr=0x"); // debug 2.2.1
+  Serial.print(F("addr=0x")); // debug 2.2.1
   Serial.println(addr,HEX); // debug 2.2.1
 
   valid= atmem.read(addr+LC_VALID);
@@ -222,7 +236,9 @@ void getSCHData(int p,int id) {
   sprintf(lcdbuf,"%02d %02d:%02d %02d:%02d %02d-%02d",
 	  id,sthr,stmn,edhr,edmn,inmn,dumn);
   lcdd.setLine(p,1,lcdbuf);
-  lcdd.setLine(p,2,"RLY:00000000  OK=ENT");
+  strcpy_P(lcdbuf,(char *)pgm_read_word(&(str_opeSCH[2])));
+  //  lcdd.setLine(p,2,"RLY:00000000  OK=ENT");
+  lcdd.setLine(p,2,lcdbuf);
   x = 4;
   for(z=0;z<2;z++) {
     for(y=6;y>=0;y-=2) {
@@ -235,5 +251,5 @@ void getSCHData(int p,int id) {
     }
   }
   Serial.println(lcdbuf); // debug 2.2.1
-  Serial.println("getSCHData exit"); // debug 2.2.1
+  Serial.println(F("getSCHData exit")); // debug 2.2.1
 }

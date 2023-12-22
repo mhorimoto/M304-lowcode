@@ -91,7 +91,7 @@ void opeHttpd(EthernetClient ec) {
           chksum += dbyte;
           htbuf[(i*2)+10] = (char)0;
           ec.print(p_htbuf);
-          ec.println("</pre></html>");
+          ec.println(F("</pre></html>"));
           break;
         }
       /* FETCH ROUTINE */
@@ -137,20 +137,16 @@ void opeHttpd(EthernetClient ec) {
         }
       }
     }
-    Serial.print(F("MF6 "));
-    Serial.println(bufcnt);
     if (c == '\n') {
       currentLineIsBlank = true;
     } else if (c != '\r') {
       currentLineIsBlank = false;
     }
-    Serial.println(F("MF7"));
     wdt_reset();
   }
   delay(500);
   wdt_reset();
   ec.stop();
-  Serial.println(F("MF8"));
   //  Serial.println(F("Clinet disconnected")); // 2.3.6D
 }
 // 2.3.6D

@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.3.7DBG8";
+char *pgname = "M304 Ver2.3.7DBGg";
 
 //typedef struct irrM304 {
 //  byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
@@ -89,7 +89,7 @@ int cmenu=NETCONFIG;
 int rlyttl[8];
 
 bool cf,fsf=true;
-//byte ip[4] = { 192,168,0,177 };
+
 char lbf[81];
 extern bool debugMsgFlag(int);
 extern void debugMsgOutput(int);
@@ -100,13 +100,32 @@ uecsM304cmpope flb_cmpope[CCM_TBL_CNT_CMP];
 // 2.3.7DBG5
 byte cmpope_result[CCM_TBL_CNT_CMP];
 
+const char str_main0[] PROGMEM = "NO NET MODE         ";
+const char str_main1[] PROGMEM = "STATIC IP ADDRESS   ";
+const char str_main2[] PROGMEM = "  EEPROM Operation  ";
+const char str_main3[] PROGMEM = "NO RTC PLS SETUP    ";
+const char str_main4[] PROGMEM = "  Network config    ";
+const char str_main5[] PROGMEM = "  RTC config        ";
+const char str_main6[] PROGMEM = "  SCHEDULE config   ";
+const char str_main7[] PROGMEM = "NIC IS NO W5500     ";
+const char str_main8[] PROGMEM = "IP:";
+const char str_main9[] PROGMEM = "Choose Menu         ";
+const char str_main10[] PROGMEM = "UP/DOWN/ENT Key use ";
+const char str_main11[] PROGMEM = "Exit:LEFT Key push  ";
+
+const char *const str_main[] PROGMEM = {
+  str_main0, str_main1, str_main2, str_main3, str_main4, str_main5, str_main6, str_main7,
+  str_main8, str_main9, str_main10, str_main11
+};
+
+
 void setup(void) {
   extern int mask2cidr(IPAddress);
   extern boolean is_dhcp(void);
   extern void clear_uecsbuf(void);
   
   int a,w,j,k;
-  char ccm_type[21];
+  char ccm_type[21],line1[21];
   IPAddress hostip,subnet,gateway,dns;
   
   m304Init();
@@ -115,7 +134,9 @@ void setup(void) {
   lcdd.begin(20,4);
   if (is_dhcp()) {
     if (Ethernet.begin(st_m.mac)==0) {
-      lcdd.setLine(0,2,"NO NET MODE");
+      strcpy_P(line1,(char *)pgm_read_word(&(str_main[0])));
+      lcdd.setLine(0,2,line1);
+      //      lcdd.setLine(0,2,"NO NET MODE");
       lcdd.LineWrite(0,2);
       st_m.dhcpflag = true;
     }
@@ -127,7 +148,8 @@ void setup(void) {
     st_m.dns    = getIPAddressFromEEPROM(FIXED_DNS);
     st_m.cidr   = mask2cidr(st_m.subnet);
     st_m.dhcpflag = false;
-    lcdd.setLine(0,2,"STATIC IP ADDRESS");
+    strcpy_P(line1,(char *)pgm_read_word(&(str_main[1])));
+    lcdd.setLine(0,2,line1);
     lcdd.LineWrite(0,2);
     Ethernet.begin(st_m.mac,st_m.ip,st_m.dns,st_m.gw,st_m.subnet);
     st_m.dhcpflag = false;
@@ -195,7 +217,9 @@ void loop(void) {
   UECSupdate16520port() ;
   UECSupdate16529port() ;
   if (digitalRead(SW_SAFE)==0) {
-    lcdd.setLine(0,1,"  EEPROM Operation  ");
+    strcpy_P(line1,(char *)pgm_read_word(&(str_main[2])));
+    lcdd.setLine(0,1,line1);
+    //    lcdd.setLine(0,1,"  EEPROM Operation  ");
     lcdd.LineWrite(0,1);
     opeEEPROM();
   }
@@ -206,7 +230,9 @@ void loop(void) {
       fsf = false;
     }
     if (RTC.read(tm)==0) {
-      lcdd.setLine(cposp,1,"NO RTC PLS SETUP    ");
+      strcpy_P(line1,(char *)pgm_read_word(&(str_main[3])));
+      lcdd.setLine(cposp,1,line1);
+      //      lcdd.setLine(cposp,1,"NO RTC PLS SETUP    ");
       lcdd.LineWrite(cposp,1);
     } else {
       if (prvsec!=tm.Second) {
@@ -315,16 +341,20 @@ void loop(void) {
     }
     switch(cmenu) {
     case NETCONFIG: // NET CONFIG
-      lcdd.setLine(0,1,"  Network config    ");
+      strcpy_P(line1,(char *)pgm_read_word(&(str_main[4])));
+      lcdd.setLine(0,1,line1);
       break;
     case RTCCONFIG: // RTC CONFIG
-      lcdd.setLine(0,1,"  RTC config        ");
+      strcpy_P(line1,(char *)pgm_read_word(&(str_main[5])));
+      lcdd.setLine(0,1,line1);
       break;
     case SCHCONFIG: // Schedule CONFIG
-      lcdd.setLine(0,1,"  SCHEDULE config   ");
+      strcpy_P(line1,(char *)pgm_read_word(&(str_main[6])));
+      lcdd.setLine(0,1,line1);
       break;
     case EEPROMOPE: // EEPROM Operation
-      lcdd.setLine(0,1,"  EEPROM Operation  ");
+      strcpy_P(line1,(char *)pgm_read_word(&(str_main[2])));
+      lcdd.setLine(0,1,line1);
       break;
     }
     if (cf) {
@@ -422,6 +452,7 @@ uint8_t InputDataButtom(int p,int x,int y,int k,uint8_t ud,int mi='0',int mx='9'
 void msgRun1st(void) {
   extern int mask2cidr(IPAddress);
   int cidr,i;
+  char line1[21];
   
   lcdd.initWriteArea(0);
   lcdd.initWriteArea(1);
@@ -435,10 +466,12 @@ void msgRun1st(void) {
   lcdd.PageWrite(cposp);
   lcdd.setCursor(cposx,cposy);
   if (Ethernet.maintain()!=0) {
-    lcdd.setLine(0,2,"NIC IS NO W5500");
+    strcpy_P(line1,(char *)pgm_read_word(&(str_main[7])));
+    lcdd.setLine(0,2,line1);
     lcdd.LineWrite(0,2);
   } else {
-    lcdd.TextWrite(0,0,2,"IP:");
+    strcpy_P(line1,(char *)pgm_read_word(&(str_main[8])));
+    lcdd.TextWrite(0,0,2,line1);
     st_m.gw = Ethernet.gatewayIP();
     st_m.ip = Ethernet.localIP();
     st_m.dns = Ethernet.dnsServerIP();
@@ -454,10 +487,15 @@ void msgRun1st(void) {
 
 void msgCmnd1st(void) {
   extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
+  char line1[21];
+  
   lcdd.noBlink();
-  lcdd.setLine(0,0,"Choose Menu         ");
-  lcdd.setLine(0,2,"UP/DOWN/ENT Key use ");
-  lcdd.setLine(0,3,"Exit:LEFT Key push  ");
+  strcpy_P(line1,(char *)pgm_read_word(&(str_main[9])));
+  lcdd.setLine(0,0,line1); // "Choose Menu         "
+  strcpy_P(line1,(char *)pgm_read_word(&(str_main[10])));
+  lcdd.setLine(0,2,line1); // "UP/DOWN/ENT Key use "
+  strcpy_P(line1,(char *)pgm_read_word(&(str_main[11])));
+  lcdd.setLine(0,3,line1); // "Exit:LEFT Key push  "
   cposp = 0;
   cposx = 0;
   cposy = 1;

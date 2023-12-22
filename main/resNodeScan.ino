@@ -11,13 +11,13 @@ void UECSupdate16529port(void) {
     UECS_UDP16529.read(uecsbuf,600-1);
     uecsbuf[packetSize] = NULL;
     if (debugMsgFlag(SO_MSG)) {
-      Serial.print("UDP16529 size=");
+      Serial.print(F("UDP16529 size="));
       Serial.println(packetSize);
-      Serial.print("UDP16529 IP=");
+      Serial.print(F("UDP16529 IP="));
       Serial.println(UECS_UDP16529.remoteIP()) ;
-      Serial.print("REMOTE PORT=");
+      Serial.print(F("REMOTE PORT="));
       Serial.println(UECS_UDP16529.remotePort());
-      Serial.print("TEXT=");
+      Serial.print(F("TEXT="));
       Serial.println(uecsbuf);
     }
     if (xmldecode(&uecsbuf[0])) {
@@ -26,7 +26,7 @@ void UECSupdate16529port(void) {
         //        debug_uecsxmldata();
       }
     } else {
-      Serial.println("YXML ERROR");
+      Serial.println(F("YXML ERROR"));
     }
   }
 }
@@ -58,30 +58,30 @@ void res_nodescan(IPAddress ripa, unsigned int rport) {
   UECS_UDP16529.beginPacket(ripa, rport);
   UECS_UDP16529.write(uecsbuf);
   UECS_UDP16529.endPacket();
-  Serial.print("uecsbuf=");
+  Serial.print(F("uecsbuf="));
   Serial.println(uecsbuf);
 }
 
 void debug_uecsxmldata(void) {
-  Serial.print("ELEMENT=");
+  Serial.print(F("ELEMENT="));
   Serial.println(ptr_uecsxmldata->element);
-  Serial.print("VER=");
+  Serial.print(F("VER="));
   Serial.println(ptr_uecsxmldata->ver);
-  Serial.print("TYPE=");
+  Serial.print(F("TYPE="));
   Serial.println(ptr_uecsxmldata->type);
-  Serial.print("PAGE=");
+  Serial.print(F("PAGE="));
   Serial.println(ptr_uecsxmldata->page);
-  Serial.print("ROOM=");
+  Serial.print(F("ROOM="));
   Serial.println(ptr_uecsxmldata->room);
-  Serial.print("REGION=");
+  Serial.print(F("REGION="));
   Serial.println(ptr_uecsxmldata->region);
-  Serial.print("ORDER=");
+  Serial.print(F("ORDER="));
   Serial.println(ptr_uecsxmldata->order);
-  Serial.print("PRIORITY=");
+  Serial.print(F("PRIORITY="));
   Serial.println(ptr_uecsxmldata->priority);
-  Serial.print("TEXTVAL=");
+  Serial.print(F("TEXTVAL="));
   Serial.println(ptr_uecsxmldata->textval);
-  Serial.print("FVAL=");
+  Serial.print(F("FVAL="));
   Serial.println(ptr_uecsxmldata->fval);
 }
 
