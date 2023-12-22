@@ -128,7 +128,12 @@ void opeHttpd(EthernetClient ec) {
           daddr = strtol(d,NULL,16);
           fetch_EEPROM(daddr,ec);
           ec.println("</html>");
-	  break;
+          break;
+          //          delay(500);
+          //          wdt_reset();
+          //          ec.stop();
+          //          Serial.println("MF9");
+          //	  return;
         }
       }
     }

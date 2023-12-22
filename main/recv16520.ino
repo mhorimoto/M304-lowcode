@@ -45,9 +45,9 @@ void UECSupdate16520port(void) {
     }
     float rfval = float(ptr_uecsxmldata->fval);
     Serial.println(rfval);
-    for (i=0;i<CCM_TBL_CNT_CMP;i++) {
-      match_rro(i); // 2.3.7D
-    }
+    //    for (i=0;i<CCM_TBL_CNT_CMP;i++) {
+    //      match_rro(i); // 2.3.7D
+    //    }
   }
 }
 
@@ -60,43 +60,45 @@ void UECSupdate16520port(void) {
 void match_rro(int id) {
   extern uecsM304cmpope flb_cmpope[];
   extern st_UECSXML *ptr_uecsxmldata;
+  extern byte cmpope_result[];
   extern char lbf[];
+  
   float rfval;
-
+  // 2.3.7DBG
   sprintf(lbf,"E match_rro(%d)",id);
   Serial.println(lbf);
   // ROOM
   if ((ptr_uecsxmldata->room==0)||(ptr_uecsxmldata->room==flb_cmpope[id].room)) {
     // REGION
-    if ((ptr_uecsxmldata->region==0)||(ptr_uecsxmldata->region==flb_cmpope[id].region)) {
-      // ORDER
-      if ((ptr_uecsxmldata->order==0)||(ptr_uecsxmldata->order==flb_cmpope[id].order)) {
-	// CCM type
-	if (!strcmp(ptr_uecsxmldata->type,flb_cmpope[id].ccm_type)) {
-	  rfval = float(ptr_uecsxmldata->fval);
-	  Serial.println(rfval);
-	  flb_cmpope[id].result = 0;   // Preset false
-	  switch(flb_cmpope[id].cmpope) {
-	  case R_EQ: // ==
-	    if (rfval==flb_cmpope[id].fval) flb_cmpope[id].result = 1;
-	    break;
-	  case R_GT: // >
-	    if (rfval>flb_cmpope[id].fval) flb_cmpope[id].result = 1;
-	    break;
-	  case R_LT: // <
-	    if (rfval<flb_cmpope[id].fval) flb_cmpope[id].result = 1;
-	    break;
-	  case R_GE: // >=
-	    if (rfval>=flb_cmpope[id].fval) flb_cmpope[id].result = 1;
-	    break;
-	  case R_LE: // <=
-	    if (rfval<=flb_cmpope[id].fval) flb_cmpope[id].result = 1;
-	    break;
-	  }
-	}
-      }
-    }
+     if ((ptr_uecsxmldata->region==0)||(ptr_uecsxmldata->region==flb_cmpope[id].region)) {
+       // ORDER
+       if ((ptr_uecsxmldata->order==0)||(ptr_uecsxmldata->order==flb_cmpope[id].order)) {
+         // CCM type
+          if (!strncmp(ptr_uecsxmldata->type,flb_cmpope[id].ccm_type,19)) {
+            rfval = float(ptr_uecsxmldata->fval);
+            Serial.println(rfval);
+            cmpope_result[id] = 0;   // Preset false
+            switch(flb_cmpope[id].cmpope) {
+            case R_EQ: // ==
+              if (rfval==flb_cmpope[id].fval) cmpope_result[id] = 1;
+              break;
+            case R_GT: // >
+              if (rfval>flb_cmpope[id].fval) cmpope_result[id] = 1;
+              break;
+            case R_LT: // <
+              if (rfval<flb_cmpope[id].fval) cmpope_result[id] = 1;
+              break;
+            case R_GE: // >=
+              if (rfval>=flb_cmpope[id].fval) cmpope_result[id] = 1;
+              break;
+            case R_LE: // <=
+              if (rfval<=flb_cmpope[id].fval) cmpope_result[id] = 1;
+              break;
+            }
+          }
+       }
+     }
   }
-  sprintf(lbf,"D %d",flb_cmpope[id].result);
+  sprintf(lbf,"D %d",cmpope_result[id]);
   Serial.println(lbf);
 }

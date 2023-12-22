@@ -1,6 +1,6 @@
 #ifndef _M304_H_
 #define _M304_H_
-#define _M304_H_V  139
+#define _M304_H_V  1310
 
 #include <avr/pgmspace.h>
 #include <LiquidCrystal.h>
@@ -198,7 +198,6 @@ typedef struct uecsM304cmpope {
   char ccm_type[20]; // 0x06 ASCIZ
   byte cmpope;       // 0x1a
   float fval;        // 0x1b
-  byte result;       // 0x1c result of compaire operation 0:false, not 0:true
   // LAST            // 0x1f
 };  // 32bytes/1unit
 

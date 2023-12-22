@@ -19,13 +19,13 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.3.7D";
+char *pgname = "M304 Ver2.3.7DBG7";
 
-typedef struct irrM304 {
-  byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
-};
+//typedef struct irrM304 {
+//  byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
+//};
 
-irrM304 irr_m;
+//irrM304 irr_m;
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -89,7 +89,7 @@ int cmenu=NETCONFIG;
 int rlyttl[8];
 
 bool cf,fsf=true;
-byte ip[4] = { 192,168,0,177 };
+//byte ip[4] = { 192,168,0,177 };
 char lbf[81];
 extern bool debugMsgFlag(int);
 extern void debugMsgOutput(int);
@@ -97,7 +97,8 @@ extern void debugMsgOutput(int);
 // 2.3.5D
 uecsM304  flb_rx_ccm[CCM_TBL_CNT_RX],flb_tx_ccm[CCM_TBL_CNT_TX];
 uecsM304cmpope flb_cmpope[CCM_TBL_CNT_CMP];
-
+// 2.3.7DBG5
+byte cmpope_result[CCM_TBL_CNT_CMP];
 
 void setup(void) {
   extern int mask2cidr(IPAddress);
@@ -147,9 +148,9 @@ void setup(void) {
   j = digitalRead(SW_SAFE);
   if (j==LOW) {
     if ((atmem.read(LC_SEND_START)==0xff)&&(atmem.read(LC_SCH_START)==0xff)) {  // CCMTABLE
-        initEEPROM_UECS();
-	lcdd.setLine(0,3,"init EEPROM         ");
-	lcdd.LineWrite(0,3);
+      //        initEEPROM_UECS();
+      //	lcdd.setLine(0,3,"init EEPROM         ");
+      //	lcdd.LineWrite(0,3);
     }
   }
 
@@ -253,13 +254,17 @@ void loop(void) {
   case CMND:
     cf = false;
     if (fsf) {
+      #ifdef DEBUG
       debugSerialOut(cmode,cmenu,"BpCMNDw/fsf");
+      #endif
       msgCmnd1st();
     }
     wdt_reset();
     ptr_crosskey = getCrossKey();
     if ((ptr_crosskey->longf==true)&&(ptr_crosskey->kpos & K_LEFT)) {
+      #ifdef DEBUG
       debugSerialOut(cmode,cmenu,"BpCMNDw/K_LEFT");
+      #endif
       cmode = RUN;
       fsf = true;
       ptr_crosskey->longf=false;
@@ -270,14 +275,18 @@ void loop(void) {
       cmenu++;
       if (cmenu>EEPROMOPE) cmenu=NETCONFIG;
       cf = true;
-      debugSerialOut(cmode,cmenu,"K_UP");      
+      #ifdef DEBUG
+      debugSerialOut(cmode,cmenu,"K_UP");
+      #endif
     }
     if (ptr_crosskey->kpos & K_DOWN) {
       ptr_crosskey->kpos &= ~K_DOWN;
       cmenu--;
       if (cmenu<NETCONFIG) cmenu=EEPROMOPE;
       cf = true;
-      debugSerialOut(cmode,cmenu,"K_DOWN");      
+      #ifdef DEBUG
+      debugSerialOut(cmode,cmenu,"K_DOWN");
+      #endif
     }
     if (ptr_crosskey->kpos & K_ENT) {
       ptr_crosskey->kpos &= ~K_ENT;
@@ -460,60 +469,60 @@ void msgCmnd1st(void) {
   ptr_crosskey->kpos=0;
 }
 
-void initEEPROM_UECS(void) {
-  int w,a,j,k;
-  w = 9;      // cnd + RLY1..8
-  bool enable;
-  byte room,region,priority;
-  int  order;
-  char ccm_type[20];
+// void initEEPROM_UECS(void) {
+//   int w,a,j,k;
+//   w = 9;      // cnd + RLY1..8
+//   bool enable;
+//   byte room,region,priority;
+//   int  order;
+//   char ccm_type[20];
 
-  enable = true;
-  room   = 1;
-  region = 1;
-  order  = 1;
-  priority = 15;
-  for (k=0;k<w;k++) {
-    for (j=0;j<20;j++) {
-      ccm_type[j] = 0;
-    }
-    if (k==0) {
-      strcpy(ccm_type,"cnd.aMC");
-    } else if (k==6) {
-      sprintf(ccm_type,"AirHumFogopr.%d",k);
-    } else {
-      sprintf(ccm_type,"Irriopr.%d",k);
-    }
-    if (k==0) {              // CCMTABLE
-      a = LC_SCH_START;
-    } else {
-      a += LC_SCH_REC_SIZE;
-    }
-    atmem.write(a+LC_VALID,enable);
-    atmem.write(a+LC_ROOM,room);
-    atmem.write(a+LC_REGION,region);
-    atmem.write(a+LC_ORDER,(order&0xff));
-    atmem.write(a+LC_ORDER+1,(order>>8)&0xff);
-    atmem.write(a+LC_PRIORITY,priority);
-    atmem.write(a+LC_LV,LV_A1M0);
-    atmem.write(a+LC_CAST,0);
-    atmem.write(a+LC_SR,'R');
-    for (j=0;j<20;j++) {
-      atmem.write(a+LC_CCMTYPE+j,ccm_type[j]);
-    }
-    for (j=0;j<10;j++) {
-      atmem.write(a+LC_UNIT+j,0);
-    }
-    atmem.write(a+LC_STHR,0);
-    atmem.write(a+LC_STMN,0);
-    atmem.write(a+LC_EDHR,0);
-    atmem.write(a+LC_EDMN,0);
-    atmem.write(a+LC_INMN,0);
-    atmem.write(a+LC_DUMN,0);
-    atmem.write(a+LC_RLY_L,0);
-    atmem.write(a+LC_RLY_H,0);
-  }
-}
+//   enable = true;
+//   room   = 1;
+//   region = 1;
+//   order  = 1;
+//   priority = 15;
+//   for (k=0;k<w;k++) {
+//     for (j=0;j<20;j++) {
+//       ccm_type[j] = 0;
+//     }
+//     if (k==0) {
+//       strcpy(ccm_type,"cnd.aMC");
+//     } else if (k==6) {
+//       sprintf(ccm_type,"AirHumFogopr.%d",k);
+//     } else {
+//       sprintf(ccm_type,"Irriopr.%d",k);
+//     }
+//     if (k==0) {              // CCMTABLE
+//       a = LC_SCH_START;
+//     } else {
+//       a += LC_SCH_REC_SIZE;
+//     }
+//     atmem.write(a+LC_VALID,enable);
+//     atmem.write(a+LC_ROOM,room);
+//     atmem.write(a+LC_REGION,region);
+//     atmem.write(a+LC_ORDER,(order&0xff));
+//     atmem.write(a+LC_ORDER+1,(order>>8)&0xff);
+//     atmem.write(a+LC_PRIORITY,priority);
+//     atmem.write(a+LC_LV,LV_A1M0);
+//     atmem.write(a+LC_CAST,0);
+//     atmem.write(a+LC_SR,'R');
+//     for (j=0;j<20;j++) {
+//       atmem.write(a+LC_CCMTYPE+j,ccm_type[j]);
+//     }
+//     for (j=0;j<10;j++) {
+//       atmem.write(a+LC_UNIT+j,0);
+//     }
+//     atmem.write(a+LC_STHR,0);
+//     atmem.write(a+LC_STMN,0);
+//     atmem.write(a+LC_EDHR,0);
+//     atmem.write(a+LC_EDMN,0);
+//     atmem.write(a+LC_INMN,0);
+//     atmem.write(a+LC_DUMN,0);
+//     atmem.write(a+LC_RLY_L,0);
+//     atmem.write(a+LC_RLY_H,0);
+//   }
+// }
 
 void sendUECSpacket(int id,char *v) {
   extern char *itoaddr(IPAddress);
