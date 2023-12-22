@@ -1,9 +1,27 @@
 #include <EthernetUdp2.h>
 #define NTP_PACKET_SIZE  48 // NTP time stamp is in the first 48 bytes of the message
-byte packetBuffer[ NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
+byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
 tmElements_t tm;
+
+const char str_opeRTC0[] PROGMEM = "Set RTC";
+const char str_opeRTC1[] PROGMEM = "  via NTP server";
+const char str_opeRTC2[] PROGMEM = "NO RTC SETUP    ";
+const char str_opeRTC3[] PROGMEM = "%d/%02d/%02d  %02d:%02d:%02d";
+const char str_opeRTC4[] PROGMEM = "Push ENT Key";
+const char str_opeRTC5[] PROGMEM = "OK DONE             ";
+
+const char *const str_opeRTC[] PROGMEM = {
+  str_opeRTC0,
+  str_opeRTC1,
+  str_opeRTC2,
+  str_opeRTC3,
+  str_opeRTC4,
+  str_opeRTC5
+};
+
+  
 void opeRTC(void) {
-  char line1[21];
+  char line1[21],line2[41];
   extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
   if (fsf) {
     fsf = false;
@@ -11,17 +29,25 @@ void opeRTC(void) {
     cposx = 0;
     cposy = 0;
     lcdd.initWriteArea(cposp);
-    lcdd.setLine(cposp,0,"Set RTC");
-    lcdd.setLine(cposp,1,"  via NTP server");
+    strcpy_P(line1,(char *)pgm_read_word(&(str_opeRTC[0])));
+    lcdd.setLine(cposp,0,line1);
+    strcpy_P(line1,(char *)pgm_read_word(&(str_opeRTC[1])));
+    lcdd.setLine(cposp,1,line1);
     if (RTC.read(tm)==0) {
-      lcdd.setLine(0,2,"NO RTC SETUP    ");
+      strcpy_P(line1,(char *)pgm_read_word(&(str_opeRTC[2])));
+      lcdd.setLine(0,2,line1);
     } else {
+      strcpy_P(line2,(char *)pgm_read_word(&(str_opeRTC[3])));
       snprintf(line1,21,"%d/%02d/%02d  %02d:%02d:%02d",
+               //snprintf(line1,21,line2,
 	       tm.Year+1970,tm.Month,tm.Day,tm.Hour,tm.Minute,tm.Second);
       lcdd.setLine(0,2,line1);
       lcdd.LineWrite(0,2);
     }
-    lcdd.setLine(cposp,3,"Push ENT Key");
+    //    lcdd.setLine(cposp,3,"Push ENT Key");
+    strcpy_P(line1,(char *)pgm_read_word(&(str_opeRTC[4])));
+    //    lcdd.setLine(cposp,3,"Push ENT Key");
+    lcdd.setLine(cposp,3,line1);
     lcdd.PageWrite(cposp);
   }
   if (ptr_crosskey->kpos & K_ENT) {
@@ -32,7 +58,9 @@ void opeRTC(void) {
     lcdd.LineWrite(0,2);
     PushEnter(cposp);
     if(RTC.write(tm)) {
-      lcdd.setLine(0,3,"OK DONE             ");
+      strcpy_P(line1,(char *)pgm_read_word(&(str_opeRTC[5])));
+      lcdd.setLine(0,3,line1);
+      //      lcdd.setLine(0,3,"OK DONE             ");
       lcdd.LineWrite(0,3);
     }
   }

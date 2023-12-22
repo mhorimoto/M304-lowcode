@@ -120,14 +120,14 @@ void opeHttpd(EthernetClient ec) {
           // ec.println("<!DOCTYPE HTML>");
           // ec.println("<html>");
 
-          ec.print("<h1>FETCH</h1>");
-          ec.print("<pre>htbuf=");
+          ec.print(F("<h1>FETCH</h1>"));
+          ec.print(F("<pre>htbuf="));
           ec.println(htbuf);
           strncpy(d,&htbuf[2],4);
           d[4]=(char)NULL;
           daddr = strtol(d,NULL,16);
           fetch_EEPROM(daddr,ec);
-          ec.println("</html>");
+          ec.println(F("</html>"));
           break;
           //          delay(500);
           //          wdt_reset();
@@ -137,20 +137,20 @@ void opeHttpd(EthernetClient ec) {
         }
       }
     }
-    Serial.print("MF6 ");
+    Serial.print(F("MF6 "));
     Serial.println(bufcnt);
     if (c == '\n') {
       currentLineIsBlank = true;
     } else if (c != '\r') {
       currentLineIsBlank = false;
     }
-    Serial.println("MF7");
+    Serial.println(F("MF7"));
     wdt_reset();
   }
   delay(500);
   wdt_reset();
   ec.stop();
-  Serial.println("MF8");
+  Serial.println(F("MF8"));
   //  Serial.println(F("Clinet disconnected")); // 2.3.6D
 }
 // 2.3.6D
@@ -187,7 +187,7 @@ void fetch_EEPROM(unsigned int addr,EthernetClient ec) {
   uint8_t d;
   char prnbuf[BUFSIZ];
   addr &= 0xff00;
-  ec.println("<pre>");
+  ec.println(F("<pre>"));
   for (y=0;y<16;y++) {
     sprintf(prnbuf,"0x%04X:",addr+(y*0x10));
     for (x=0;x<16;x++) {

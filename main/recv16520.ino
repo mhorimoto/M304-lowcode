@@ -2,7 +2,7 @@ void UECSupdate16520port(void) {
   extern char uecsbuf[];
   extern bool xmldecode(char *);
   extern st_UECSXML *ptr_uecsxmldata;
-
+  void match_rro(int);
   int packetSize = UDP16520.parsePacket(),i;
   
   if (packetSize>10) {
@@ -20,34 +20,34 @@ void UECSupdate16520port(void) {
       if (ptr_uecsxmldata->element==ELE_IP) {
         ptr_uecsxmldata->ip = UDP16520.remoteIP();
       }
-      //      Serial.print("Ver="); 2.3.5D
-      Serial.println(ptr_uecsxmldata->ver);
-      //      Serial.print("Type=");
-      Serial.println(ptr_uecsxmldata->type);
-      //      Serial.print("TEXTVAL=");
-      Serial.println(ptr_uecsxmldata->textval);
-      //      Serial.print("Page=");
-      Serial.println(ptr_uecsxmldata->page);
-      //      Serial.print("ROOM=");
-      Serial.print(ptr_uecsxmldata->room);
-      //      Serial.print("  REGION=");
-      Serial.print(ptr_uecsxmldata->region);
-      //      Serial.print("  ORDER=");
-      Serial.print(ptr_uecsxmldata->order);
-      //      Serial.print("  PRIORITY=");
-      Serial.println(ptr_uecsxmldata->priority);
-      //      Serial.print("FVAL=");
-      Serial.println(ptr_uecsxmldata->fval);
-      //      Serial.print("IP=");
-      Serial.println(ptr_uecsxmldata->ip);
+      // //      Serial.print("Ver="); 2.3.5D
+      // Serial.println(ptr_uecsxmldata->ver);
+      // //      Serial.print("Type=");
+      // Serial.println(ptr_uecsxmldata->type);
+      // //      Serial.print("TEXTVAL=");
+      // Serial.println(ptr_uecsxmldata->textval);
+      // //      Serial.print("Page=");
+      // Serial.println(ptr_uecsxmldata->page);
+      // //      Serial.print("ROOM=");
+      // Serial.print(ptr_uecsxmldata->room);
+      // //      Serial.print("  REGION=");
+      // Serial.print(ptr_uecsxmldata->region);
+      // //      Serial.print("  ORDER=");
+      // Serial.print(ptr_uecsxmldata->order);
+      // //      Serial.print("  PRIORITY=");
+      // Serial.println(ptr_uecsxmldata->priority);
+      // //      Serial.print("FVAL=");
+      // Serial.println(ptr_uecsxmldata->fval);
+      // //      Serial.print("IP=");
+      // Serial.println(ptr_uecsxmldata->ip);
     } else {
       Serial.println("ERR YXML");
     }
     float rfval = float(ptr_uecsxmldata->fval);
-    Serial.println(rfval);
-    //    for (i=0;i<CCM_TBL_CNT_CMP;i++) {
-    //      match_rro(i); // 2.3.7D
-    //    }
+    //    Serial.println(rfval);
+    for (i=0;i<CCM_TBL_CNT_CMP;i++) {
+      match_rro(i); // 2.3.7D
+    }
   }
 }
 
