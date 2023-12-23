@@ -1,7 +1,7 @@
 #include <M304.h>
 
-#if _M304_H_V < 139
-#pragma message("Library M304 is old. Version 1.3.8 or higher is required.")
+#if _M304_H_V < 1310
+#pragma message("Library M304 is old. Version 1.3.10 or higher is required.")
 #else
 
 #include <avr/wdt.h>
@@ -19,13 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.3.7DBGg";
-
-//typedef struct irrM304 {
-//  byte id,sthr,stmn,edhr,edmn,inmn,dumn,rly[8];
-//};
-
-//irrM304 irr_m;
+char *pgname = "M304 Ver2.4.0D";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -100,22 +94,24 @@ uecsM304cmpope flb_cmpope[CCM_TBL_CNT_CMP];
 // 2.3.7DBG5
 byte cmpope_result[CCM_TBL_CNT_CMP];
 
-const char str_main0[] PROGMEM = "NO NET MODE         ";
-const char str_main1[] PROGMEM = "STATIC IP ADDRESS   ";
-const char str_main2[] PROGMEM = "  EEPROM Operation  ";
-const char str_main3[] PROGMEM = "NO RTC PLS SETUP    ";
-const char str_main4[] PROGMEM = "  Network config    ";
-const char str_main5[] PROGMEM = "  RTC config        ";
-const char str_main6[] PROGMEM = "  SCHEDULE config   ";
-const char str_main7[] PROGMEM = "NIC IS NO W5500     ";
-const char str_main8[] PROGMEM = "IP:";
-const char str_main9[] PROGMEM = "Choose Menu         ";
+const char str_main0[] PROGMEM  = "NO NET MODE         ";
+const char str_main1[] PROGMEM  = "STATIC IP ADDRESS   ";
+const char str_main2[] PROGMEM  = "  EEPROM Operation  ";
+const char str_main3[] PROGMEM  = "NO RTC PLS SETUP    ";
+const char str_main4[] PROGMEM  = "  Network config    ";
+const char str_main5[] PROGMEM  = "  RTC config        ";
+const char str_main6[] PROGMEM  = "  SCHEDULE config   ";
+const char str_main7[] PROGMEM  = "NIC IS NO W5500     ";
+const char str_main8[] PROGMEM  = "IP:";
+const char str_main9[] PROGMEM  = "Choose Menu         ";
 const char str_main10[] PROGMEM = "UP/DOWN/ENT Key use ";
 const char str_main11[] PROGMEM = "Exit:LEFT Key push  ";
+const char str_main12[] PROGMEM = "ALL BREAK           ";
+const char str_main13[] PROGMEM = "BpCMNDw/fsf";
 
 const char *const str_main[] PROGMEM = {
   str_main0, str_main1, str_main2, str_main3, str_main4, str_main5, str_main6, str_main7,
-  str_main8, str_main9, str_main10, str_main11
+  str_main8, str_main9, str_main10, str_main11, str_main12, str_main13
 };
 
 
@@ -134,9 +130,9 @@ void setup(void) {
   lcdd.begin(20,4);
   if (is_dhcp()) {
     if (Ethernet.begin(st_m.mac)==0) {
+      // "NO NET MODE"
       strcpy_P(line1,(char *)pgm_read_word(&(str_main[0])));
       lcdd.setLine(0,2,line1);
-      //      lcdd.setLine(0,2,"NO NET MODE");
       lcdd.LineWrite(0,2);
       st_m.dhcpflag = true;
     }
@@ -217,9 +213,9 @@ void loop(void) {
   UECSupdate16520port() ;
   UECSupdate16529port() ;
   if (digitalRead(SW_SAFE)==0) {
+    // "  EEPROM Operation  "
     strcpy_P(line1,(char *)pgm_read_word(&(str_main[2])));
     lcdd.setLine(0,1,line1);
-    //    lcdd.setLine(0,1,"  EEPROM Operation  ");
     lcdd.LineWrite(0,1);
     opeEEPROM();
   }
@@ -230,9 +226,9 @@ void loop(void) {
       fsf = false;
     }
     if (RTC.read(tm)==0) {
+      // "NO RTC PLS SETUP    "
       strcpy_P(line1,(char *)pgm_read_word(&(str_main[3])));
       lcdd.setLine(cposp,1,line1);
-      //      lcdd.setLine(cposp,1,"NO RTC PLS SETUP    ");
       lcdd.LineWrite(cposp,1);
     } else {
       if (prvsec!=tm.Second) {
@@ -258,7 +254,7 @@ void loop(void) {
 	if (minsec>0) {
 	  snprintf(line1,21,"REMAINING=%3d",minsec);
 	} else {
-	  snprintf(line1,21,"ALL BREAK          ");
+          strcpy_P(line1,(char *)pgm_read_word(&(str_main[12])));
 	}
 	lcdd.setLine(cposp,3,line1);
 	lcdd.LineWrite(cposp,3);
@@ -281,7 +277,9 @@ void loop(void) {
     cf = false;
     if (fsf) {
       #ifdef DEBUG
-      debugSerialOut(cmode,cmenu,"BpCMNDw/fsf");
+      // "BpCMNDw/fsf"
+      strcpy_P(line1,(char *)pgm_read_word(&(str_main[12])));
+      debugSerialOut(cmode,cmenu,line1);
       #endif
       msgCmnd1st();
     }
@@ -506,61 +504,6 @@ void msgCmnd1st(void) {
   ptr_crosskey->longf=false;
   ptr_crosskey->kpos=0;
 }
-
-// void initEEPROM_UECS(void) {
-//   int w,a,j,k;
-//   w = 9;      // cnd + RLY1..8
-//   bool enable;
-//   byte room,region,priority;
-//   int  order;
-//   char ccm_type[20];
-
-//   enable = true;
-//   room   = 1;
-//   region = 1;
-//   order  = 1;
-//   priority = 15;
-//   for (k=0;k<w;k++) {
-//     for (j=0;j<20;j++) {
-//       ccm_type[j] = 0;
-//     }
-//     if (k==0) {
-//       strcpy(ccm_type,"cnd.aMC");
-//     } else if (k==6) {
-//       sprintf(ccm_type,"AirHumFogopr.%d",k);
-//     } else {
-//       sprintf(ccm_type,"Irriopr.%d",k);
-//     }
-//     if (k==0) {              // CCMTABLE
-//       a = LC_SCH_START;
-//     } else {
-//       a += LC_SCH_REC_SIZE;
-//     }
-//     atmem.write(a+LC_VALID,enable);
-//     atmem.write(a+LC_ROOM,room);
-//     atmem.write(a+LC_REGION,region);
-//     atmem.write(a+LC_ORDER,(order&0xff));
-//     atmem.write(a+LC_ORDER+1,(order>>8)&0xff);
-//     atmem.write(a+LC_PRIORITY,priority);
-//     atmem.write(a+LC_LV,LV_A1M0);
-//     atmem.write(a+LC_CAST,0);
-//     atmem.write(a+LC_SR,'R');
-//     for (j=0;j<20;j++) {
-//       atmem.write(a+LC_CCMTYPE+j,ccm_type[j]);
-//     }
-//     for (j=0;j<10;j++) {
-//       atmem.write(a+LC_UNIT+j,0);
-//     }
-//     atmem.write(a+LC_STHR,0);
-//     atmem.write(a+LC_STMN,0);
-//     atmem.write(a+LC_EDHR,0);
-//     atmem.write(a+LC_EDMN,0);
-//     atmem.write(a+LC_INMN,0);
-//     atmem.write(a+LC_DUMN,0);
-//     atmem.write(a+LC_RLY_L,0);
-//     atmem.write(a+LC_RLY_H,0);
-//   }
-// }
 
 void sendUECSpacket(int id,char *v) {
   extern char *itoaddr(IPAddress);
