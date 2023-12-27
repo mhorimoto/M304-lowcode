@@ -44,14 +44,14 @@ void debugSerialOut(int a,int b,char *c) {
   }
 }
 
-void debugMsgOutput(int kind) {
+void debugMsgOutput(int kind,int f=0) {
   extern uecsM304  flb_rx_ccm[],flb_tx_ccm[];
   extern uecsM304cmpope flb_cmpope[];
   extern bool debugMsgFlag(int);
 
   int i;
   
-  if (debugMsgFlag(SO_MSG)) {
+  if (debugMsgFlag(SO_MSG)||f) {
     Serial.begin(115200);
     switch(kind) {
     case 1:  // st_m display

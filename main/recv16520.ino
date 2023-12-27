@@ -2,20 +2,23 @@ void UECSupdate16520port(void) {
   extern char uecsbuf[];
   extern bool xmldecode(char *);
   extern st_UECSXML *ptr_uecsxmldata;
+  extern EthernetUDP UDP16520;
   void match_rro(int);
-  int packetSize = UDP16520.parsePacket(),i;
+  int packetSize ,i;
+  
+  packetSize = UDP16520.parsePacket();
   
   if (packetSize>10) {
     UDP16520.read(uecsbuf,LEN_UECSXML_BUFFER-1);
     uecsbuf[packetSize] = NULL;
-      // Serial.print("UDP16520 size=");  2.3.5D
-      // Serial.println(packetSize);
-      // Serial.print("UDP16520 IP=");
-      // Serial.println(UDP16520.remoteIP()) ;
-      // Serial.print("REMOTE PORT=");
-      // Serial.println(UDP16520.remotePort());
-      // Serial.print("TEXT=");
-      // Serial.println(uecsbuf);
+    // Serial.print("UDP16520 size=");  //2.3.5D
+    // Serial.println(packetSize);
+    // Serial.print("UDP16520 IP=");
+    // Serial.println(UDP16520.remoteIP()) ;
+    // Serial.print("REMOTE PORT=");
+    // Serial.println(UDP16520.remotePort());
+    // Serial.print("TEXT=");
+    // Serial.println(uecsbuf);
     if (xmldecode(&uecsbuf[0])) {
       if (ptr_uecsxmldata->element==ELE_IP) {
         ptr_uecsxmldata->ip = UDP16520.remoteIP();
@@ -67,13 +70,14 @@ void match_rro(int id) {
   // 2.3.7DBG
   sprintf(lbf,"E match_rro(%d)",id);
   Serial.println(lbf);
-  // ROOM
-  if ((ptr_uecsxmldata->room==0)||(ptr_uecsxmldata->room==flb_cmpope[id].room)) {
-    // REGION
-     if ((ptr_uecsxmldata->region==0)||(ptr_uecsxmldata->region==flb_cmpope[id].region)) {
-       // ORDER
-       if ((ptr_uecsxmldata->order==0)||(ptr_uecsxmldata->order==flb_cmpope[id].order)) {
-         // CCM type
+  if (flb_cmpope[id].valid==1) {
+    // ROOM
+    if ((ptr_uecsxmldata->room==0)||(ptr_uecsxmldata->room==flb_cmpope[id].room)) {
+      // REGION
+      if ((ptr_uecsxmldata->region==0)||(ptr_uecsxmldata->region==flb_cmpope[id].region)) {
+        // ORDER
+        if ((ptr_uecsxmldata->order==0)||(ptr_uecsxmldata->order==flb_cmpope[id].order)) {
+          // CCM type
           if (!strncmp(ptr_uecsxmldata->type,flb_cmpope[id].ccm_type,19)) {
             rfval = float(ptr_uecsxmldata->fval);
             Serial.println(rfval);
@@ -96,8 +100,12 @@ void match_rro(int id) {
               break;
             }
           }
-       }
-     }
+        }
+      }
+    }
+  } else {
+    //    Serial.println(F("NO MATCH "));
+    ;    
   }
   sprintf(lbf,"D %d",cmpope_result[id]);
   Serial.println(lbf);

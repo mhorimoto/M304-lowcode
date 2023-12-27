@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.4.0D";
+char *pgname = "M304 Ver2.4.3D";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -86,7 +86,7 @@ bool cf,fsf=true;
 
 char lbf[81];
 extern bool debugMsgFlag(int);
-extern void debugMsgOutput(int);
+extern void debugMsgOutput(int,int);
 
 // 2.3.5D
 uecsM304  flb_rx_ccm[CCM_TBL_CNT_RX],flb_tx_ccm[CCM_TBL_CNT_TX];
@@ -123,12 +123,13 @@ void setup(void) {
   int a,w,j,k;
   char ccm_type[21],line1[21];
   IPAddress hostip,subnet,gateway,dns;
-  
+
   m304Init();
   clear_uecsbuf();
   ptr_uecsxmldata = &uecsxmldata;
   lcdd.begin(20,4);
   if (is_dhcp()) {
+    debugMsgOutput(1,0); // st_m display
     if (Ethernet.begin(st_m.mac)==0) {
       // "NO NET MODE"
       strcpy_P(line1,(char *)pgm_read_word(&(str_main[0])));
@@ -153,7 +154,7 @@ void setup(void) {
   configure_wdt();
   msgRun1st();
   wdt_reset();
-  debugMsgOutput(1); // st_m display
+  debugMsgOutput(1,0); // st_m display
   for(w=0;w<8;w++) {
     rlyttl[w] = 0;
   }
@@ -177,12 +178,12 @@ void setup(void) {
     a = LC_SCH_START+(j*LC_SCH_REC_SIZE);
     copyFromLC_uecsM304(&flb_rx_ccm[j],a);
   }
-  debugMsgOutput(2); // rx_ccm display
+  debugMsgOutput(2,0); // rx_ccm display
   for (j=0;j<CCM_TBL_CNT_TX;j++) {
     a = LC_SEND_START+(j*LC_SEND_REC_SIZE);
     copyFromLC_uecsM304(&flb_tx_ccm[j],a);
   }
-  debugMsgOutput(3); // tx_ccm display
+  debugMsgOutput(3,0); // tx_ccm display
   
   UDP16520.begin(16520);
   UECS_UDP16529.begin(16529);
