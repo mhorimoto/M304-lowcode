@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.4.3D";
+char *pgname = "M304 Ver2.4.6Dc";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -67,6 +67,11 @@ typedef struct st_UECSXML {
   IPAddress ip;
 };
 
+union CHARFLOAT {
+  float f;
+  char  c[4];
+};
+  
 st_UECSXML uecsxmldata,*ptr_uecsxmldata;
 
 LCDd lcdd(RS,RW,ENA,DB0,DB1,DB2,DB3,DB4,DB5,DB6,DB7);
@@ -123,9 +128,14 @@ void setup(void) {
   int a,w,j,k;
   char ccm_type[21],line1[21];
   IPAddress hostip,subnet,gateway,dns;
-
+  float tesfval;
+  
   m304Init();
+  Serial.begin(115200);
   clear_uecsbuf();
+  //  floating test routine 2.4.6Db
+  //  floatingtest(387.0);
+  
   ptr_uecsxmldata = &uecsxmldata;
   lcdd.begin(20,4);
   if (is_dhcp()) {
@@ -138,7 +148,6 @@ void setup(void) {
       st_m.dhcpflag = true;
     }
   } else {
-    Serial.begin(115200);
     st_m.ip     = getIPAddressFromEEPROM(FIXED_IPADDRESS);
     st_m.subnet = getIPAddressFromEEPROM(FIXED_NETMASK);
     st_m.gw     = getIPAddressFromEEPROM(FIXED_DEFGW);
@@ -184,6 +193,11 @@ void setup(void) {
     copyFromLC_uecsM304(&flb_tx_ccm[j],a);
   }
   debugMsgOutput(3,0); // tx_ccm display
+  for (j=0;j<CCM_TBL_CNT_CMP;j++) {
+    a = LC_CMPOPE_START+(j*LC_CMPOPE_REC_SIZE);
+    copyFromLC_uecsM304cmpope(&flb_cmpope[j],a);
+  }
+  debugMsgOutput(4,0); // cmpope display
   
   UDP16520.begin(16520);
   UECS_UDP16529.begin(16529);
@@ -642,6 +656,29 @@ void copyFromLC_uecsM304(uecsM304 *tg,int a) {
   tg->rly_l    = atmem.read(a+LC_RLY_L);        // 0x2d
   tg->rly_h    = atmem.read(a+LC_RLY_H);        // 0x2e
 }
+
+void copyFromLC_uecsM304cmpope(uecsM304cmpope *tg,int a) {
+  int i;
+  uint8_t ordl,ordh;
+  union CHARFLOAT crf;
+  tg->valid    = atmem.read(a+LC_COPE_VALID);    
+  tg->room     = atmem.read(a+LC_COPE_ROOM);         // 0x01
+  tg->region   = atmem.read(a+LC_COPE_REGION);       // 0x02
+  ordl = atmem.read(a+LC_COPE_ORDER);
+  ordh = atmem.read(a+LC_COPE_ORDER+1);
+  tg->order    = (ordh<<8)+ordl;
+  tg->priority = atmem.read(a+LC_COPE_PRIORITY);     // 0x05
+  for (i=0;i<20;i++) {
+    tg->ccm_type[i] = atmem.read(a+LC_COPE_CCMTYPE+i); // 0x06 ASCIZ
+  }
+  tg->cmpope = atmem.read(a+LC_COPE_OPE);         // 0x1a
+  for(i=0;i<4;i++) {
+    crf.c[i] = atmem.read(a+LC_COPE_FVAL+i);
+  }
+  tg->fval = crf.f;
+}
+
+
 
 void configure_wdt(void) {
   cli();                           // disable interrupts for changing the registers

@@ -138,7 +138,7 @@
 #define   LC_COPE_CCMTYPE  0x06
 #define   LC_COPE_OPE      0x1a
 #define   LC_COPE_FVAL     0x1b
-#define   LC_COPE_RESULT   0x1c
+#define   LC_COPE_RESULT   0x1f
 #define LC_END      0x7fff
 
 /*** LV define ***/

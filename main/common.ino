@@ -109,6 +109,34 @@ void debugMsgOutput(int kind,int f=0) {
         Serial.println(flb_tx_ccm[i].rly_h,HEX);
       }
       break;
+    case 4:  // flb_cmpope display
+      Serial.println(F("4-CMPOPE"));
+      for(i=0;i<CCM_TBL_CNT_CMP;i++) {
+	if ((f==2)&&(flb_cmpope[i].valid==1)) {
+	  Serial.println(flb_cmpope[i].valid);
+	  Serial.println(flb_cmpope[i].room);
+	  Serial.println(flb_cmpope[i].region);
+	  Serial.println(flb_cmpope[i].order);
+	  Serial.println(flb_cmpope[i].priority);
+	  Serial.println(flb_cmpope[i].ccm_type);
+	  Serial.println(flb_cmpope[i].cmpope);
+	  Serial.println(flb_cmpope[i].fval);
+	}
+      }
+      break;
     }
   }
+}
+
+
+void floatingtest(float a) {
+  union CHARFLOAT crf;
+  int k;
+  
+  crf.f = a;
+  for (k=0;k<4;k++) {
+    Serial.print((crf.c[k]&0xff),HEX);
+    Serial.print(" ");
+  }
+  Serial.println();
 }
