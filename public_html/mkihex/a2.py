@@ -43,14 +43,26 @@ if __name__ == '__main__':
     cast = int(args[7])
     sr = args[8]
     ccmtype = args[9]
-    unit = argv[10]
-    sthr stmn edhr edmn inmn dumn rly_l rly_h
+    unit = args[10]
+    sthr = int(args[11])
+    stmn = int(args[12])
+    edhr = int(args[13])
+    edmn = int(args[14])
+    inmn = int(args[15])
+    dumn = int(args[16])
+    rly_l = int(args[17])
+    rly_h = int(args[18])
 
 
-
-    LC_CMPOPE_START    = 0x5000
-    LC_CMPOPE_REC_SIZE = 0x20
-    addr  = hex(id*LC_CMPOPE_REC_SIZE+LC_CMPOPE_START).replace('0x','').rjust(4,'0')
+    if sr=="S":
+        sr = "53"
+        baseaddr = 0x3000 # LC_SEND_START
+        recstep  = 0x40   # LC_SEND_REC_SIZE
+    else:
+        sr = "52"
+        baseaddr = 0x1000 # LC_SCH_START
+        recstep  = 0x40   # LC_SCH_REC_SIZE
+        
 
     ih_valid    = byte_arrange(1)
     ih_room     = byte_arrange(room)
@@ -58,13 +70,28 @@ if __name__ == '__main__':
     order_o     = hex(order).replace('0x','').rjust(4,'0')
     ih_order    = order_o[2:4]+order_o[0:2]
     ih_priority = byte_arrange(priority)
+    ih_lv       = byte_arrange(lv)
+    ih_cast     = byte_arrange(cast)
+    ih_sr       = sr
     ih_ccmtype  = string_arrange(ccmtype,20)
-    ih_cmope    = byte_arrange(cmope)
-    ih_fval     = hex(struct.unpack('>I',struct.pack('<f',fval))[0]).replace('0x','').rjust(8,'0')
-    ihtxt       = ih_valid+ih_room+ih_region+ih_order+ih_priority+ih_ccmtype+ih_cmope+ih_fval
-    sz          = hex(int(len(ihtxt)/2)).replace('0x','').rjust(2,'0')
+    ih_unit     = string_arrange(unit,10)
+    ih_sthr     = byte_arrange(sthr)
+    ih_stmn     = byte_arrange(stmn)
+    ih_edhr     = byte_arrange(edhr)
+    ih_edmn     = byte_arrange(edmn)
+    ih_inmn     = byte_arrange(inmn)
+    ih_dumn     = byte_arrange(dumn)
+    ih_rly_l    = byte_arrange(rly_l)
+    ih_rly_h    = byte_arrange(rly_h)
     
-    ih =":"+sz+addr+"00"+ihtxt+"FF"
-
-    print(ih)
-    
+    ihtxt       = ih_valid+ih_room+ih_region+ih_order+ih_priority+ih_lv+ih_cast+ih_sr+ \
+        ih_ccmtype+ih_unit+ih_sthr+ih_stmn+ih_edhr+ih_edmn+ih_inmn+ih_dumn+ \
+        ih_rly_l+ih_rly_h
+    for i in range(3):
+        tp = i*32
+        iht = ihtxt[tp:(tp+32)]
+        sz  = hex(int(len(iht)/2)).replace('0x','').rjust(2,'0')
+        addr  = hex(id*recstep+baseaddr+int(tp/2)).replace('0x','').rjust(4,'0')
+        ih  =":"+sz+addr+"00"+iht+"FF"
+        print(ih)
+    quit()

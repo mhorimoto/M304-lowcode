@@ -1,6 +1,6 @@
 #ifndef _M304_H_
 #define _M304_H_
-#define _M304_H_V  1310
+#define _M304_H_V  1311
 
 #include <avr/pgmspace.h>
 #include <LiquidCrystal.h>
@@ -101,9 +101,10 @@
 #define FIXED_DNS         0x1c
 #define VENDER_NAME       0x40
 #define NODE_NAME         0x50
-#define LC_DBGMSG         0x60  /* bit pos 0x80: Serial out, 0x40: LCD out */
+#define LC_DBGMSG         0x60  /* bit pos 0x80: Serial out, 0x40: LCD out, 0x20: Info Serial out */
 #define   SO_MSG    0x80
 #define   LCD_MSG   0x40
+#define   SO_INFO   0x02
 #define LC_CMODE          0x62  /* Force CMODE Change */
 
 #define LC_SCH_START 0x1000

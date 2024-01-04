@@ -1,7 +1,7 @@
 #include <M304.h>
 
-#if _M304_H_V < 1310
-#pragma message("Library M304 is old. Version 1.3.10 or higher is required.")
+#if _M304_H_V < 1311
+#pragma message("Library M304 is old. Version 1.3.11 or higher is required.")
 #else
 
 #include <avr/wdt.h>
@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.4.6Dc";
+char *pgname = "M304 Ver2.4.9D";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -163,7 +163,6 @@ void setup(void) {
   configure_wdt();
   msgRun1st();
   wdt_reset();
-  debugMsgOutput(1,0); // st_m display
   for(w=0;w<8;w++) {
     rlyttl[w] = 0;
   }
@@ -181,29 +180,30 @@ void setup(void) {
       //	lcdd.LineWrite(0,3);
     }
   }
-
+  w = atmem.read(LC_DBGMSG);
+  debugMsgOutput(1,w); // NET
   // 2.3.5D Read fast lookup buffer for CCM table
   for (j=0;j<CCM_TBL_CNT_RX;j++) {
     a = LC_SCH_START+(j*LC_SCH_REC_SIZE);
     copyFromLC_uecsM304(&flb_rx_ccm[j],a);
   }
-  debugMsgOutput(2,0); // rx_ccm display
+  debugMsgOutput(2,w); // rx_ccm display
   for (j=0;j<CCM_TBL_CNT_TX;j++) {
     a = LC_SEND_START+(j*LC_SEND_REC_SIZE);
     copyFromLC_uecsM304(&flb_tx_ccm[j],a);
   }
-  debugMsgOutput(3,0); // tx_ccm display
+  debugMsgOutput(3,w); // tx_ccm display
   for (j=0;j<CCM_TBL_CNT_CMP;j++) {
     a = LC_CMPOPE_START+(j*LC_CMPOPE_REC_SIZE);
     copyFromLC_uecsM304cmpope(&flb_cmpope[j],a);
   }
-  debugMsgOutput(4,0); // cmpope display
+  debugMsgOutput(4,w); // cmpope display
   
   UDP16520.begin(16520);
   UECS_UDP16529.begin(16529);
   httpd.begin();
   sendUECSpacket(0,"2048"); // setup completed 0x800
-  Serial.begin(115200);
+  //  Serial.begin(115200);
   Serial.println(pgname);
 }
 
@@ -524,7 +524,7 @@ void sendUECSpacket(int id,char *v) {
   extern char *itoaddr(IPAddress);
   char t[256];
   char *xmlDT;
-  bool enable;
+  byte enable;
   byte room,region,priority;
   int  order,x,a,j;
   char ccm_type[20];
@@ -532,7 +532,7 @@ void sendUECSpacket(int id,char *v) {
   for(x=0;x<256;x++) {
     t[x] = (char)NULL;
   }
-  a = LC_SCH_START+(id*0x40);    // CCMTABLE
+  a = LC_SEND_START+(id*LC_SEND_REC_SIZE);    // CCMTABLE
   xmlDT = CCMFMT;
   enable = atmem.read(a+LC_VALID);
   if (enable!=1) {

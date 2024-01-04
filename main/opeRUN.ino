@@ -8,16 +8,16 @@ void opeRUN(int hr,int mn) {
   char t[81],buf[8];
   extern int rlyttl[];
 
-  //  debugSerialOut(hr,mn,"Enter opeRUN()");
+  //  1min interval
   if (mn!=pmn) {
     pmn = mn;
-    for(id=0;id<100;id++) {
+    for(id=0;id<CCM_TBL_CNT_RX;id++) {
       a = LC_SCH_START+(id*LC_SCH_REC_SIZE);
       if (atmem.read(a)!=0xff) {
 	timeDecision(id,hr,mn);
       }
     }
-    for (r=1;r<9;r++) {
+    for (r=1;r<CCM_TBL_CNT_TX;r++) {
       sendUECSpacket(r,itoa(rlyttl[r-1],buf,DEC));
     }
   }

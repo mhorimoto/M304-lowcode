@@ -45,89 +45,116 @@ void debugSerialOut(int a,int b,char *c) {
 }
 
 void debugMsgOutput(int kind,int f=0) {
-  extern uecsM304  flb_rx_ccm[],flb_tx_ccm[];
-  extern uecsM304cmpope flb_cmpope[];
   extern bool debugMsgFlag(int);
-
-  int i;
   
   if (debugMsgFlag(SO_MSG)||f) {
     Serial.begin(115200);
     switch(kind) {
     case 1:  // st_m display
       Serial.println(F("1-NET"));
-      Serial.println(st_m.gw);
-      Serial.println(st_m.ip);
-      Serial.println(st_m.dns);
-      Serial.println(st_m.subnet);
-      Serial.println(st_m.cidr);
-      Serial.println(broadcastIP);
+      _dump_flb(1,f);
       break;
     case 2:  // flb_rx_ccm display
       Serial.println(F("2-RX CCM"));
-      for(i=0;i<CCM_TBL_CNT_RX;i++) {
-        Serial.println(flb_rx_ccm[i].valid);
-        Serial.println(flb_rx_ccm[i].room);
-        Serial.println(flb_rx_ccm[i].region);
-        Serial.println(flb_rx_ccm[i].order);
-        Serial.println(flb_rx_ccm[i].priority);
-        Serial.println(flb_rx_ccm[i].lv);
-        Serial.println(flb_rx_ccm[i].cast);
-        Serial.println(flb_rx_ccm[i].sr);
-        Serial.println(flb_rx_ccm[i].ccm_type);
-        Serial.println(flb_rx_ccm[i].unit);
-        Serial.println(flb_rx_ccm[i].sthr);
-        Serial.println(flb_rx_ccm[i].stmn);
-        Serial.println(flb_rx_ccm[i].edhr);
-        Serial.println(flb_rx_ccm[i].edmn);
-        Serial.println(flb_rx_ccm[i].inmn);
-        Serial.println(flb_rx_ccm[i].dumn);
-        Serial.println(flb_rx_ccm[i].rly_l,HEX);
-        Serial.println(flb_rx_ccm[i].rly_h,HEX);
-      }
+      _dump_flb(2,f);
       break;
     case 3:  // flb_tx_ccm display
       Serial.println(F("3-TX CCM"));
-      for(i=0;i<CCM_TBL_CNT_TX;i++) {
-        Serial.println(flb_tx_ccm[i].valid);
-        Serial.println(flb_tx_ccm[i].room);
-        Serial.println(flb_tx_ccm[i].region);
-        Serial.println(flb_tx_ccm[i].order);
-        Serial.println(flb_tx_ccm[i].priority);
-        Serial.println(flb_tx_ccm[i].lv);
-        Serial.println(flb_tx_ccm[i].cast);
-        Serial.println(flb_tx_ccm[i].sr);
-        Serial.println(flb_tx_ccm[i].ccm_type);
-        Serial.println(flb_tx_ccm[i].unit);
-        Serial.println(flb_tx_ccm[i].sthr);
-        Serial.println(flb_tx_ccm[i].stmn);
-        Serial.println(flb_tx_ccm[i].edhr);
-        Serial.println(flb_tx_ccm[i].edmn);
-        Serial.println(flb_tx_ccm[i].inmn);
-        Serial.println(flb_tx_ccm[i].dumn);
-        Serial.println(flb_tx_ccm[i].rly_l,HEX);
-        Serial.println(flb_tx_ccm[i].rly_h,HEX);
-      }
+      _dump_flb(3,f);
       break;
     case 4:  // flb_cmpope display
       Serial.println(F("4-CMPOPE"));
-      for(i=0;i<CCM_TBL_CNT_CMP;i++) {
-	if ((f==2)&&(flb_cmpope[i].valid==1)) {
-	  Serial.println(flb_cmpope[i].valid);
-	  Serial.println(flb_cmpope[i].room);
-	  Serial.println(flb_cmpope[i].region);
-	  Serial.println(flb_cmpope[i].order);
-	  Serial.println(flb_cmpope[i].priority);
-	  Serial.println(flb_cmpope[i].ccm_type);
-	  Serial.println(flb_cmpope[i].cmpope);
-	  Serial.println(flb_cmpope[i].fval);
-	}
-      }
+      _dump_flb(4,f);
       break;
     }
   }
 }
 
+void _dump_flb(int k, int f) {
+  extern uecsM304  flb_rx_ccm[],flb_tx_ccm[];
+  extern uecsM304cmpope flb_cmpope[];
+  extern bool debugMsgFlag(int);
+  int i,imax;
+  uecsM304 *flb;
+  
+  if (k==2) {
+    flb = &flb_rx_ccm[0];
+    imax = CCM_TBL_CNT_RX;
+  } else if (k==3) {
+    flb = &flb_tx_ccm[0];
+    imax = CCM_TBL_CNT_TX;
+  }
+  switch(k) {
+  case 1:
+    Serial.println(st_m.gw);
+    Serial.println(st_m.ip);
+    Serial.println(st_m.dns);
+    Serial.println(st_m.subnet);
+    Serial.println(st_m.cidr);
+    Serial.println(broadcastIP);
+    break;
+  case 2:
+  case 3:
+    for(i=0;i<imax;i++) {
+      if ((f==2)&&(flb->valid!=1)) continue;
+      //      sprintf(lbftxt,"%d,%d,%d,%d,%d,%d,%d,%c,%s,%s,%d,%d,%d,%d,%d,%d,%02x,%02x",
+      //              flb->valid,flb->room,flb->region,flb->order,flb->priority,flb->lv,
+      //              flb->cast,flb->sr,flb->ccm_type,flb->unit,
+      //              flb->sthr,flb->stmn,flb->edhr,flb->edmn,flb->inmn,flb->dumn,
+      //              flb->rly_l,flb->rly_h);
+      //      Serial.println(lbftxt);
+      Serial.print(flb->valid);
+      Serial.print(F(","));
+      Serial.print(flb->room);
+      Serial.print(F(","));
+      Serial.print(flb->region);
+      Serial.print(F(","));
+      Serial.print(flb->order);
+      Serial.print(F(","));
+      Serial.print(flb->priority);
+      Serial.print(F(","));
+      Serial.print(flb->lv);
+      Serial.print(F(","));
+      Serial.print(flb->cast);
+      Serial.print(F(","));
+      Serial.print((char)flb->sr);
+      Serial.print(F(","));
+      Serial.print(flb->ccm_type);
+      Serial.print(F(","));
+      Serial.print(flb->unit);
+      Serial.print(F(","));
+      Serial.print(flb->sthr);
+      Serial.print(F(","));
+      Serial.print(flb->stmn);
+      Serial.print(F(","));
+      Serial.print(flb->edhr);
+      Serial.print(F(","));
+      Serial.print(flb->edmn);
+      Serial.print(F(","));
+      Serial.print(flb->inmn);
+      Serial.print(F(","));
+      Serial.print(flb->dumn);
+      Serial.print(F(","));
+      Serial.print(flb->rly_l,BIN);
+      Serial.print(F(","));
+      Serial.println(flb->rly_h,BIN);
+      flb++;
+    }
+    break;
+  case 4:
+    for(i=0;i<CCM_TBL_CNT_CMP;i++) {
+      if ((f==2)&&(flb_cmpope[i].valid!=1)) continue;
+      Serial.println(flb_cmpope[i].valid);
+      Serial.println(flb_cmpope[i].room);
+      Serial.println(flb_cmpope[i].region);
+      Serial.println(flb_cmpope[i].order);
+      Serial.println(flb_cmpope[i].priority);
+      Serial.println(flb_cmpope[i].ccm_type);
+      Serial.println(flb_cmpope[i].cmpope);
+      Serial.println(flb_cmpope[i].fval);
+    }
+  }
+}
 
 void floatingtest(float a) {
   union CHARFLOAT crf;
