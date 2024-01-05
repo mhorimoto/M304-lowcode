@@ -3,7 +3,7 @@
 #pragma message("Library M304 is old. Version 1.3.11 or higher is required.")
 #else
 
-char *pgname = "M304 makelc Ver1.04 ";
+char *pgname = "M304 makelc Ver1.00 ";
 char inputbuf[BUFSIZ],*ptr_inputbuf;
 int  cnt;
 
@@ -18,9 +18,9 @@ void setup(void) {
   linebuf[1] = String(pgname);
   lcdd.print(linebuf[1]);
   lcdd.setCursor(0,1);
-  lcdd.print("Open SERIAL");
+  lcdd.print(F("Open SERIAL"));
   lcdd.setCursor(0,2);
-  lcdd.print("115200bps");
+  lcdd.print(F("115200bps"));
   Serial.println(pgname);
   ptr_inputbuf = &inputbuf[0];
   cnt = 0;
@@ -28,9 +28,15 @@ void setup(void) {
 
 
 void loop(void) {
-  char ch;
+  char ch,sc[3];
+  byte r;
+  int  sl,i;
   static bool cr = true;
-
+  extern void listCommand(void);
+  extern void setCommand(char *,int,int);
+  extern void clearpage(char *);
+  extern void help(void);
+  
   if ((cnt==0) && cr) {
     Serial.print(F("$ "));
     cr = false;
@@ -40,85 +46,80 @@ void loop(void) {
     if ((ch=='\r')||(ch=='\n')) {
       cr = true;
       Serial.println();
-    } else {
+    } else if ((ch==(char)0x08)||(ch==(char)0x7f)) {
+      if (cnt>0) {
+	cnt--;
+	Serial.print(ch);
+	Serial.print(" ");
+	Serial.print(ch);
+      }
+    } else if ((ch>=(char)0x20)&&(ch<(char)0x7f)) {
       Serial.print(ch);
       inputbuf[cnt] = ch;
       cnt++;
-      inputbuf[cnt] = (char)NULL;
-      if (cnt>=BUFSIZ) {
-        Serial.println("OV");
-        cnt=0;
-      }
+    }
+    inputbuf[cnt] = (char)NULL;
+    if (cnt>=BUFSIZ) {
+      Serial.println(F("OV"));
+      cnt=0;
     }
   }
+
+  // Command operation
   if (cr) {
     ptr_inputbuf = &inputbuf[0];
     if ( !strncmp(ptr_inputbuf,"list",BUFSIZ-1) ) {
-      Serial.println("LIST COMMAND");
+      Serial.println(F("LIST COMMAND"));
       listCommand();
     }
-    Serial.println("OK");
+    if ( !strncmp(ptr_inputbuf,"setid ",6) ) {
+      ptr_inputbuf += 6;
+      setCommand(ptr_inputbuf,12,LC_UECS_ID);
+    }
+    if ( !strncmp(ptr_inputbuf,"setmac ",7) ) {
+      ptr_inputbuf += 7;
+      setCommand(ptr_inputbuf,12,LC_MAC);
+    }
+    if ( !strncmp(ptr_inputbuf,"setdhcp ",8) ) {
+      ptr_inputbuf += 8;
+      setCommand(ptr_inputbuf,1,FIX_DHCP_FLAG);
+    }
+    if ( !strncmp(ptr_inputbuf,"setip ",6) ) {
+      ptr_inputbuf += 6;
+      setCommand(ptr_inputbuf,15,FIXED_IPADDRESS);
+    }
+    if ( !strncmp(ptr_inputbuf,"setmask ",8) ) {
+      ptr_inputbuf += 8;
+      setCommand(ptr_inputbuf,15,FIXED_NETMASK);
+    }
+    if ( !strncmp(ptr_inputbuf,"setgw ",6) ) {
+      ptr_inputbuf += 6;
+      setCommand(ptr_inputbuf,15,FIXED_DEFGW);
+    }
+    if ( !strncmp(ptr_inputbuf,"setdns ",7) ) {
+      ptr_inputbuf += 7;
+      setCommand(ptr_inputbuf,15,FIXED_DNS);
+    }
+    if ( !strncmp(ptr_inputbuf,"setvender ",10) ) {
+      ptr_inputbuf += 10;
+      setCommand(ptr_inputbuf,16,VENDER_NAME);
+    }
+    if ( !strncmp(ptr_inputbuf,"setnodename ",12) ) {
+      ptr_inputbuf += 12;
+      setCommand(ptr_inputbuf,16,NODE_NAME);
+    }
+    if ( !strncmp(ptr_inputbuf,"clearpage ",10) ) {
+      ptr_inputbuf += 10;
+      clearpage(ptr_inputbuf);
+    }
+    if ( !strncmp(ptr_inputbuf,"help",4)) {
+      help();
+    }
+    Serial.println(F("OK"));
     cnt = 0;
   }
 }
 
 
-
-void listCommand(void) {
-  int i;
-  char lbf[80];
-  char sbf[21];
-  
-  // UECS ID
-  sprintf(lbf,"UECS ID: %02X %02X %02X %02X %02X %02X",
-          atmem.read(LC_UECS_ID),atmem.read(LC_UECS_ID+1),atmem.read(LC_UECS_ID+2),
-          atmem.read(LC_UECS_ID+3),atmem.read(LC_UECS_ID+4),atmem.read(LC_UECS_ID+5));
-  Serial.println(lbf);
-  // MAC Address
-  sprintf(lbf,"MAC ADDR: %02X:%02X:%02X:%02X:%02X:%02X",
-          atmem.read(LC_MAC),atmem.read(LC_MAC+1),atmem.read(LC_MAC+2),
-          atmem.read(LC_MAC+3),atmem.read(LC_MAC+4),atmem.read(LC_MAC+5));
-  Serial.println(lbf);
-  // FIXED or DHCP
-  Serial.print(F("Address allocation method is "));
-  if (atmem.read(FIX_DHCP_FLAG)==0) {
-    Serial.println(F("STATIC."));
-    Serial.println(F("The data below is important."));
-  } else {
-    Serial.println(F("DHCP."));
-    Serial.println(F("The data below are for reference only."));
-  }
-  // IP Address
-  sprintf(lbf,"IP Address/Netmask: %d.%d.%d.%d/%d.%d.%d.%d",
-          atmem.read(FIXED_IPADDRESS),atmem.read(FIXED_IPADDRESS+1),
-          atmem.read(FIXED_IPADDRESS+2),atmem.read(FIXED_IPADDRESS+3),
-          atmem.read(FIXED_NETMASK),atmem.read(FIXED_NETMASK+1),
-          atmem.read(FIXED_NETMASK+2),atmem.read(FIXED_NETMASK+3));
-  Serial.println(lbf);
-  // Default gateway
-  sprintf(lbf,"Default Gateway: %d.%d.%d.%d",
-          atmem.read(FIXED_DEFGW),atmem.read(FIXED_DEFGW+1),
-          atmem.read(FIXED_DEFGW+2),atmem.read(FIXED_DEFGW+3));
-  Serial.println(lbf);
-  // DNS
-  sprintf(lbf,"DNS: %d.%d.%d.%d",
-          atmem.read(FIXED_DNS),atmem.read(FIXED_DNS+1),
-          atmem.read(FIXED_DNS+2),atmem.read(FIXED_DNS+3));
-  Serial.println(lbf);
-  // Vender name
-  for (i=0;i<16;i++) {
-    sbf[i] = atmem.read(VENDER_NAME+i);
-    if (sbf[i]==(char)NULL) break;
-  }
-  sprintf(lbf,"Vender Name: %s",sbf);
-  Serial.println(lbf);
-  // Node name
-  for (i=0;i<16;i++) {
-    sbf[i] = atmem.read(NODE_NAME+i);
-    if (sbf[i]==(char)NULL) break;
-  }
-  sprintf(lbf,"Node Name: %s",sbf);
-  Serial.println(lbf);
-}
 
 #endif

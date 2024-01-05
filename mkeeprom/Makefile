@@ -3,7 +3,7 @@ all:
 
 mklc: mklc/mklc.touch
 
-mklc/mklc.touch: mklc/mklc.ino
+mklc/mklc.touch: mklc/mklc.ino mklc/listCommand.ino mklc/setCommand.ino mklc/clearpage.ino mklc/help.ino
 	arduino-cli compile -b arduino:avr:mega mklc
 	touch mklc/mklc.touch
 
