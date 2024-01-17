@@ -24,25 +24,25 @@ void UECSupdate16520port(void) {
         ptr_uecsxmldata->ip = UDP16520.remoteIP();
       }
       // //      Serial.print("Ver="); 2.3.5D
-      Serial.println(ptr_uecsxmldata->ver);
+      //      Serial.println(ptr_uecsxmldata->ver);
       // //      Serial.print("Type=");
       Serial.println(ptr_uecsxmldata->type);
       // //      Serial.print("TEXTVAL=");
-      Serial.println(ptr_uecsxmldata->textval);
+      //      Serial.println(ptr_uecsxmldata->textval);
       // //      Serial.print("Page=");
-      Serial.println(ptr_uecsxmldata->page);
+      //      Serial.println(ptr_uecsxmldata->page);
       // //      Serial.print("ROOM=");
-      Serial.println(ptr_uecsxmldata->room);
+      //      Serial.println(ptr_uecsxmldata->room);
       // //      Serial.print("  REGION=");
-      Serial.println(ptr_uecsxmldata->region);
+      //      Serial.println(ptr_uecsxmldata->region);
       // //      Serial.print("  ORDER=");
-      Serial.println(ptr_uecsxmldata->order);
+      //      Serial.println(ptr_uecsxmldata->order);
       // //      Serial.print("  PRIORITY=");
-      Serial.println(ptr_uecsxmldata->priority);
+      //      Serial.println(ptr_uecsxmldata->priority);
       // //      Serial.print("FVAL=");
-      Serial.println(ptr_uecsxmldata->fval);
+      //      Serial.println(ptr_uecsxmldata->fval);
       // //      Serial.print("IP=");
-      Serial.println(ptr_uecsxmldata->ip);
+      //      Serial.println(ptr_uecsxmldata->ip);
     } else {
       Serial.println("ERR YXML");
     }

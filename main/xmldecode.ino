@@ -134,18 +134,18 @@ bool xmldecode(char *xml) {
           break;
         case ATTR_ROOM:
           ptr_uecsxmldata->room = (byte)(atoi(aval));
-	  Serial.print(F("room="));
-	  Serial.println(ptr_uecsxmldata->room);
+          //	  Serial.print(F("room="));
+          //	  Serial.println(ptr_uecsxmldata->room);
 	  break;
         case ATTR_REGION:
           ptr_uecsxmldata->region = (byte)(atoi(aval));
-	  Serial.print(F("region="));
-	  Serial.println(ptr_uecsxmldata->region);
+          //	  Serial.print(F("region="));
+          //	  Serial.println(ptr_uecsxmldata->region);
           break;
         case ATTR_ORDER:
           ptr_uecsxmldata->order = (int)(atoi(aval));
-	  Serial.print(F("order="));
-	  Serial.println(ptr_uecsxmldata->order);
+          //	  Serial.print(F("order="));
+          //	  Serial.println(ptr_uecsxmldata->order);
           break;
         case ATTR_PRIORITY:
           ptr_uecsxmldata->priority = (byte)(atoi(aval));
