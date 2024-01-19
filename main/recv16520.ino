@@ -48,9 +48,10 @@ void UECSupdate16520port(void) {
     }
     float rfval = float(ptr_uecsxmldata->fval);
     //    Serial.println(rfval);
-    for (i=0;i<CCM_TBL_CNT_CMP;i++) {
-      match_rro(i); // 2.3.7D
-    }
+    // Ver2.4.aDbg-04 removed
+    // for (i=0;i<CCM_TBL_CNT_CMP;i++) {
+    //      match_rro(i); // 2.3.7D
+    //    }
   }
 }
 

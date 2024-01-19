@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.4.aDbg";
+char *pgname = "M304 Ver2.4.aDbg-04";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -119,6 +119,10 @@ const char *const str_main[] PROGMEM = {
   str_main8, str_main9, str_main10, str_main11, str_main12, str_main13
 };
 
+volatile int period1sec = 0;
+volatile int period10sec = 0;
+volatile int period60sec = 0;
+volatile time_t cepoch,pepoch;
 
 void setup(void) {
   extern int mask2cidr(IPAddress);
@@ -129,6 +133,7 @@ void setup(void) {
   char ccm_type[21],line1[21];
   IPAddress hostip,subnet,gateway,dns;
   float tesfval;
+  tmElements_t tm;
   
   m304Init();
   Serial.begin(115200);
@@ -205,6 +210,21 @@ void setup(void) {
   sendUECSpacket(0,"2048"); // setup completed 0x800
   //  Serial.begin(115200);
   Serial.println(pgname);
+  if (RTC.read(tm)==0) {
+    // "NO RTC PLS SETUP    "
+    strcpy_P(line1,(char *)pgm_read_word(&(str_main[3])));
+    lcdd.setLine(cposp,1,line1);
+    lcdd.LineWrite(cposp,1);
+  }  //
+  // Setup Timer1 Interrupt
+  //
+  TCCR1A  = 0;
+  TCCR1B  = 0;
+  TCCR1B |= (1 << WGM12) | (1 << CS12) | (1 << CS10);  //CTCmode //prescaler to 1024
+  OCR1A   = 15625-1;
+  TIMSK1 |= (1 << OCIE1A);
+
+  cepoch = RTC.get();
 }
 
 
@@ -222,10 +242,12 @@ void loop(void) {
 
   EthernetClient httpClient = httpd.available();
   wdt_reset();
+  //2.4.aDbg-01
   if ( httpClient ) {
     opeHttpd(httpClient);
   }
   UECSupdate16520port() ;
+  // 2.4.aDbg-03
   UECSupdate16529port() ;
   if (digitalRead(SW_SAFE)==0) {
     // "  EEPROM Operation  "
@@ -240,43 +262,45 @@ void loop(void) {
       msgRun1st();
       fsf = false;
     }
-    if (RTC.read(tm)==0) {
-      // "NO RTC PLS SETUP    "
-      strcpy_P(line1,(char *)pgm_read_word(&(str_main[3])));
+    //    if (RTC.read(tm)==0) {
+    //      // "NO RTC PLS SETUP    "
+    //      strcpy_P(line1,(char *)pgm_read_word(&(str_main[3])));
+    //      lcdd.setLine(cposp,1,line1);
+    //      lcdd.LineWrite(cposp,1);
+    //    } else {
+    if (period1sec==1) {
+      period1sec = 0;
+      breakTime(cepoch,tm);
+      prvsec = tm.Second;
+      snprintf(line1,21,"%d/%02d/%02d  %02d:%02d:%02d",	
+               tm.Year+1970,tm.Month,tm.Day,tm.Hour,tm.Minute,tm.Second);
       lcdd.setLine(cposp,1,line1);
       lcdd.LineWrite(cposp,1);
-    } else {
-      if (prvsec!=tm.Second) {
-	prvsec = tm.Second;
-	snprintf(line1,21,"%d/%02d/%02d  %02d:%02d:%02d",	
-	 tm.Year+1970,tm.Month,tm.Day,tm.Hour,tm.Minute,tm.Second);
-	lcdd.setLine(cposp,1,line1);
-	lcdd.LineWrite(cposp,1);
-	opeRUN(tm.Hour,tm.Minute);
-	minsec = 0;
-	for (x=0;x<8;x++) {
-	  if (rlyttl[x]>0) {
-	    if (minsec==0) minsec = rlyttl[x];
-	    if (minsec>rlyttl[x]) {
-	      minsec = rlyttl[x];
-	    }
-	    digitalWrite(RLY1+x,LOW);
-	    rlyttl[x]--;
-	  } else {
-	    digitalWrite(RLY1+x,HIGH);
-	  }
-	}
-	if (minsec>0) {
-	  snprintf(line1,21,"REMAINING=%3d",minsec);
-	} else {
-          strcpy_P(line1,(char *)pgm_read_word(&(str_main[12])));
-	}
-	lcdd.setLine(cposp,3,line1);
-	lcdd.LineWrite(cposp,3);
-        //
-        sendUECSpacket(0,"0");
-        //
+      opeRUN(tm.Hour,tm.Minute);
+      minsec = 0;
+      for (x=0;x<8;x++) {
+        if (rlyttl[x]>0) {
+          if (minsec==0) minsec = rlyttl[x];
+          if (minsec>rlyttl[x]) {
+            minsec = rlyttl[x];
+          }
+          digitalWrite(RLY1+x,LOW);
+          rlyttl[x]--;
+        } else {
+          digitalWrite(RLY1+x,HIGH);
+        }
       }
+      if (minsec>0) {
+        snprintf(line1,21,"REMAINING=%3d",minsec);
+      } else {
+        strcpy_P(line1,(char *)pgm_read_word(&(str_main[12])));
+      }
+      lcdd.setLine(cposp,3,line1);
+      lcdd.LineWrite(cposp,3);
+      //
+      sendUECSpacket(0,"0");
+      // Ver2.4.aDbg-02
+      UECSupdate16520port() ;
     }
     ptr_crosskey = getCrossKey();
     if (ptr_crosskey->longf==true) {
@@ -698,6 +722,23 @@ void configure_wdt(void) {
                                    //  2 seconds: 0b000111
                                    //  4 seconds: 0b100000
                                    //  8 seconds: 0b100001
+}
+
+ISR(TIMER1_COMPA_vect) {
+  static byte cnt10,cnt60;
+  extern time_t cepoch;
+  cnt10++;
+  cnt60++;
+  period1sec = 1;
+  cepoch++;
+  if (cnt10 >= 10) {
+    cnt10 = 0;
+    period10sec = 1;
+  }
+  if (cnt60 >= 60) {
+    cnt60 = 0;
+    period60sec = 1;
+  }
 }
 
 #endif
