@@ -7,8 +7,8 @@ void UECSupdate16520port(void) {
   int packetSize ,i;
   
   packetSize = UDP16520.parsePacket();
-  
-  if (packetSize>10) {
+  // Ver2.4.aDbg-06  packetSize>0
+  if (packetSize>0) {
     UDP16520.read(uecsbuf,LEN_UECSXML_BUFFER-1);
     uecsbuf[packetSize] = NULL;
     // Serial.print("UDP16520 size=");  //2.3.5D
@@ -21,12 +21,13 @@ void UECSupdate16520port(void) {
     // Serial.println(uecsbuf);
     if (xmldecode(&uecsbuf[0])) {
       if (ptr_uecsxmldata->element==ELE_IP) {
-        // Ver2.4.aDbg-05
-        //ptr_uecsxmldata->ip = UDP16520.remoteIP();
+        ptr_uecsxmldata->ip = UDP16520.remoteIP();
       }
       // //      Serial.print("Ver="); 2.3.5D
       //      Serial.println(ptr_uecsxmldata->ver);
       // //      Serial.print("Type=");
+      Serial.print(now());
+      Serial.print("  ");
       Serial.println(ptr_uecsxmldata->type);
       // //      Serial.print("TEXTVAL=");
       //      Serial.println(ptr_uecsxmldata->textval);
