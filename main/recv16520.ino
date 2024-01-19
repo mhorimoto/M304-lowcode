@@ -21,7 +21,8 @@ void UECSupdate16520port(void) {
     // Serial.println(uecsbuf);
     if (xmldecode(&uecsbuf[0])) {
       if (ptr_uecsxmldata->element==ELE_IP) {
-        ptr_uecsxmldata->ip = UDP16520.remoteIP();
+        // Ver2.4.aDbg-05
+        //ptr_uecsxmldata->ip = UDP16520.remoteIP();
       }
       // //      Serial.print("Ver="); 2.3.5D
       //      Serial.println(ptr_uecsxmldata->ver);
@@ -49,9 +50,9 @@ void UECSupdate16520port(void) {
     float rfval = float(ptr_uecsxmldata->fval);
     //    Serial.println(rfval);
     // Ver2.4.aDbg-04 removed
-    // for (i=0;i<CCM_TBL_CNT_CMP;i++) {
-    //      match_rro(i); // 2.3.7D
-    //    }
+    for (i=0;i<CCM_TBL_CNT_CMP;i++) {
+      match_rro(i);
+    }
   }
 }
 

@@ -12,3 +12,5 @@ cat rx.log.L30 rx.log.L30 | ./uecsresender
            ＝＝＝変わらず。ロスあり。 42/60
 2024/01/19 Ver2.4.aDbg-04 recv16520.ino内のmatch_rro()を通過しないようにした。
            ＝＝＝変わらず。ロスあり。 42/60
+2024/01/19 Ver2.4.aDbg-05 recv16520.ino内の24行目ptr_uecsxmldata->ip = UDP16520.remoteIP();を通過しないようにした。
+           ＝＝＝変わらず。ロスあり。 42/60
