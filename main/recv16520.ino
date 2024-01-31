@@ -18,8 +18,7 @@ void UECSupdate16520port(void) {
     // Serial.print("REMOTE PORT=");
     // Serial.println(UDP16520.remotePort());
     // Serial.print("TEXT=");
-    Serial.println(uecsbuf); // Ver2.4.aDbg-08
-    return; // Ver2.4.aDbg-08
+    //    Serial.println(uecsbuf);
     if (xmldecode(&uecsbuf[0])) {
       if (ptr_uecsxmldata->element==ELE_IP) {
         ptr_uecsxmldata->ip = UDP16520.remoteIP();

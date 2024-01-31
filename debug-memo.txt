@@ -20,3 +20,5 @@ cat rx.log.L30 rx.log.L30 | ./uecsresender
            ＝＝＝42レコード変わらず。ロスあり。 43/120
 2024/01/29 Ver2.4.aDbg-08 recv16520.ino内でxmldecode()を通過しないようにした。
            ＝＝＝変わらず。ロスあり。 42/60
+2024/01/31 Ver2.4.aDbg-09 main.ino内でlcdd(LCD出力)をバイパスした。
+           ＝＝＝変わらず。ロスあり。 42/60
