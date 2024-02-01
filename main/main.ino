@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.4.aDbg-09";
+char *pgname = "M304 Ver2.4.aDbg-10";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -274,8 +274,8 @@ void loop(void) {
       prvsec = tm.Second;
       snprintf(line1,21,"%d/%02d/%02d  %02d:%02d:%02d",	
                tm.Year+1970,tm.Month,tm.Day,tm.Hour,tm.Minute,tm.Second);
-      // Ver2.4.aDbg-09      lcdd.setLine(cposp,1,line1);
-      // Ver2.4.aDbg-09      lcdd.LineWrite(cposp,1);
+      lcdd.setLine(cposp,1,line1);
+      lcdd.LineWrite(cposp,1);
       opeRUN(tm.Hour,tm.Minute);
       minsec = 0;
       for (x=0;x<8;x++) {
@@ -295,8 +295,8 @@ void loop(void) {
       } else {
         strcpy_P(line1,(char *)pgm_read_word(&(str_main[12])));
       }
-      // Ver2.4.aDbg-09     lcdd.setLine(cposp,3,line1);
-      // Ver2.4.aDbg-09     lcdd.LineWrite(cposp,3);
+      lcdd.setLine(cposp,3,line1);
+      lcdd.LineWrite(cposp,3);
       //
       sendUECSpacket(0,"0");
       // Ver2.4.aDbg-02
@@ -371,7 +371,7 @@ void loop(void) {
         cmode = EEPROMCMND;
         break;
       default:
-	// Ver2.4.aDbg-09  lcdd.clear();
+	lcdd.clear();
 	cmode = CMND;
 	break;
       }
@@ -395,7 +395,7 @@ void loop(void) {
       break;
     }
     if (cf) {
-      // Ver2.4.aDbg-09      lcdd.LineWrite(0,1);
+      lcdd.LineWrite(0,1);
       cf = false;
     }
     break;

@@ -1,0 +1,277 @@
+opeRUN mn=54  pmn=54
+opeRUN mn=54  pmn=54
+opeRUN mn=54  pmn=54
+opeRUN mn=54  pmn=54
+opeRUN mn=54  pmn=54
+opeRUN mn=54  pmn=54
+opeRUN mn=54  pmn=54
+opeRUN mn=54  pmn=54
+opeRUN mn=54  pmn=54
+opeRUN mn=54  pmn=54
+opeRUN mn=54  pmn=54
+opeRUN mn=54  pmn=54
+opeRUN mn=54  pmn=54
+opeRUN mn=54  pmn=54
+opeRUN mn=55  pmn=54
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55
+45  cnd.mMC
+E match_rro(0) valid=1
+D 0
+45  cnd.mICcnd.mIC
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+MATCH ORDER
+D 0
+45  cnd.mMC
+E match_rro(0) valid=1
+D 0
+45  cnd.mNB
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+D 0
+45  cnd.mMC
+E match_rro(0) valid=1
+D 0
+45  cnd.mMC
+E match_rro(0) valid=1
+MATCH ROOM
+D 0
+45  cnd.mMC
+E match_rro(0) valid=1
+D 0
+45  cnd.mICcnd.mIC
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+MATCH ORDER
+D 0
+45  cnd.mMC
+E match_rro(0) valid=1
+D 0
+45  cnd.mMC
+E match_rro(0) valid=1
+D 0
+45  cnd.mMC
+E match_rro(0) valid=1
+MATCH ROOM
+D 0
+45  cnd.mNB
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+D 0
+opeRUN mn=55  pmn=55
+46  cnd.mMC
+E match_rro(0) valid=1
+D 0
+46  cnd.mICcnd.mIC
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+MATCH ORDER
+D 0
+46  cnd.mMC
+E match_rro(0) valid=1
+D 0
+46  cnd.mMC
+E match_rro(0) valid=1
+D 0
+46  cnd.mMC
+E match_rro(0) valid=1
+MATCH ROOM
+D 0
+opeRUN mn=55  pmn=55
+47  cnd.mNB
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+D 0
+47  cnd.mMC
+E match_rro(0) valid=1
+D 0
+47  cnd.mICcnd.mIC
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+MATCH ORDER
+D 0
+47  cnd.mMC
+E match_rro(0) valid=1
+D 0
+47  cnd.mMC
+E match_rro(0) valid=1
+D 0
+47  cnd.mMC
+E match_rro(0) valid=1
+MATCH ROOM
+D 0
+opeRUN mn=55  pmn=55
+48  cnd.mMC
+E match_rro(0) valid=1
+D 0
+48  cnd.mNB
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+D 0
+48  cnd.mICcnd.mIC
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+MATCH ORDER
+D 0
+48  cnd.mMC
+E match_rro(0) valid=1
+D 0
+48  cnd.mMC
+E match_rro(0) valid=1
+D 0
+48  cnd.mMC
+E match_rro(0) valid=1
+MATCH ROOM
+D 0
+opeRUN mn=55  pmn=55
+49  InAirTemp
+E match_rro(0) valid=1
+D 0
+49  cnd.mMC
+E match_rro(0) valid=1
+D 0
+49  cnd.mICcnd.mIC
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+MATCH ORDER
+D 0
+49  cnd.mMC
+E match_rro(0) valid=1
+D 0
+49  cnd.mNB
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+D 0
+49  cnd.mMC
+E match_rro(0) valid=1
+D 0
+49  cnd.mMC
+E match_rro(0) valid=1
+MATCH ROOM
+D 0
+opeRUN mn=55  pmn=55
+50  cnd.mMC
+E match_rro(0) valid=1
+D 0
+50  cnd.mICcnd.mIC
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+MATCH ORDER
+D 0
+50  cnd.mMC
+E match_rro(0) valid=1
+D 0
+50  cnd.mMC
+E match_rro(0) valid=1
+D 0
+50  cnd.mMC
+E match_rro(0) valid=1
+MATCH ROOM
+D 0
+50  cnd.mNB
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+D 0
+opeRUN mn=55  pmn=55
+51  cnd.mMC
+E match_rro(0) valid=1
+D 0
+51  cnd.mICcnd.mIC
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+MATCH ORDER
+D 0
+51  cnd.mMC
+E match_rro(0) valid=1
+D 0
+51  cnd.mMC
+E match_rro(0) valid=1
+D 0
+51  cnd.mMC
+E match_rro(0) valid=1
+MATCH ROOM
+D 0
+opeRUN mn=55  pmn=55
+52  cnd.mNB
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+D 0
+52  cnd.mMC
+E match_rro(0) valid=1
+D 0
+52  cnd.mICcnd.mIC
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+MATCH ORDER
+D 0
+52  cnd.mMC
+E match_rro(0) valid=1
+D 0
+52  cnd.mMC
+E match_rro(0) valid=1
+D 0
+52  cnd.mMC
+E match_rro(0) valid=1
+MATCH ROOM
+D 0
+opeRUN mn=55  pmn=55
+53  cnd.mMC
+E match_rro(0) valid=1
+D 0
+53  cnd.mNB
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+D 0
+53  cnd.mICcnd.mIC
+E match_rro(0) valid=1
+MATCH ROOM
+MATCH REGION
+MATCH ORDER
+D 0
+53  cnd.mMC
+E match_rro(0) valid=1
+D 0
+53  cnd.mMC
+E match_rro(0) valid=1
+D 0
+53  cnd.mMC
+E match_rro(0) valid=1
+MATCH ROOM
+D 0
+opeRUN mn=55  pmn=55
+54  InAirTemp
+E match_rro(0) valid=1
+D 0
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55
+opeRUN mn=55  pmn=55

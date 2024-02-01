@@ -8,6 +8,10 @@ void opeRUN(int hr,int mn) {
   char t[81],buf[8];
   extern int rlyttl[];
 
+  Serial.print("opeRUN mn=");
+  Serial.print(mn);
+  Serial.print("  pmn=");
+  Serial.println(pmn);
   //  1min interval
   if (mn!=pmn) {
     pmn = mn;
