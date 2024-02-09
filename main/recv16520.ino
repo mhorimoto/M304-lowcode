@@ -28,7 +28,7 @@ void UECSupdate16520port(void) {
       // //      Serial.print("Type=");
       Serial.print(now());
       Serial.print("  ");
-      Serial.println(ptr_uecsxmldata->type);
+      Serial.print(ptr_uecsxmldata->type);
       // //      Serial.print("TEXTVAL=");
       //      Serial.println(ptr_uecsxmldata->textval);
       // //      Serial.print("Page=");
@@ -54,6 +54,7 @@ void UECSupdate16520port(void) {
     for (i=0;i<CCM_TBL_CNT_CMP;i++) {
       match_rro(i);
     }
+    Serial.println();
   }
 }
 
@@ -72,21 +73,21 @@ void match_rro(int id) {
   float rfval;
   // 2.3.7DBG
   if (flb_cmpope[id].valid!=0xff) {
-    sprintf(lbf,"E match_rro(%d) valid=%d",id,flb_cmpope[id].valid);
-    Serial.println(lbf);
+    sprintf(lbf," E match_rro(%d) valid=%d  ",id,flb_cmpope[id].valid);
+    Serial.print(lbf);
     if (flb_cmpope[id].valid==1) {
       // ROOM
       if ((ptr_uecsxmldata->room==0)||(ptr_uecsxmldata->room==flb_cmpope[id].room)) {
-	Serial.println(F("MATCH ROOM"));
+	Serial.print(F("MATCH ROOM  "));
 	// REGION
 	if ((ptr_uecsxmldata->region==0)||(ptr_uecsxmldata->region==flb_cmpope[id].region)) {
-	  Serial.println(F("MATCH REGION"));
+	  Serial.print(F("MATCH REGION  "));
 	  // ORDER
 	  if ((ptr_uecsxmldata->order==0)||(ptr_uecsxmldata->order==flb_cmpope[id].order)) {
-	    Serial.println(F("MATCH ORDER"));
+	    Serial.print(F("MATCH ORDER  "));
 	    // CCM type
 	    if (!strncmp(ptr_uecsxmldata->type,flb_cmpope[id].ccm_type,19)) {
-	      Serial.println(F("MATCH CCM"));
+	      Serial.print(F("MATCH CCM  "));
 	      rfval = float(ptr_uecsxmldata->fval);
 	      Serial.println(rfval);
 	      cmpope_result[id] = 0;   // Preset false
@@ -112,7 +113,7 @@ void match_rro(int id) {
 	}
       }
       sprintf(lbf,"D %d",cmpope_result[id]);
-      Serial.println(lbf);
+      Serial.print(lbf);
     } else {
       //    Serial.println(F("NO MATCH "));
       ;    
