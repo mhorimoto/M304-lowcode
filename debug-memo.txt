@@ -24,3 +24,5 @@ cat rx.log.L30 rx.log.L30 | ./uecsresender
            ＝＝＝変わらず。ロスあり。 42/60
 2024/02/01 Ver2.4.aDbg-10 入力データに問題があることが判明。時刻情報の重複を削除し繰り返す。
 2024/02/07 Ver2.4.aDbg-11 uecsresenderに送信後10mSecのdelayを設ける。これで一旦の解決を見る。
+2024/02/09 develにmergeしてバージョンは 2.5.0D に変更。
+
