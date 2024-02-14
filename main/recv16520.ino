@@ -89,7 +89,7 @@ void match_rro(int id) {
 	    if (!strncmp(ptr_uecsxmldata->type,flb_cmpope[id].ccm_type,19)) {
 	      Serial.print(F("MATCH CCM  "));
 	      rfval = float(ptr_uecsxmldata->fval);
-	      Serial.println(rfval);
+	      Serial.print(rfval);
 	      cmpope_result[id] = 0;   // Preset false
 	      switch(flb_cmpope[id].cmpope) {
 	      case R_EQ: // ==
