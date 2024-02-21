@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.5.0D";
+char *pgname = "M304 Ver2.5.1D";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -122,6 +122,7 @@ const char *const str_main[] PROGMEM = {
 volatile int period1sec = 0;
 volatile int period10sec = 0;
 volatile int period60sec = 0;
+volatile int period1hour = 0;
 volatile time_t cepoch,pepoch;
 
 void setup(void) {
@@ -223,7 +224,7 @@ void setup(void) {
   TCCR1B |= (1 << WGM12) | (1 << CS12) | (1 << CS10);  //CTCmode //prescaler to 1024
   OCR1A   = 15625-1;
   TIMSK1 |= (1 << OCIE1A);
-
+  pepoch = 0;
   cepoch = RTC.get();
 }
 
@@ -308,6 +309,10 @@ void loop(void) {
       ptr_crosskey->kpos=0;
       cmode=CMND;
       fsf = true;
+    }
+    if (period1hour==1) {
+      period1hour = 0;
+      cepoch = RTC.get();
     }
     wdt_reset();
     break;
@@ -725,12 +730,14 @@ void configure_wdt(void) {
 }
 
 ISR(TIMER1_COMPA_vect) {
-  static byte cnt10,cnt60;
-  extern time_t cepoch;
+  static byte cnt10=0,cnt60=0,cnt1h=0;
+  extern time_t cepoch,pepoch;
   cnt10++;
   cnt60++;
+  cnt1h++;
   period1sec = 1;
   cepoch++;
+  pepoch++;
   if (cnt10 >= 10) {
     cnt10 = 0;
     period10sec = 1;
@@ -739,6 +746,11 @@ ISR(TIMER1_COMPA_vect) {
     cnt60 = 0;
     period60sec = 1;
   }
+  if (cnt1h >= 3600) {
+    cnt1h = 0;
+    period1hour = 1;
+  }
+  
 }
 
 #endif
