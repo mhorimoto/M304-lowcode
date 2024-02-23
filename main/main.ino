@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.5.1Dbg01";
+char *pgname = "M304 Ver2.5.1Dbg03";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -216,17 +216,20 @@ void setup(void) {
     strcpy_P(line1,(char *)pgm_read_word(&(str_main[3])));
     lcdd.setLine(cposp,1,line1);
     lcdd.LineWrite(cposp,1);
-  }  //
+  }
+  pepoch = 0;
+  cepoch = RTC.get();
+  pinMode(7,OUTPUT);
+  //
   // Setup Timer1 Interrupt
   //
   TCCR1A  = 0;
   TCCR1B  = 0;
-  TCCR1B |= (1 << WGM12) | (1 << CS12) | (1 << CS10);  //CTCmode //prescaler to 1024
-  OCR1A   = 15625-1;
+  //  TCCR1B |= (1 << WGM12) | (1 << CS12) | (1 << CS10);  //CTCmode //prescaler to 1024
+  //  OCR1A   = 15625-1;
+  TCNT1 = 3036;
+  TCCR1B |= (1 << CS12); // CS12 -> 1 prescaler = 256
   TIMSK1 |= (1 << OCIE1A);
-  pepoch = 0;
-  cepoch = RTC.get();
-  pinMode(7,OUTPUT);
 }
 
 
@@ -314,6 +317,8 @@ void loop(void) {
     if (period1hour==1) {
       period1hour = 0;
       cepoch = RTC.get();
+      Serial.print("1hour  ");
+      Serial.println(cepoch);
     }
     wdt_reset();
     break;
@@ -743,16 +748,20 @@ ISR(TIMER1_COMPA_vect) {
   if (cnt10 >= 10) {
     cnt10 = 0;
     period10sec = 1;
+    Serial.print(F("10sec  "));
+    Serial.println(millis());
   }
   if (cnt60 >= 60) {
     cnt60 = 0;
     period60sec = 1;
+    Serial.print(F("60sec  "));
+    Serial.println(millis());
   }
   if (cnt1h >= 3600) {
     cnt1h = 0;
     period1hour = 1;
   }
-  
+  TCNT1 = 3036;
 }
 
 #endif

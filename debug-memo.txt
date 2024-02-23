@@ -1,6 +1,3 @@
-時刻表示が大幅に遅れる
-2024/02/22 Ver2.5.1D 1時間に一度RTC.read()で時刻を合わせる。
-
 rx.log.L30という実測データ30行を繰り返し送信することで30行単位で増減している。
 cat rx.log.L30 rx.log.L30 | ./uecsresender
 として送信している。すべて同じ欠損データ
@@ -28,4 +25,11 @@ cat rx.log.L30 rx.log.L30 | ./uecsresender
 2024/02/01 Ver2.4.aDbg-10 入力データに問題があることが判明。時刻情報の重複を削除し繰り返す。
 2024/02/07 Ver2.4.aDbg-11 uecsresenderに送信後10mSecのdelayを設ける。これで一旦の解決を見る。
 2024/02/09 develにmergeしてバージョンは 2.5.0D に変更。
+
+時刻表示が大幅に遅れる
+2024/02/22 Ver2.5.1D 1時間に一度RTC.get()で時刻を合わせる。
+2024/02/23 Ver2.5.1Dbg01  timer1割り込みの試験を行う
+2024/02/24 Ver2.5.1Dbg02  timer1をNormal modeで使用してprescaler 256でTCNT1=3036で1secを作る
+2024/02/24 Ver2.5.1Dbg03  period10secなどを表示してmillis()との差を確認する。1時間毎のRTC.get()の反映具合を確認。
+
 
