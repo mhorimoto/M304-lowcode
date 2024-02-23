@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.5.1D";
+char *pgname = "M304 Ver2.5.1Dbg01";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -226,6 +226,7 @@ void setup(void) {
   TIMSK1 |= (1 << OCIE1A);
   pepoch = 0;
   cepoch = RTC.get();
+  pinMode(7,OUTPUT);
 }
 
 
@@ -735,6 +736,7 @@ ISR(TIMER1_COMPA_vect) {
   cnt10++;
   cnt60++;
   cnt1h++;
+  digitalWrite(7,cnt1h&1);
   period1sec = 1;
   cepoch++;
   pepoch++;
