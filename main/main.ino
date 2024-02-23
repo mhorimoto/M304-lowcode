@@ -46,6 +46,8 @@ char *pgname = "M304 Ver2.5.1Dbg03";
 #define CCM_TBL_CNT_TX  10
 #define CCM_TBL_CNT_CMP 10
 
+#define TCNT1_1SEC      3036   // TNCT1 value for 1sec
+
 char uecsbuf[LEN_UECSXML_BUFFER+1];
 const char xmlhead[] PROGMEM = "<?xml version=\"1.0\"?><UECS ver=\"1.00-E10\">$";
 const char res_xmlnode1[] PROGMEM = "<NODE><NAME>$";
@@ -227,7 +229,7 @@ void setup(void) {
   TCCR1B  = 0;
   //  TCCR1B |= (1 << WGM12) | (1 << CS12) | (1 << CS10);  //CTCmode //prescaler to 1024
   //  OCR1A   = 15625-1;
-  TCNT1 = 3036;
+  TCNT1 = TCNT1_1SEC ;
   TCCR1B |= (1 << CS12); // CS12 -> 1 prescaler = 256
   TIMSK1 |= (1 << OCIE1A);
 }
@@ -761,7 +763,7 @@ ISR(TIMER1_COMPA_vect) {
     cnt1h = 0;
     period1hour = 1;
   }
-  TCNT1 = 3036;
+  TCNT1 = TCNT1_1SEC;
 }
 
 #endif
