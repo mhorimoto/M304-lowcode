@@ -31,5 +31,4 @@ cat rx.log.L30 rx.log.L30 | ./uecsresender
 2024/02/23 Ver2.5.1Dbg01  timer1割り込みの試験を行う
 2024/02/24 Ver2.5.1Dbg02  timer1をNormal modeで使用してprescaler 256でTCNT1=3036で1secを作る
 2024/02/24 Ver2.5.1Dbg03  period10secなどを表示してmillis()との差を確認する。1時間毎のRTC.get()の反映具合を確認。
-
-
+2024/02/24 Ver2.5.1Dbg04  TCNT1を3036から3473に変更して1秒毎7msecの遅れを吸収する。

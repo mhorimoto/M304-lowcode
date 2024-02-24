@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.5.1Dbg03";
+char *pgname = "M304 Ver2.5.1Dbg04";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -46,7 +46,7 @@ char *pgname = "M304 Ver2.5.1Dbg03";
 #define CCM_TBL_CNT_TX  10
 #define CCM_TBL_CNT_CMP 10
 
-#define TCNT1_1SEC      3036   // TNCT1 value for 1sec
+#define TCNT1_1SEC      3473   // TNCT1 value for 0.993sec
 
 char uecsbuf[LEN_UECSXML_BUFFER+1];
 const char xmlhead[] PROGMEM = "<?xml version=\"1.0\"?><UECS ver=\"1.00-E10\">$";
