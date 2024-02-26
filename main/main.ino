@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.5.1Dbg04";
+char *pgname = "M304 Ver2.5.2D";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -227,8 +227,6 @@ void setup(void) {
   //
   TCCR1A  = 0;
   TCCR1B  = 0;
-  //  TCCR1B |= (1 << WGM12) | (1 << CS12) | (1 << CS10);  //CTCmode //prescaler to 1024
-  //  OCR1A   = 15625-1;
   TCNT1 = TCNT1_1SEC ;
   TCCR1B |= (1 << CS12); // CS12 -> 1 prescaler = 256
   TIMSK1 |= (1 << OCIE1A);
@@ -249,12 +247,10 @@ void loop(void) {
 
   EthernetClient httpClient = httpd.available();
   wdt_reset();
-  //2.4.aDbg-01
   if ( httpClient ) {
     opeHttpd(httpClient);
   }
   UECSupdate16520port() ;
-  // 2.4.aDbg-03
   UECSupdate16529port() ;
   if (digitalRead(SW_SAFE)==0) {
     // "  EEPROM Operation  "

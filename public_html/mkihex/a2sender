@@ -1,0 +1,38 @@
+#! /usr/bin/env php
+
+<?php
+
+if (!empty($argv[1])) {
+    $url=$argv[1];
+
+    $f = fopen($url,"r");
+    if ($f) {
+        while (($buffer = fgets($f, 4096)) !== false) {
+            if (substr($buffer,6,1)==':') {
+                echo rtrim($buffer);
+                echo "  ";
+                for ($x=8;$x<54;$x+=3) {
+                    $y = hexdec(substr($buffer,$x,3));
+                    if (($y<0x20)||($y>0x7f)) {
+                        echo ".";
+                    } else {
+                        echo chr($y);
+                    }
+                }                    
+                echo "\n";
+            } else {
+                echo $buffer;
+            }
+        }
+        if (!feof($f)) {
+            echo "Error: unexpected fgets() fail\n";
+        }
+        fclose($f);
+    }
+} else {
+    echo "You need argument.";
+}
+
+# -*- mode: phps-mode; -*-
+?>
+
