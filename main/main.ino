@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.5.2D";
+char *pgname = "M304 Ver2.5.2D1";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -562,7 +562,7 @@ void sendUECSpacket(int id,char *v) {
   int  order,x,a,j;
   byte roomf,regionf,priorityf;
   int  orderf;
-  char ccm_type[20];
+  char ccm_type[20],ccm_typef[20];
   byte ordh,ordl;
   for(x=0;x<256;x++) {
     t[x] = (char)NULL;
@@ -574,12 +574,15 @@ void sendUECSpacket(int id,char *v) {
     return;
   }
   // 2.5.2D TESTING ***
-  roomf = flb_tx_ccm[a].room;
-  regionf = flb_tx_ccm[a].region;
-  orderf = flb_tx_ccm[a].order;
-  priorityf = flb_tx_ccm[a].priority;
-  sprintf(lbf,"FLB %d %d %d %d\n",roomf,regionf,orderf,priorityf);
-  Serial.print.print(lbf);
+  roomf = flb_tx_ccm[id].room;
+  regionf = flb_tx_ccm[id].region;
+  orderf = flb_tx_ccm[id].order;
+  priorityf = flb_tx_ccm[id].priority;
+  for (j=0;j<20;j++) {
+    ccm_typef[j] = flb_tx_ccm[id].ccm_type[j];
+  }
+  sprintf(lbf,"FLB[%d] %d %d %d %d %s",id,roomf,regionf,orderf,priorityf,ccm_typef);
+  Serial.println(lbf);
   // 2.5.2D TESTING ***
   room = atmem.read(a+LC_ROOM);
   region = atmem.read(a+LC_REGION);
@@ -587,11 +590,11 @@ void sendUECSpacket(int id,char *v) {
   ordh = atmem.read(a+LC_ORDER+1);
   order = (ordh<<8)+ordl;
   priority = atmem.read(a+LC_PRIORITY);
-  sprintf(lbf,"ROM %d %d %d %d\n",room,region,order,priority);
-  Serial.print.print(lbf);
   for (j=0;j<20;j++) {
     ccm_type[j] = atmem.read(a+LC_CCMTYPE+j);
   }
+  sprintf(lbf,"ROM[%04x] %d %d %d %d %s",a,room,region,order,priority,ccm_type);
+  Serial.println(lbf);
   sprintf(t,xmlDT,ccm_type,room,region,
           order,priority,v,itoaddr(st_m.ip));
   
