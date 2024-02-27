@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.4.aDbg-11";
+char *pgname = "M304 Ver2.5.1Dbg04";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -45,6 +45,8 @@ char *pgname = "M304 Ver2.4.aDbg-11";
 #define CCM_TBL_CNT_RX  30
 #define CCM_TBL_CNT_TX  10
 #define CCM_TBL_CNT_CMP 10
+
+#define TCNT1_1SEC      3473   // TNCT1 value for 0.993sec
 
 char uecsbuf[LEN_UECSXML_BUFFER+1];
 const char xmlhead[] PROGMEM = "<?xml version=\"1.0\"?><UECS ver=\"1.00-E10\">$";
@@ -122,6 +124,7 @@ const char *const str_main[] PROGMEM = {
 volatile int period1sec = 0;
 volatile int period10sec = 0;
 volatile int period60sec = 0;
+volatile int period1hour = 0;
 volatile time_t cepoch,pepoch;
 
 void setup(void) {
@@ -215,16 +218,20 @@ void setup(void) {
     strcpy_P(line1,(char *)pgm_read_word(&(str_main[3])));
     lcdd.setLine(cposp,1,line1);
     lcdd.LineWrite(cposp,1);
-  }  //
+  }
+  pepoch = 0;
+  cepoch = RTC.get();
+  pinMode(7,OUTPUT);
+  //
   // Setup Timer1 Interrupt
   //
   TCCR1A  = 0;
   TCCR1B  = 0;
-  TCCR1B |= (1 << WGM12) | (1 << CS12) | (1 << CS10);  //CTCmode //prescaler to 1024
-  OCR1A   = 15625-1;
+  //  TCCR1B |= (1 << WGM12) | (1 << CS12) | (1 << CS10);  //CTCmode //prescaler to 1024
+  //  OCR1A   = 15625-1;
+  TCNT1 = TCNT1_1SEC ;
+  TCCR1B |= (1 << CS12); // CS12 -> 1 prescaler = 256
   TIMSK1 |= (1 << OCIE1A);
-
-  cepoch = RTC.get();
 }
 
 
@@ -308,6 +315,12 @@ void loop(void) {
       ptr_crosskey->kpos=0;
       cmode=CMND;
       fsf = true;
+    }
+    if (period1hour==1) {
+      period1hour = 0;
+      cepoch = RTC.get();
+      Serial.print("1hour  ");
+      Serial.println(cepoch);
     }
     wdt_reset();
     break;
@@ -725,20 +738,32 @@ void configure_wdt(void) {
 }
 
 ISR(TIMER1_COMPA_vect) {
-  static byte cnt10,cnt60;
-  extern time_t cepoch;
+  static byte cnt10=0,cnt60=0,cnt1h=0;
+  extern time_t cepoch,pepoch;
   cnt10++;
   cnt60++;
+  cnt1h++;
+  digitalWrite(7,cnt1h&1);
   period1sec = 1;
   cepoch++;
+  pepoch++;
   if (cnt10 >= 10) {
     cnt10 = 0;
     period10sec = 1;
+    Serial.print(F("10sec  "));
+    Serial.println(millis());
   }
   if (cnt60 >= 60) {
     cnt60 = 0;
     period60sec = 1;
+    Serial.print(F("60sec  "));
+    Serial.println(millis());
   }
+  if (cnt1h >= 3600) {
+    cnt1h = 0;
+    period1hour = 1;
+  }
+  TCNT1 = TCNT1_1SEC;
 }
 
 #endif
