@@ -560,6 +560,8 @@ void sendUECSpacket(int id,char *v) {
   byte enable;
   byte room,region,priority;
   int  order,x,a,j;
+  byte roomf,regionf,priorityf;
+  int  orderf;
   char ccm_type[20];
   byte ordh,ordl;
   for(x=0;x<256;x++) {
@@ -571,12 +573,22 @@ void sendUECSpacket(int id,char *v) {
   if (enable!=1) {
     return;
   }
+  // 2.5.2D TESTING ***
+  roomf = flb_tx_ccm[a].room;
+  regionf = flb_tx_ccm[a].region;
+  orderf = flb_tx_ccm[a].order;
+  priorityf = flb_tx_ccm[a].priority;
+  sprintf(lbf,"FLB %d %d %d %d\n",roomf,regionf,orderf,priorityf);
+  Serial.print.print(lbf);
+  // 2.5.2D TESTING ***
   room = atmem.read(a+LC_ROOM);
   region = atmem.read(a+LC_REGION);
   ordl = atmem.read(a+LC_ORDER);
   ordh = atmem.read(a+LC_ORDER+1);
   order = (ordh<<8)+ordl;
   priority = atmem.read(a+LC_PRIORITY);
+  sprintf(lbf,"ROM %d %d %d %d\n",room,region,order,priority);
+  Serial.print.print(lbf);
   for (j=0;j<20;j++) {
     ccm_type[j] = atmem.read(a+LC_CCMTYPE+j);
   }
