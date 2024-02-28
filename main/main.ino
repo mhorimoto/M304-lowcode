@@ -569,7 +569,8 @@ void sendUECSpacket(int id,char *v) {
   }
   a = LC_SEND_START+(id*LC_SEND_REC_SIZE);    // CCMTABLE
   xmlDT = CCMFMT;
-  enable = atmem.read(a+LC_VALID);
+  //  enable = atmem.read(a+LC_VALID);
+  enable = flb_tx_ccm[id].valid;
   if (enable!=1) {
     return;
   }
@@ -584,17 +585,17 @@ void sendUECSpacket(int id,char *v) {
   sprintf(lbf,"FLB[%d] %d %d %d %d %s",id,roomf,regionf,orderf,priorityf,ccm_typef);
   Serial.println(lbf);
   // 2.5.2D TESTING ***
-  room = atmem.read(a+LC_ROOM);
-  region = atmem.read(a+LC_REGION);
-  ordl = atmem.read(a+LC_ORDER);
-  ordh = atmem.read(a+LC_ORDER+1);
-  order = (ordh<<8)+ordl;
-  priority = atmem.read(a+LC_PRIORITY);
-  for (j=0;j<20;j++) {
-    ccm_type[j] = atmem.read(a+LC_CCMTYPE+j);
-  }
-  sprintf(lbf,"ROM[%04x] %d %d %d %d %s",a,room,region,order,priority,ccm_type);
-  Serial.println(lbf);
+  //  room = atmem.read(a+LC_ROOM);
+  //  region = atmem.read(a+LC_REGION);
+  //  ordl = atmem.read(a+LC_ORDER);
+  //  ordh = atmem.read(a+LC_ORDER+1);
+  //  order = (ordh<<8)+ordl;
+  //  priority = atmem.read(a+LC_PRIORITY);
+  //  for (j=0;j<20;j++) {
+  //    ccm_type[j] = atmem.read(a+LC_CCMTYPE+j);
+  //  }
+  //  sprintf(lbf,"ROM[%04x] %d %d %d %d %s",a,room,region,order,priority,ccm_type);
+  //  Serial.println(lbf);
   sprintf(t,xmlDT,ccm_type,room,region,
           order,priority,v,itoaddr(st_m.ip));
   

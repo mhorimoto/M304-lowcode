@@ -22,6 +22,7 @@ const char *const str_opeRTC[] PROGMEM = {
   
 void opeRTC(void) {
   char line1[21],line2[41];
+  //  extern time_t cepoch;
   extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
   if (fsf) {
     fsf = false;
