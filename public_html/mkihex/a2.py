@@ -2,11 +2,11 @@
 #coding: utf-8
 #
 
-# Version: 1.00
+# Version: 1.50
 # Author: Masafumi Horimoto <mh@ys-lab.tech>
 #
 # arguments are as following
-#  id room region order priority lv cast sr ccm_type unit sthr stmn edhr edmn inmn dumn rly_l rly_h
+#  id room region order priority lv cast sr ccm_type unit sthr stmn edhr edmn inmn dumn rly
 
 import sys
 import struct
@@ -50,9 +50,15 @@ if __name__ == '__main__':
     edmn = int(args[14])
     inmn = int(args[15])
     dumn = int(args[16])
-    rly_l = int(args[17])
-    rly_h = int(args[18])
-
+    rly  = args[17]
+    rly_l = 0
+    rly_h = 0
+    for x in range(4):
+        if (rly[x]=="1"):
+            rly_l |= 0b11 << 6-(x*2)
+    for x in range(4,8):
+        if (rly[x]=="1"):
+            rly_h |= 0b11 << 6-((x-4)*2)
 
     if sr=="S":
         sr = "53"

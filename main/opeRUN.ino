@@ -2,7 +2,7 @@
 
 void opeRUN(int hr,int mn) {
   static int pmn=61;  // Nothing 61minute
-  int id, a,i,j,k;
+  int id, i,j,k; //a  2.5.2D7
   byte s[2];
   int r;
   char t[81],buf[8];
@@ -12,8 +12,9 @@ void opeRUN(int hr,int mn) {
   if (mn!=pmn) {
     pmn = mn;
     for(id=0;id<CCM_TBL_CNT_RX;id++) {
-      a = LC_SCH_START+(id*LC_SCH_REC_SIZE);
-      if (atmem.read(a)!=0xff) {
+      //      a = LC_SCH_START+(id*LC_SCH_REC_SIZE);  2.5.2D7
+      if (flb_rx_ccm[id].valid!=0xff) {
+        //      if (atmem.read(a)!=0xff) { 2.5.2D7
 	timeDecision(id,hr,mn);
       }
     }

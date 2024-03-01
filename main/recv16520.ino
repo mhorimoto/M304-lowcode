@@ -70,7 +70,7 @@ void match_rro(int id) {
   extern byte cmpope_result[];
   extern char lbf[];
   extern void sendUECSpacket(int ,char *);
-
+  char ft[6];
   float rfval;
   // 2.3.7DBG
   if (flb_cmpope[id].valid!=0xff) {
@@ -116,8 +116,9 @@ void match_rro(int id) {
 	      Serial.print(rfval);
 	      Serial.print(",");
 	      Serial.println(flb_cmpope[id].fval);
-	      dtostrf(rfval,5,2,lbf);
-	      sendUECSpacket(7,lbf);
+	      dtostrf(rfval,5,2,ft);
+              sprintf(lbf,"%d %s %s",id,flb_cmpope[id].ccm_type,ft);
+	      sendUECSpacket(9,lbf);
 
 	      //	      Serial.print(",");
 	      //	      Serial.println(rfval);
