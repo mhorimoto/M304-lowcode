@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.5.2D2";
+char *pgname = "M304 Ver2.5.2D5";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -302,7 +302,6 @@ void loop(void) {
       lcdd.LineWrite(cposp,3);
       //
       sendUECSpacket(0,"0");
-      // Ver2.4.aDbg-02
       UECSupdate16520port() ;
     }
     ptr_crosskey = getCrossKey();
@@ -315,8 +314,6 @@ void loop(void) {
     if (period1hour==1) {
       period1hour = 0;
       cepoch = RTC.get();
-      Serial.print("1hour  ");
-      Serial.println(cepoch);
     }
     wdt_reset();
     break;
@@ -559,43 +556,24 @@ void sendUECSpacket(int id,char *v) {
   char *xmlDT;
   byte enable;
   byte room,region,priority;
-  int  order,x,a,j;
-  byte roomf,regionf,priorityf;
-  int  orderf;
-  char ccm_type[20],ccm_typef[20];
+  int  order,x,j;
+  char ccm_type[20];
   byte ordh,ordl;
   for(x=0;x<256;x++) {
     t[x] = (char)NULL;
   }
-  a = LC_SEND_START+(id*LC_SEND_REC_SIZE);    // CCMTABLE
   xmlDT = CCMFMT;
-  //  enable = atmem.read(a+LC_VALID);
   enable = flb_tx_ccm[id].valid;
   if (enable!=1) {
     return;
   }
-  // 2.5.2D TESTING ***
-  roomf = flb_tx_ccm[id].room;
-  regionf = flb_tx_ccm[id].region;
-  orderf = flb_tx_ccm[id].order;
-  priorityf = flb_tx_ccm[id].priority;
+  room = flb_tx_ccm[id].room;
+  region = flb_tx_ccm[id].region;
+  order = flb_tx_ccm[id].order;
+  priority = flb_tx_ccm[id].priority;
   for (j=0;j<20;j++) {
-    ccm_typef[j] = flb_tx_ccm[id].ccm_type[j];
+    ccm_type[j] = flb_tx_ccm[id].ccm_type[j];
   }
-  sprintf(lbf,"FLB[%d] %d %d %d %d %s",id,roomf,regionf,orderf,priorityf,ccm_typef);
-  Serial.println(lbf);
-  // 2.5.2D TESTING ***
-  //  room = atmem.read(a+LC_ROOM);
-  //  region = atmem.read(a+LC_REGION);
-  //  ordl = atmem.read(a+LC_ORDER);
-  //  ordh = atmem.read(a+LC_ORDER+1);
-  //  order = (ordh<<8)+ordl;
-  //  priority = atmem.read(a+LC_PRIORITY);
-  //  for (j=0;j<20;j++) {
-  //    ccm_type[j] = atmem.read(a+LC_CCMTYPE+j);
-  //  }
-  //  sprintf(lbf,"ROM[%04x] %d %d %d %d %s",a,room,region,order,priority,ccm_type);
-  //  Serial.println(lbf);
   sprintf(t,xmlDT,ccm_type,room,region,
           order,priority,v,itoaddr(st_m.ip));
   
@@ -762,14 +740,10 @@ ISR(TIMER1_COMPA_vect) {
   if (cnt10 >= 10) {
     cnt10 = 0;
     period10sec = 1;
-    Serial.print(F("10sec  "));
-    Serial.println(millis());
   }
   if (cnt60 >= 60) {
     cnt60 = 0;
     period60sec = 1;
-    Serial.print(F("60sec  "));
-    Serial.println(millis());
   }
   if (cnt1h >= 3600) {
     cnt1h = 0;

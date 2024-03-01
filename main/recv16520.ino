@@ -69,7 +69,8 @@ void match_rro(int id) {
   extern st_UECSXML *ptr_uecsxmldata;
   extern byte cmpope_result[];
   extern char lbf[];
-  
+  extern void sendUECSpacket(int ,char *);
+
   float rfval;
   // 2.3.7DBG
   if (flb_cmpope[id].valid!=0xff) {
@@ -107,14 +108,19 @@ void match_rro(int id) {
 		if (rfval<=flb_cmpope[id].fval) cmpope_result[id] = 1;
 		break;
 	      }
-	      sprintf(lbf,"MATCH OPE %d,%d,%d,%d,%d,%s,%d,",
+	      sprintf(lbf," MATCH OPE %d,%d,%d,%d,%d,%s,%d,",
 		      id,flb_cmpope[id].room,flb_cmpope[id].region,
 		      flb_cmpope[id].order,flb_cmpope[id].priority,
 		      flb_cmpope[id].ccm_type,flb_cmpope[id].cmpope);
 	      Serial.print(lbf);
-	      Serial.print(flb_cmpope[id].fval);
+	      Serial.print(rfval);
 	      Serial.print(",");
-	      Serial.println(rfval);
+	      Serial.println(flb_cmpope[id].fval);
+	      dtostrf(rfval,5,2,lbf);
+	      sendUECSpacket(7,lbf);
+
+	      //	      Serial.print(",");
+	      //	      Serial.println(rfval);
 	    }
 	  }
 	}
