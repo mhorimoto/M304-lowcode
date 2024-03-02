@@ -1,6 +1,6 @@
 #ifndef _M304_H_
 #define _M304_H_
-#define _M304_H_V  1311
+#define _M304_H_V  1312
 
 #include <avr/pgmspace.h>
 #include <LiquidCrystal.h>
@@ -126,6 +126,17 @@
 #define   LC_DUMN         0x2c // During time (mins)
 #define   LC_RLY_L        0x2d // RLY 1..4
 #define   LC_RLY_H        0x2e // RLY 5..8
+#define   LC_CPXCONDS     0x30 // Complex Conditions 16bytes but current 8bytes
+#define   LC_CONDVAL1     0x30 // Condition compare value 1
+#define   LC_CONDEXP2     0x31 // Conditional Expression 2
+#define   LC_CONDVAL2     0x32 // Condition compare value 1
+#define   LC_CONDEXP3     0x33 // Conditional Expression 2
+#define   LC_CONDVAL3     0x34 // Condition compare value 1
+#define   LC_CONDEXP4     0x35 // Conditional Expression 2
+#define   LC_CONDVAL4     0x36 // Condition compare value 1
+
+
+
 #define LC_SCH_REC_SIZE   0x40 // reserve to 0x3f step by 0x40
 #define LC_SEND_START 0x3000   // CCM for data sending (for example cnd.aMC)
 #define LC_SEND_REC_SIZE  0x40 // reserve to 0x3f step by 0x40

@@ -1,7 +1,7 @@
 #include <M304.h>
 
-#if _M304_H_V < 1311
-#pragma message("Library M304 is old. Version 1.3.11 or higher is required.")
+#if _M304_H_V < 1312
+#pragma message("Library M304 is old. Version 1.3.12 or higher is required.")
 #else
 
 #include <avr/wdt.h>
@@ -682,6 +682,10 @@ void copyFromLC_uecsM304(uecsM304 *tg,int a) {
   tg->dumn     = atmem.read(a+LC_DUMN);         // 0x2c
   tg->rly_l    = atmem.read(a+LC_RLY_L);        // 0x2d
   tg->rly_h    = atmem.read(a+LC_RLY_H);        // 0x2e
+  // 2.5.2D7
+  for(i=0;i<16;i++) {
+    tg->dummy[i] = atmem.read(a+LC_CPXCONDS+i); // COPY Complex Conditions
+  }
 }
 
 void copyFromLC_uecsM304cmpope(uecsM304cmpope *tg,int a) {

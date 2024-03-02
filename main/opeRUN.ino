@@ -2,7 +2,7 @@
 
 void opeRUN(int hr,int mn) {
   static int pmn=61;  // Nothing 61minute
-  int id, i,j,k; //a  2.5.2D7
+  int id, i,j,k;
   byte s[2];
   int r;
   char t[81],buf[8];
@@ -12,9 +12,7 @@ void opeRUN(int hr,int mn) {
   if (mn!=pmn) {
     pmn = mn;
     for(id=0;id<CCM_TBL_CNT_RX;id++) {
-      //      a = LC_SCH_START+(id*LC_SCH_REC_SIZE);  2.5.2D7
       if (flb_rx_ccm[id].valid!=0xff) {
-        //      if (atmem.read(a)!=0xff) { 2.5.2D7
 	timeDecision(id,hr,mn);
       }
     }
@@ -22,34 +20,32 @@ void opeRUN(int hr,int mn) {
       sendUECSpacket(r,itoa(rlyttl[r-1],buf,DEC));
     }
   }
-  //  debugSerialOut(hr,mn,"Exit opeRUN()");
 }
 
 void timeDecision(int id,int curhr,int curmn) {
   byte d,sthr,stmn,edhr,edmn,inmn,dumn,s[2];
-  int  i,j,k,addr,sttime,edtime,inmntm,dumntm,startmin,curtim,pmin;
+  int  i,j,k,sttime,edtime,inmntm,dumntm,startmin,curtim,pmin;
   char t[81];
   extern int rlyttl[];
-  
-  addr = LC_SCH_START+(id*0x40);
-  sthr   = (int)atmem.read(addr+LC_STHR);
-  stmn   = (int)atmem.read(addr+LC_STMN);
+
+  sthr   = (int)flb_rx_ccm[id].sthr;
+  stmn   = (int)flb_rx_ccm[id].stmn;
   if (sthr>24) return ERROR;
   sttime = sthr * 60 + stmn;
-  edhr   = (int)atmem.read(addr+LC_EDHR);
-  edmn   = (int)atmem.read(addr+LC_EDMN);
+  edhr   = (int)flb_rx_ccm[id].edhr;
+  edmn   = (int)flb_rx_ccm[id].edmn;
   if (edhr>24) return ERROR;
   edtime = edhr * 60 + edmn;
-  inmntm = (int)atmem.read(addr+LC_INMN);
-  dumntm = (int)atmem.read(addr+LC_DUMN);
+  inmntm = (int)flb_rx_ccm[id].inmn;
+  dumntm = (int)flb_rx_ccm[id].dumn;
   if ((inmntm+dumntm)==0) return; // If either is 0, the process is aborted and returns.
   
   curtim = curhr*60+curmn;
   
   for(startmin=sttime;startmin<edtime;startmin+=(inmntm+dumntm)) {
     if (startmin==curtim) {
-      s[0] = atmem.read(addr+LC_RLY_L);
-      s[1] = atmem.read(addr+LC_RLY_H);
+      s[0] = flb_rx_ccm[id].rly_l;
+      s[1] = flb_rx_ccm[id].rly_h;
       for(i=0;i<4;i++) {
 	j = (s[0]>>(i*2))&0x3;
 	k = (s[1]>>(i*2))&0x3;

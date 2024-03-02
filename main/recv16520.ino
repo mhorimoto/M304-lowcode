@@ -11,50 +11,17 @@ void UECSupdate16520port(void) {
   if (packetSize>0) {
     UDP16520.read(uecsbuf,LEN_UECSXML_BUFFER-1);
     uecsbuf[packetSize] = NULL;
-    // Serial.print("UDP16520 size=");  //2.3.5D
-    // Serial.println(packetSize);
-    // Serial.print("UDP16520 IP=");
-    // Serial.println(UDP16520.remoteIP()) ;
-    // Serial.print("REMOTE PORT=");
-    // Serial.println(UDP16520.remotePort());
-    // Serial.print("TEXT=");
-    //    Serial.println(uecsbuf);
     if (xmldecode(&uecsbuf[0])) {
       if (ptr_uecsxmldata->element==ELE_IP) {
         ptr_uecsxmldata->ip = UDP16520.remoteIP();
       }
-      // //      Serial.print("Ver="); 2.3.5D
-      //      Serial.println(ptr_uecsxmldata->ver);
-      // //      Serial.print("Type=");
-      Serial.print(now());
-      Serial.print("  ");
-      Serial.print(ptr_uecsxmldata->type);
-      // //      Serial.print("TEXTVAL=");
-      //      Serial.println(ptr_uecsxmldata->textval);
-      // //      Serial.print("Page=");
-      //      Serial.println(ptr_uecsxmldata->page);
-      // //      Serial.print("ROOM=");
-      //      Serial.println(ptr_uecsxmldata->room);
-      // //      Serial.print("  REGION=");
-      //      Serial.println(ptr_uecsxmldata->region);
-      // //      Serial.print("  ORDER=");
-      //      Serial.println(ptr_uecsxmldata->order);
-      // //      Serial.print("  PRIORITY=");
-      //      Serial.println(ptr_uecsxmldata->priority);
-      // //      Serial.print("FVAL=");
-      //      Serial.println(ptr_uecsxmldata->fval);
-      // //      Serial.print("IP=");
-      //      Serial.println(ptr_uecsxmldata->ip);
     } else {
       Serial.println("ERR YXML");
     }
     float rfval = float(ptr_uecsxmldata->fval);
-    //    Serial.println(rfval);
-    // Ver2.4.aDbg-04 removed
     for (i=0;i<CCM_TBL_CNT_CMP;i++) {
       match_rro(i);
     }
-    Serial.println();
   }
 }
 
@@ -108,26 +75,21 @@ void match_rro(int id) {
 		if (rfval<=flb_cmpope[id].fval) cmpope_result[id] = 1;
 		break;
 	      }
-	      sprintf(lbf," MATCH OPE %d,%d,%d,%d,%d,%s,%d,",
-		      id,flb_cmpope[id].room,flb_cmpope[id].region,
-		      flb_cmpope[id].order,flb_cmpope[id].priority,
-		      flb_cmpope[id].ccm_type,flb_cmpope[id].cmpope);
-	      Serial.print(lbf);
-	      Serial.print(rfval);
-	      Serial.print(",");
-	      Serial.println(flb_cmpope[id].fval);
+	      // sprintf(lbf," MATCH OPE %d,%d,%d,%d,%d,%s,%d,",
+	      //         id,flb_cmpope[id].room,flb_cmpope[id].region,
+	      //         flb_cmpope[id].order,flb_cmpope[id].priority,
+	      //         flb_cmpope[id].ccm_type,flb_cmpope[id].cmpope);
+	      // Serial.print(lbf);
+	      // Serial.print(rfval);
+	      // Serial.print(",");
+	      // Serial.println(flb_cmpope[id].fval);
 	      dtostrf(rfval,5,2,ft);
               sprintf(lbf,"%d %s %s",id,flb_cmpope[id].ccm_type,ft);
 	      sendUECSpacket(9,lbf);
-
-	      //	      Serial.print(",");
-	      //	      Serial.println(rfval);
 	    }
 	  }
 	}
       }
-      sprintf(lbf,"D %d",cmpope_result[id]);
-      Serial.print(lbf);
     } else {
       //    Serial.println(F("NO MATCH "));
       ;    
