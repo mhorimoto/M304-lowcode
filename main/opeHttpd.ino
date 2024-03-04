@@ -120,6 +120,30 @@ void opeHttpd(EthernetClient ec) {
           //          ec.println(F("</html>"));
           break;
         }
+      } else if (mode==MD_HT_REMOCON) {
+	if (c==0x20) {
+	  htbuf[bufcnt] = (char)NULL;
+	  flag2 = 1;
+	}
+	if (flag2==0) {
+	  htbuf[bufcnt] = c;
+	  bufcnt++;
+	}
+        if ( bufcnt > HTTPBUFSIZ ) {
+          ec.stop();
+          Serial.print(bufcnt);
+          Serial.println(F(" Bov3"));
+          return;
+        }
+        htbuf[bufcnt] = (char)NULL;
+        if ( c=='\n' && currentLineIsBlank ) {
+	  sendHTTPheader(ec);
+          strncpy(d,&htbuf[0],4);
+          d[4]=(char)NULL;
+          daddr = strtol(d,NULL,16);
+	  remocon_exec(daddr,ec);
+          break;
+        }
       }
     }
     if (c == '\n') {
@@ -133,7 +157,24 @@ void opeHttpd(EthernetClient ec) {
   wdt_reset();
   ec.stop();
 }
-// 2.3.6D
+
+// 2.5.2D8
+// Reset logic
+void(*resetFunc)(void) = 0;
+
+void remocon_exec(unsigned int cnum,EthernetClient ec) {
+  extern void ntpAccess(void);
+  ec.println(cnum);
+  switch(cnum) {
+  case 0x7700:
+    resetFunc();
+    break;
+  case 0x7001:
+    ntpAccess();
+    break;
+  }
+}
+
 void sendHTTPheader(EthernetClient ec) {
   ec.println(F("HTTP/1.1 200 OK"));
   ec.println(F("Content-Type: text/html"));
