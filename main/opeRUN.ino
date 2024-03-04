@@ -39,6 +39,7 @@ void timeDecision(int id,int curhr,int curmn) {
   inmntm = (int)flb_rx_ccm[id].inmn;
   dumntm = (int)flb_rx_ccm[id].dumn;
   if ((inmntm+dumntm)==0) return; // If either is 0, the process is aborted and returns.
+  // 2.5.2D8
   
   curtim = curhr*60+curmn;
   

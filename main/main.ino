@@ -1,7 +1,7 @@
 #include <M304.h>
 
-#if _M304_H_V < 1312
-#pragma message("Library M304 is old. Version 1.3.12 or higher is required.")
+#if _M304_H_V < 1313
+#pragma message("Library M304 is old. Version 1.3.13 or higher is required.")
 #else
 
 #include <avr/wdt.h>
@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.5.2D7";
+char *pgname = "M304 Ver2.5.2D8";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010

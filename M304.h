@@ -1,6 +1,6 @@
 #ifndef _M304_H_
 #define _M304_H_
-#define _M304_H_V  1312
+#define _M304_H_V  1313
 
 #include <avr/pgmspace.h>
 #include <LiquidCrystal.h>
@@ -29,6 +29,7 @@
 #define MD_HT_STORE   1
 #define MD_HT_FETCH   2
 #define MD_HT_END     3
+#define MD_HT_REMOCON 4
 
 /*** CMODE ***/
 

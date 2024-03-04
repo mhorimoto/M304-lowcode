@@ -26,8 +26,12 @@ void opeHttpd(EthernetClient ec) {
         case 'L':
           mode = MD_HT_FETCH;
           continue;
+        case 'R':
+          mode = MD_HT_REMOCON;
+          continue;
         }
       }
+
       /* STORE ROUTINE */
       if (mode==MD_HT_STORE) {
         htbuf[bufcnt] = c;
@@ -41,15 +45,8 @@ void opeHttpd(EthernetClient ec) {
       
         if ( c=='\n' && currentLineIsBlank ) {
 	  sendHTTPheader(ec); // 2.3.5D
-          // ec.println("HTTP/1.1 200 OK");
-          // ec.println("Content-Type: text/html");
-          // ec.println("Connection: close");
-          // ec.println();
-          // ec.println("<!DOCTYPE HTML>");
-          // ec.println("<html>");
-
-          ec.print("<h1>MOD</h1>");
-          ec.print("<pre>htbuf=");
+          //          ec.print("<h1>MOD</h1>");
+          //          ec.print("<pre>htbuf=");
           ec.println(htbuf);
           strncpy(d,htbuf,2);
           dlen = strtol(d,NULL,16);
@@ -58,8 +55,8 @@ void opeHttpd(EthernetClient ec) {
           d[4]=(char)NULL;
           daddr = strtol(d,NULL,16);
 
-          sprintf(prnbuf,"dlen=%d  chksum=0x%02X  addr=0x%04X",dlen,chksum,daddr);
-          ec.println(prnbuf);
+          //          sprintf(prnbuf,"dlen=%d  chksum=0x%02X  addr=0x%04X",dlen,chksum,daddr);
+          //          ec.println(prnbuf);
           
           strncpy(d,&htbuf[2],2);
           d[2]=(char)NULL;
@@ -71,9 +68,9 @@ void opeHttpd(EthernetClient ec) {
           dtype = strtol(d,NULL,16);
           chksum += dtype;
           chksum &= 0xff;
-          sprintf(prnbuf,"dty=%d  cs=0x%02X  %d  leng=%d  adr=%04X\n",
-                  dtype,chksum,strlen(p_htbuf),dlen,daddr);
-          ec.print(prnbuf);
+          //          sprintf(prnbuf,"dty=%d  cs=0x%02X  %d  leng=%d  adr=%04X\n",
+          //                  dtype,chksum,strlen(p_htbuf),dlen,daddr);
+          //          ec.print(prnbuf);
           
           for (i=0;i<dlen;i++) {
             strncpy(d,&htbuf[(i*2)+8],2);
@@ -91,7 +88,7 @@ void opeHttpd(EthernetClient ec) {
           chksum += dbyte;
           htbuf[(i*2)+10] = (char)0;
           ec.print(p_htbuf);
-          ec.println(F("</pre></html>"));
+          //          ec.println(F("</pre></html>"));
           break;
         }
       /* FETCH ROUTINE */
@@ -113,27 +110,15 @@ void opeHttpd(EthernetClient ec) {
         htbuf[bufcnt] = (char)NULL;
         if ( c=='\n' && currentLineIsBlank ) {
 	  sendHTTPheader(ec); // 2.3.5D
-	  // ec.println("HTTP/1.1 200 OK");
-          // ec.println("Content-Type: text/html");
-          // ec.println("Connection: close");
-          // ec.println();
-          // ec.println("<!DOCTYPE HTML>");
-          // ec.println("<html>");
-
-          ec.print(F("<h1>FETCH</h1>"));
-          ec.print(F("<pre>htbuf="));
-          ec.println(htbuf);
+          //          ec.print(F("<h1>FETCH</h1>"));
+          //          ec.print(F("<pre>htbuf="));
+          //          ec.println(htbuf);
           strncpy(d,&htbuf[2],4);
           d[4]=(char)NULL;
           daddr = strtol(d,NULL,16);
           fetch_EEPROM(daddr,ec);
-          ec.println(F("</html>"));
+          //          ec.println(F("</html>"));
           break;
-          //          delay(500);
-          //          wdt_reset();
-          //          ec.stop();
-          //          Serial.println("MF9");
-          //	  return;
         }
       }
     }
@@ -147,7 +132,6 @@ void opeHttpd(EthernetClient ec) {
   delay(500);
   wdt_reset();
   ec.stop();
-  //  Serial.println(F("Clinet disconnected")); // 2.3.6D
 }
 // 2.3.6D
 void sendHTTPheader(EthernetClient ec) {
@@ -155,8 +139,8 @@ void sendHTTPheader(EthernetClient ec) {
   ec.println(F("Content-Type: text/html"));
   ec.println(F("Connection: close"));
   ec.println();
-  ec.println(F("<!DOCTYPE HTML>"));
-  ec.println(F("<html>"));
+  //  ec.println(F("<!DOCTYPE HTML>"));
+  //  ec.println(F("<html>"));
 }
 
 void mod_EEPROM(unsigned int addr,byte dt,EthernetClient ec) {
@@ -166,12 +150,6 @@ void mod_EEPROM(unsigned int addr,byte dt,EthernetClient ec) {
     return;
   }
   atmem.write(addr,dt);
-  // 2.3.5D
-  // ec.print("mE:addr=");
-  // ec.print(addr,HEX);
-  // ec.print(" data=");
-  // ec.print(dt,HEX);
-  // ec.println("  Writen");
   return;
 }
 
@@ -183,7 +161,7 @@ void fetch_EEPROM(unsigned int addr,EthernetClient ec) {
   uint8_t d;
   char prnbuf[BUFSIZ];
   addr &= 0xff00;
-  ec.println(F("<pre>"));
+  //  ec.println(F("<pre>"));
   for (y=0;y<16;y++) {
     sprintf(prnbuf,"0x%04X:",addr+(y*0x10));
     for (x=0;x<16;x++) {
@@ -193,5 +171,5 @@ void fetch_EEPROM(unsigned int addr,EthernetClient ec) {
     }
     ec.println(prnbuf);
   }
-  ec.println(F("</pre>"));
+  //  ec.println(F("</pre>"));
 }
