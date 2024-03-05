@@ -23,11 +23,12 @@ void opeRUN(int hr,int mn) {
 }
 
 void timeDecision(int id,int curhr,int curmn) {
-  byte d,sthr,stmn,edhr,edmn,inmn,dumn,s[2];
-  int  i,j,k,sttime,edtime,inmntm,dumntm,startmin,curtim,pmin;
+  byte d,sthr,stmn,edhr,edmn,inmn,dumn,s[2],x,y,p;
+  int  i,j,k,sttime,edtime,inmntm,dumntm,startmin,curtim,pmin,did;
   char t[81];
   extern int rlyttl[];
-
+  extern byte cmpope_result[];
+  
   sthr   = (int)flb_rx_ccm[id].sthr;
   stmn   = (int)flb_rx_ccm[id].stmn;
   if (sthr>24) return ERROR;
@@ -39,8 +40,31 @@ void timeDecision(int id,int curhr,int curmn) {
   inmntm = (int)flb_rx_ccm[id].inmn;
   dumntm = (int)flb_rx_ccm[id].dumn;
   if ((inmntm+dumntm)==0) return; // If either is 0, the process is aborted and returns.
-  // 2.5.2D8
-  
+  // 2.5.2D9
+  x = 0;
+  y = flb_rx_ccm[id].dummy[0];
+  if ( y != 0xff ) {
+    x = cmpope_result[y];
+    for (i=1;i<4;i++) {
+      j = 2*i;
+      p = flb_rx_ccm[id].dummy[j-1]; // operator (AND/OR)
+      y = flb_rx_ccm[id].dummy[j];   // value index;
+      if ((y==0xff)||(p==0xff)) {
+        i = 5;  // force exit
+        break;
+      }
+      switch(p) {
+      case R_AND:
+        x &= cmpope_result[y];       // x &= result
+        break;
+      case R_OR:
+        x |= cmpope_result[y];       // x |= result
+        break;
+      }
+    }
+  } else {  // y==0xff ---> always true
+    x = 1;
+  }
   curtim = curhr*60+curmn;
   
   for(startmin=sttime;startmin<edtime;startmin+=(inmntm+dumntm)) {
@@ -50,11 +74,12 @@ void timeDecision(int id,int curhr,int curmn) {
       for(i=0;i<4;i++) {
 	j = (s[0]>>(i*2))&0x3;
 	k = (s[1]>>(i*2))&0x3;
+        if (x!=0) x=1;  // True is true
 	if (j) {
-	  rlyttl[3-i] = dumntm*60; // RLY1..4
+	  rlyttl[3-i] = dumntm*60*x; // RLY1..4
 	}
 	if (k) {
-	  rlyttl[7-i] = dumntm*60; // RLY5..8
+	  rlyttl[7-i] = dumntm*60*x; // RLY5..8
 	}
       }
     }

@@ -7,7 +7,6 @@ void UECSupdate16520port(void) {
   int packetSize ,i;
   
   packetSize = UDP16520.parsePacket();
-  // Ver2.4.aDbg-06  packetSize>0
   if (packetSize>0) {
     UDP16520.read(uecsbuf,LEN_UECSXML_BUFFER-1);
     uecsbuf[packetSize] = NULL;

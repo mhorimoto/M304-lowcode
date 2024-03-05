@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.5.2D8";
+char *pgname = "M304 Ver2.5.2D9";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -69,6 +69,10 @@ typedef struct st_UECSXML {
   IPAddress ip;
 };
 
+//
+//  Floating data
+//  byte alignment
+//
 union CHARFLOAT {
   float f;
   char  c[4];
@@ -131,13 +135,15 @@ void setup(void) {
   extern int mask2cidr(IPAddress);
   extern boolean is_dhcp(void);
   extern void clear_uecsbuf(void);
+  extern void copyVersionCode(unsigned int,char *);
   
   int a,w,j,k;
   char ccm_type[21],line1[21];
   IPAddress hostip,subnet,gateway,dns;
   float tesfval;
   tmElements_t tm;
-  
+
+  copyVersionCode(0x7ff0,pgname);
   m304Init();
   Serial.begin(115200);
   clear_uecsbuf();
