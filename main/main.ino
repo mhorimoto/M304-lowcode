@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.5.2D9";
+char *pgname = "M304 Ver2.5.2Da";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -216,7 +216,7 @@ void setup(void) {
   UDP16520.begin(16520);
   UECS_UDP16529.begin(16529);
   httpd.begin();
-  sendUECSpacket(0,"2048"); // setup completed 0x800
+  sendUECSpacket(0,"2048",0); // setup completed 0x800
   //  Serial.begin(115200);
   Serial.println(pgname);
   if (RTC.read(tm)==0) {
@@ -240,8 +240,9 @@ void setup(void) {
 
 
 void loop(void) {
-  int x,y,z,id,hr,mi,mx,io,minsec,j;
-  char ca,line1[21];
+  int x,y,z,id,hr,mi,mx,io,minsec,j,r;
+  char ca,line1[21],buf[8];
+  int b_tmp;
   static char pca;
   static int prvsec;
   extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
@@ -307,7 +308,7 @@ void loop(void) {
       lcdd.setLine(cposp,3,line1);
       lcdd.LineWrite(cposp,3);
       //
-      sendUECSpacket(0,"0");
+      sendUECSpacket(0,"0",1);
       UECSupdate16520port() ;
     }
     ptr_crosskey = getCrossKey();
@@ -317,9 +318,23 @@ void loop(void) {
       cmode=CMND;
       fsf = true;
     }
+    if (period10sec==1) {
+      period10sec=0;
+      for (r=1;r<CCM_TBL_CNT_TX;r++) {
+        sendUECSpacket(r,itoa(rlyttl[r-1],buf,DEC),10);
+      }
+    }
     if (period1hour==1) {
+      sendUECSpacket(0,"4096",0);
       period1hour = 0;
       cepoch = RTC.get();
+      b_tmp = Ethernet.maintain();
+      b_tmp += 2064;  // 2064 = 0x810
+      if (itoa((int)b_tmp,buf,10)) {
+        sendUECSpacket(0,buf,0);
+      } else {
+        sendUECSpacket(0,"2079",0);
+      }
     }
     wdt_reset();
     break;
@@ -556,12 +571,12 @@ void msgCmnd1st(void) {
   ptr_crosskey->kpos=0;
 }
 
-void sendUECSpacket(int id,char *v) {
+void sendUECSpacket(int id,char *v,int lvo) {
   extern char *itoaddr(IPAddress);
   char t[256];
   char *xmlDT;
   byte enable;
-  byte room,region,priority;
+  byte room,region,priority,lv;
   int  order,x,j;
   char ccm_type[20];
   byte ordh,ordl;
@@ -573,22 +588,30 @@ void sendUECSpacket(int id,char *v) {
   if (enable!=1) {
     return;
   }
-  room = flb_tx_ccm[id].room;
-  region = flb_tx_ccm[id].region;
-  order = flb_tx_ccm[id].order;
-  priority = flb_tx_ccm[id].priority;
-  for (j=0;j<20;j++) {
-    ccm_type[j] = flb_tx_ccm[id].ccm_type[j];
-  }
-  sprintf(t,xmlDT,ccm_type,room,region,
-          order,priority,v,itoaddr(st_m.ip));
-  
-  if (debugMsgFlag(SO_MSG)) {
+  lv = flb_tx_ccm[id].lv;
+  if (((lvo==1)&&((lv==1)||(lv==2)||(lv==9)))      // 1sec
+      || ((lvo==10)&&((lv==3)||(lv==4)))           // 10sec
+      || ((lvo==60)&&((lv==5)||(lv==6)||(lv==10))) // 60sec
+      || (lvo==0)) {
+    room = flb_tx_ccm[id].room;
+    region = flb_tx_ccm[id].region;
+    order = flb_tx_ccm[id].order;
+    priority = flb_tx_ccm[id].priority;
+    for (j=0;j<20;j++) {
+      ccm_type[j] = flb_tx_ccm[id].ccm_type[j];
+    }
+    sprintf(t,xmlDT,ccm_type,room,region,
+            order,priority,v,itoaddr(st_m.ip));
+    
+    if (debugMsgFlag(SO_MSG)) {
+      Serial.println(t);
+    }
     Serial.println(t);
+
+    UDP16520.beginPacket(broadcastIP, 16520);
+    UDP16520.write(t);
+    UDP16520.endPacket();
   }
-  UDP16520.beginPacket(broadcastIP, 16520);
-  UDP16520.write(t);
-  UDP16520.endPacket();
 }
 
 int copyFromNAMEVENDER(char *dest,char *src) {
@@ -738,7 +761,8 @@ void configure_wdt(void) {
 }
 
 ISR(TIMER1_COMPA_vect) {
-  static byte cnt10=0,cnt60=0,cnt1h=0;
+  static byte cnt10=0,cnt60=0;
+  static int cnt1h=0;
   extern time_t cepoch,pepoch;
   cnt10++;
   cnt60++;

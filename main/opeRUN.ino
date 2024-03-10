@@ -17,7 +17,7 @@ void opeRUN(int hr,int mn) {
       }
     }
     for (r=1;r<CCM_TBL_CNT_TX;r++) {
-      sendUECSpacket(r,itoa(rlyttl[r-1],buf,DEC));
+      sendUECSpacket(r,itoa(rlyttl[r-1],buf,DEC),60);
     }
   }
 }
