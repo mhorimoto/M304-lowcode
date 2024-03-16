@@ -1,0 +1,146 @@
+#! /usr/bin/env php
+
+<?php
+
+if (!empty($argv[1])) {
+    $opts = getopt("d:u",[],$ri);
+    $url=@$argv[$ri];
+    $optd = $opts['d'];
+    $ausm = @$opts['u'];
+    $uasm = isset($ausm);
+
+    switch ($optd) {
+    case 'rx':
+        $addr = "L00100000";
+        break;
+    case 'tx':
+        $addr = "L00300000";
+        break;
+    case 'ope':
+        $addr = "L00500000";
+        break;
+    case 'info':
+        $addr = "L00000000";
+        break;
+    }
+        
+    $url = sprintf("http://%s/%s",$url,$addr);
+    $f = fopen($url,"r");
+    if ($f) {
+        if ($uasm==1) {
+            switch($optd) {
+            case 'info':
+                for($y=0;$y<8;$y++) {
+                    $buffer = fgets($f,80);
+                    for($x=0;$x<16;$x++) {
+                        $z = 0xff & hexdec(substr($buffer,(3*$x+8),3));
+                        $hexdata[$y*0x10+$x] = $z;
+                    }
+                }
+                printf("     UECS-ID: %s\n",prt_LC_INFO($hexdata,"uecsid"));
+                printf(" MAC ADDRESS: %s\n",prt_LC_INFO($hexdata,"mac"));
+                printf("   IP ASSIGN: %s\n",prt_LC_INFO($hexdata,"dhcpf"));
+                printf("    FIXED IP: %s\n",prt_LC_INFO($hexdata,"ipaddress"));
+                printf("     NETMASK: %s\n",prt_LC_INFO($hexdata,"netmask"));
+                printf("     GATEWAY: %s\n",prt_LC_INFO($hexdata,"defgw"));
+                printf("         DNS: %s\n",prt_LC_INFO($hexdata,"dns"));
+                printf("      VENDER: %s\n",prt_LC_INFO($hexdata,"vender"));
+                printf("   NODE NAME: %s\n",prt_LC_INFO($hexdata,"nodename"));
+                break;
+            }
+        } else {
+            while (($buffer = fgets($f, 4096)) !== false) {
+                if (substr($buffer,6,1)==':') {
+                    echo rtrim($buffer);
+                    echo "  ";
+                    for ($x=8;$x<54;$x+=3) {
+                        $y = hexdec(substr($buffer,$x,3));
+                        if (($y<0x20)||($y>0x7f)) {
+                            echo ".";
+                        } else {
+                            echo chr($y);
+                        }
+                    }                    
+                    echo "\n";
+                } else {
+                    echo $buffer;
+                }
+            }
+            if (!feof($f)) {
+                echo "Error: unexpected fgets() fail\n";
+            }
+        }
+        fclose($f);
+    }
+} else {
+    echo "You need argument.";
+}
+
+function prt_LC_INFO($dt,$k) {
+    switch($k) {
+    case "uecsid":
+        $odt = sprintf("%02X%02X%02X%02X%02X%02X",
+                       $dt[0],$dt[1],$dt[2],$dt[3],$dt[4],$dt[5]);
+        break;
+    case "mac":
+        $odt = sprintf("%02X:%02X:%02X:%02X:%02X:%02X",
+                       $dt[6],$dt[7],$dt[8],$dt[9],$dt[10],$dt[11]);
+        break;
+    case "dhcpf":
+        if ($dt[0x0c]==00) {
+            $odt = "STATIC";
+        } else {
+            $odt = "DHCP";
+        }
+        break;
+    case "ipaddress":
+        $odt = _IPaddress($dt,0x10);
+        break;
+    case "netmask":
+        $odt = _IPaddress($dt,0x14);
+        break;
+    case "defgw":
+        $odt = _IPaddress($dt,0x18);
+        break;
+    case "dns":
+        $odt = _IPaddress($dt,0x1c);
+        break;
+    case "vender":
+        $odt = _LCText($dt,0x40,16);
+        break;
+    case "nodename":
+        $odt = _LCText($dt,0x50,16);
+        break;
+    }
+    return $odt;
+}
+
+function _LCBitSW($dt,$ofs) {
+}
+
+function _LCText($dt,$ofs,$len) {
+    $rt = "";
+    for($x=0;$x<$len;$x++) {
+        if (($dt[$ofs+$x]<0x20)||($dt[$ofs+$x]>0x7f)) {
+            $rt .= NULL;
+            break;
+        } else {
+            $rt .= chr($dt[$ofs+$x]);
+        }
+    }
+    return($rt);
+}
+
+function _IPaddress($dt,$ofs) {
+    if ($dt[0x0c]!=00) {
+        $ign = "(ignore)";
+    } else {
+        $ign = "";
+    }
+    $odt = sprintf("%d.%d.%d.%d %s",$dt[$ofs],$dt[$ofs+1],$dt[$ofs+2],$dt[$ofs+3],$ign);
+    return($odt);
+}
+
+# -*- mode: php-mode; -*-
+?>
+
