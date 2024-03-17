@@ -23,7 +23,15 @@ if (!empty($argv[1])) {
         $addr = "L00000000";
         break;
     }
-        
+    $vul = sprintf("http://%s/L007F0000",$url);
+    $f = fopen($vul,"r");
+    if ($f) {
+        for ($y=0;$y<15;$y++) {
+            $buffer = fgets($f,80);
+        }
+        $buffer = fgets($f,80);
+    }
+    echo $buffer."\n";
     $url = sprintf("http://%s/%s",$url,$addr);
     $f = fopen($url,"r");
     if ($f) {
@@ -46,6 +54,7 @@ if (!empty($argv[1])) {
                 printf("         DNS: %s\n",prt_LC_INFO($hexdata,"dns"));
                 printf("      VENDER: %s\n",prt_LC_INFO($hexdata,"vender"));
                 printf("   NODE NAME: %s\n",prt_LC_INFO($hexdata,"nodename"));
+                printf("   DEBUG MSG: %s\n",prt_LC_INFO($hexdata,"dbgmsg"));
                 break;
             }
         } else {
@@ -111,11 +120,17 @@ function prt_LC_INFO($dt,$k) {
     case "nodename":
         $odt = _LCText($dt,0x50,16);
         break;
+    case "dbgmsg":
+        $odt = _LCBitSW($dt,0x60);
+        break;
     }
     return $odt;
 }
 
 function _LCBitSW($dt,$ofs) {
+    $d = $dt[$ofs];
+    $odt = substr("00000000".decbin($d),-0,8);
+    return($odt);
 }
 
 function _LCText($dt,$ofs,$len) {
