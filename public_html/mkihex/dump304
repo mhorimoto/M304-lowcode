@@ -23,6 +23,78 @@ if (!empty($argv[1])) {
         $addr = "L00000000";
         break;
     }
+    $ver = getVersion($url);
+    $url = sprintf("http://%s/%s",$url,$addr);
+    $f = fopen($url,"r");
+    if ($f) {
+        if ($uasm==1) {
+            switch($optd) {
+            case 'info':
+                display_info($f,$ver);
+                break;
+            case 'rx':
+                display_rx($f,$ver);
+                break;
+            }
+        } else {
+            normal_dump($f);
+        }
+        fclose($f);
+    }
+} else {
+    echo "You need argument.";
+}
+
+
+////////////////////////////////////////////////////////////////////
+
+function display_info($fp,$ver) {
+    for($y=0;$y<8;$y++) {
+        $buffer = fgets($fp,80);
+        for($x=0;$x<16;$x++) {
+            $z = 0xff & hexdec(substr($buffer,(3*$x+8),3));
+            $hexdata[$y*0x10+$x] = $z;
+        }
+    }
+    printf("     UECS-ID: %s\n",prt_LC_INFO($hexdata,"uecsid"));
+    printf("     VERSION: %s\n",$ver);
+    printf(" MAC ADDRESS: %s\n",prt_LC_INFO($hexdata,"mac"));
+    printf("   IP ASSIGN: %s\n",prt_LC_INFO($hexdata,"dhcpf"));
+    printf("    FIXED IP: %s\n",prt_LC_INFO($hexdata,"ipaddress"));
+    printf("     NETMASK: %s\n",prt_LC_INFO($hexdata,"netmask"));
+    printf("     GATEWAY: %s\n",prt_LC_INFO($hexdata,"defgw"));
+    printf("         DNS: %s\n",prt_LC_INFO($hexdata,"dns"));
+    printf("      VENDER: %s\n",prt_LC_INFO($hexdata,"vender"));
+    printf("   NODE NAME: %s\n",prt_LC_INFO($hexdata,"nodename"));
+    printf("   DEBUG MSG: %s\n",prt_LC_INFO($hexdata,"dbgmsg"));
+}
+
+function display_rx($fp,$ver) {
+    for($y=0;$y<30;$y++) {  // CCM_TBL_CNT_RX
+        for($w=0;$w<4;$w++) {  // 4records per an entry
+            $buffer = fgets($fp,80);
+            for($x=0;$x<16;$x++) {
+                $z = 0xff & hexdec(substr($buffer,(3*$x+8),3));
+                $hexdata[$w*0x10+$x] = $z;
+            }
+        }
+        printf("%02d:%c,%3d,%3d,%3d,%2d\n",$y,prt_LC_RTX($hexdata,"valid"),prt_LC_RTX($hexdata,"room"),
+               prt_LC_RTX($hexdata,"region"),prt_LC_RTX($hexdata,"order"),prt_LC_RTX($hexdata,"priority"));
+
+    }
+}
+
+function display_tx($fp,$ver) {
+}
+
+function display_ope($fp,$ver) {
+}
+
+//
+// Subroutines
+//
+
+function getVersion($url) {
     $vul = sprintf("http://%s/L007F0000",$url);
     $f = fopen($vul,"r");
     if ($f) {
@@ -30,59 +102,36 @@ if (!empty($argv[1])) {
             $buffer = fgets($f,80);
         }
         $buffer = fgets($f,80);
-    }
-    echo $buffer."\n";
-    $url = sprintf("http://%s/%s",$url,$addr);
-    $f = fopen($url,"r");
-    if ($f) {
-        if ($uasm==1) {
-            switch($optd) {
-            case 'info':
-                for($y=0;$y<8;$y++) {
-                    $buffer = fgets($f,80);
-                    for($x=0;$x<16;$x++) {
-                        $z = 0xff & hexdec(substr($buffer,(3*$x+8),3));
-                        $hexdata[$y*0x10+$x] = $z;
-                    }
-                }
-                printf("     UECS-ID: %s\n",prt_LC_INFO($hexdata,"uecsid"));
-                printf(" MAC ADDRESS: %s\n",prt_LC_INFO($hexdata,"mac"));
-                printf("   IP ASSIGN: %s\n",prt_LC_INFO($hexdata,"dhcpf"));
-                printf("    FIXED IP: %s\n",prt_LC_INFO($hexdata,"ipaddress"));
-                printf("     NETMASK: %s\n",prt_LC_INFO($hexdata,"netmask"));
-                printf("     GATEWAY: %s\n",prt_LC_INFO($hexdata,"defgw"));
-                printf("         DNS: %s\n",prt_LC_INFO($hexdata,"dns"));
-                printf("      VENDER: %s\n",prt_LC_INFO($hexdata,"vender"));
-                printf("   NODE NAME: %s\n",prt_LC_INFO($hexdata,"nodename"));
-                printf("   DEBUG MSG: %s\n",prt_LC_INFO($hexdata,"dbgmsg"));
-                break;
-            }
-        } else {
-            while (($buffer = fgets($f, 4096)) !== false) {
-                if (substr($buffer,6,1)==':') {
-                    echo rtrim($buffer);
-                    echo "  ";
-                    for ($x=8;$x<54;$x+=3) {
-                        $y = hexdec(substr($buffer,$x,3));
-                        if (($y<0x20)||($y>0x7f)) {
-                            echo ".";
-                        } else {
-                            echo chr($y);
-                        }
-                    }                    
-                    echo "\n";
-                } else {
-                    echo $buffer;
-                }
-            }
-            if (!feof($f)) {
-                echo "Error: unexpected fgets() fail\n";
-            }
+        $ver = "";
+        for($x=0;$x<16;$x++) {
+            $z = chr(0xff & hexdec(substr($buffer,(3*$x+8),3)));
+            $ver .= $z;
         }
-        fclose($f);
     }
-} else {
-    echo "You need argument.";
+    return($ver);
+}
+
+function normal_dump($fp) {
+    while (($buffer = fgets($fp, 4096)) !== false) {
+        if (substr($buffer,6,1)==':') {
+            echo rtrim($buffer);
+            echo "  ";
+            for ($x=8;$x<54;$x+=3) {
+                $y = hexdec(substr($buffer,$x,3));
+                if (($y<0x20)||($y>0x7f)) {
+                    echo ".";
+                } else {
+                    echo chr($y);
+                }
+            }                    
+            echo "\n";
+        } else {
+            echo $buffer;
+        }
+    }
+    if (!feof($fp)) {
+        echo "Error: unexpected fgets() fail\n";
+    }
 }
 
 function prt_LC_INFO($dt,$k) {
@@ -127,6 +176,19 @@ function prt_LC_INFO($dt,$k) {
     return $odt;
 }
 
+function prt_LC_RTX($dt,$k) {
+    switch($k) {
+    case "valid":
+        echo $dt[0];
+        if (($dt[0]&0xff)==1) {
+            return("E");
+        } else {
+            return("N");
+        }
+        
+    }
+}
+    
 function _LCBitSW($dt,$ofs) {
     $d = $dt[$ofs];
     $odt = substr("00000000".decbin($d),-0,8);
@@ -155,6 +217,7 @@ function _IPaddress($dt,$ofs) {
     $odt = sprintf("%d.%d.%d.%d %s",$dt[$ofs],$dt[$ofs+1],$dt[$ofs+2],$dt[$ofs+3],$ign);
     return($odt);
 }
+
 
 # -*- mode: php-mode; -*-
 ?>
