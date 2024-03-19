@@ -136,8 +136,9 @@ void setup(void) {
   extern boolean is_dhcp(void);
   extern void clear_uecsbuf(void);
   extern void copyVersionCode(unsigned int,char *);
+  extern void init_uecsTBL(void);
   
-  int a,w,j,k;
+  int j;
   char ccm_type[21],line1[21];
   IPAddress hostip,subnet,gateway,dns;
   float tesfval;
@@ -177,8 +178,8 @@ void setup(void) {
   configure_wdt();
   msgRun1st();
   wdt_reset();
-  for(w=0;w<8;w++) {
-    rlyttl[w] = 0;
+  for(j=0;j<8;j++) {
+    rlyttl[j] = 0;
   }
   for (j=0;j<20;j++) {
     ccm_type[j] = 0;
@@ -194,29 +195,11 @@ void setup(void) {
       //	lcdd.LineWrite(0,3);
     }
   }
-  w = atmem.read(LC_DBGMSG);
-  debugMsgOutput(1,w); // NET
-  // 2.3.5D Read fast lookup buffer for CCM table
-  for (j=0;j<CCM_TBL_CNT_RX;j++) {
-    a = LC_SCH_START+(j*LC_SCH_REC_SIZE);
-    copyFromLC_uecsM304(&flb_rx_ccm[j],a);
-  }
-  debugMsgOutput(2,w); // rx_ccm display
-  for (j=0;j<CCM_TBL_CNT_TX;j++) {
-    a = LC_SEND_START+(j*LC_SEND_REC_SIZE);
-    copyFromLC_uecsM304(&flb_tx_ccm[j],a);
-  }
-  debugMsgOutput(3,w); // tx_ccm display
-  for (j=0;j<CCM_TBL_CNT_CMP;j++) {
-    a = LC_CMPOPE_START+(j*LC_CMPOPE_REC_SIZE);
-    copyFromLC_uecsM304cmpope(&flb_cmpope[j],a);
-  }
-  debugMsgOutput(4,w); // cmpope display
-  
+  init_uecsTBL();
   UDP16520.begin(16520);
   UECS_UDP16529.begin(16529);
   httpd.begin();
-  sendUECSpacket(0,"2048",0); // setup completed 0x800
+  sendUECSpacket(0,"395264",0); // setup completed 0x60800
   //  Serial.begin(115200);
   Serial.println(pgname);
   if (RTC.read(tm)==0) {
@@ -325,7 +308,6 @@ void loop(void) {
       }
     }
     if (period1hour==1) {
-      sendUECSpacket(0,"4096",0);
       period1hour = 0;
       cepoch = RTC.get();
       b_tmp = Ethernet.maintain();
@@ -680,63 +662,6 @@ IPAddress getIPAddressFromEEPROM(int a) {
   r = IPAddress(atmem.read(a),atmem.read(a+1),atmem.read(a+2),atmem.read(a+3));
   return(r);
 }
-
-// 2.3.5D
-void copyFromLC_uecsM304(uecsM304 *tg,int a) {
-  int i;
-  uint8_t ordl,ordh;
-  tg->valid    = atmem.read(a+LC_VALID);    
-  tg->room     = atmem.read(a+LC_ROOM);         // 0x01
-  tg->region   = atmem.read(a+LC_REGION);       // 0x02
-  ordl = atmem.read(a+LC_ORDER);
-  ordh = atmem.read(a+LC_ORDER+1);
-  tg->order    = (ordh<<8)+ordl;
-  tg->priority = atmem.read(a+LC_PRIORITY);     // 0x05
-  tg->lv       = atmem.read(a+LC_LV);    
-  tg->cast     = atmem.read(a+LC_CAST);         // 0x07
-  tg->sr       = atmem.read(a+LC_SR);           // 0x08
-  for (i=0;i<20;i++) {
-    tg->ccm_type[i] = atmem.read(a+LC_CCMTYPE+i); // 0x09 ASCIZ
-  }
-  for (i=0;i<10;i++) {
-    tg->unit[i] = atmem.read(a+LC_UNIT+i);      // 0x1d ASCIZ
-  }
-  tg->sthr     = atmem.read(a+LC_STHR);         // 0x27
-  tg->stmn     = atmem.read(a+LC_STMN);         // 0x28
-  tg->edhr     = atmem.read(a+LC_EDHR);         // 0x29
-  tg->edmn     = atmem.read(a+LC_EDMN);         // 0x2a
-  tg->inmn     = atmem.read(a+LC_INMN);         // 0x2b
-  tg->dumn     = atmem.read(a+LC_DUMN);         // 0x2c
-  tg->rly_l    = atmem.read(a+LC_RLY_L);        // 0x2d
-  tg->rly_h    = atmem.read(a+LC_RLY_H);        // 0x2e
-  // 2.5.2D7
-  for(i=0;i<16;i++) {
-    tg->dummy[i] = atmem.read(a+LC_CPXCONDS+i); // COPY Complex Conditions
-  }
-}
-
-void copyFromLC_uecsM304cmpope(uecsM304cmpope *tg,int a) {
-  int i;
-  uint8_t ordl,ordh;
-  union CHARFLOAT crf;
-  tg->valid    = atmem.read(a+LC_COPE_VALID);    
-  tg->room     = atmem.read(a+LC_COPE_ROOM);         // 0x01
-  tg->region   = atmem.read(a+LC_COPE_REGION);       // 0x02
-  ordl = atmem.read(a+LC_COPE_ORDER);
-  ordh = atmem.read(a+LC_COPE_ORDER+1);
-  tg->order    = (ordh<<8)+ordl;
-  tg->priority = atmem.read(a+LC_COPE_PRIORITY);     // 0x05
-  for (i=0;i<20;i++) {
-    tg->ccm_type[i] = atmem.read(a+LC_COPE_CCMTYPE+i); // 0x06 ASCIZ
-  }
-  tg->cmpope = atmem.read(a+LC_COPE_OPE);         // 0x1a
-  for(i=0;i<4;i++) {
-    crf.c[i] = atmem.read(a+LC_COPE_FVAL+i);
-  }
-  tg->fval = crf.f;
-}
-
-
 
 void configure_wdt(void) {
   cli();                           // disable interrupts for changing the registers

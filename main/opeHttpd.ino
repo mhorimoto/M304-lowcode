@@ -37,10 +37,12 @@ void opeHttpd(EthernetClient ec) {
         htbuf[bufcnt] = c;
         bufcnt++;
         if ( bufcnt > HTTPBUFSIZ ) {
+	  sendUECSpacket(0,"131073",0); // Buffer overflow 0x20001
           ec.stop();
           Serial.println(F("Bov1")); // 2.3.5D
           return;
         }
+	sendUECSpacket(0,"131074",0); // Success Store via httpd 0x20002
         htbuf[bufcnt] = (char)NULL;
       
         if ( c=='\n' && currentLineIsBlank ) {
@@ -102,11 +104,13 @@ void opeHttpd(EthernetClient ec) {
 	  bufcnt++;
 	}
         if ( bufcnt > HTTPBUFSIZ ) {
+	  sendUECSpacket(0,"131075",0); // Buffer overflow 0x20003
           ec.stop();
           Serial.print(bufcnt);
           Serial.println(F(" Bov2")); // 2.3.5D
           return;
         }
+	sendUECSpacket(0,"131076",0); // Success fetch via httpd 0x20004
         htbuf[bufcnt] = (char)NULL;
         if ( c=='\n' && currentLineIsBlank ) {
 	  sendHTTPheader(ec); // 2.3.5D
@@ -164,13 +168,21 @@ void(*resetFunc)(void) = 0;
 
 void remocon_exec(unsigned int cnum,EthernetClient ec) {
   extern void ntpAccess(void);
-  ec.println(cnum);
+  extern void sendUECSpacket(int,char *,int);
+  
   switch(cnum) {
   case 0x7700:
+    sendUECSpacket(0,"135167",0); // 0x20FFF
+    delay(10);
     resetFunc();
     break;
   case 0x7001:
+    sendUECSpacket(0,"132865",0); // 0x20701
     ntpAccess();
+    break;
+  case 0x7500:
+    sendUECSpacket(0,"132944",0); // 0x20750
+    init_uecsTBL();
     break;
   }
 }
