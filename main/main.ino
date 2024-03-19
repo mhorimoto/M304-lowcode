@@ -19,7 +19,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver2.5.2Da";
+char *pgname = "M304 Ver2.5.2Db";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -606,8 +606,6 @@ void sendUECSpacket(int id,char *v,int lvo) {
     if (debugMsgFlag(SO_MSG)) {
       Serial.println(t);
     }
-    Serial.println(t);
-
     UDP16520.beginPacket(broadcastIP, 16520);
     UDP16520.write(t);
     UDP16520.endPacket();
