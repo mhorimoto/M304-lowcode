@@ -12,20 +12,26 @@ if (!empty($argv[1])) {
     switch ($optd) {
     case 'rx':
         $addr = "L00100000";
+        $lcnt = 8;
         break;
     case 'tx':
         $addr = "L00300000";
+        $lcnt = 3;
         break;
     case 'ope':
         $addr = "L00500000";
         break;
     case 'info':
         $addr = "L00000000";
+        $lcnt = 1;
         break;
     }
     $ver = getVersion($url);
     $url = sprintf("http://%s/%s",$url,$addr);
-    $f = fopen($url,"r");
+    $f = "";
+    for ($lc=0;$lc<$lcnt;$lc++) {
+        $f = fopen($url,"r");
+    }
     if ($f) {
         if ($uasm==1) {
             switch($optd) {
@@ -76,9 +82,11 @@ function display_rx($fp,$ver) {
             for($x=0;$x<16;$x++) {
                 $z = 0xff & hexdec(substr($buffer,(3*$x+8),3));
                 $hexdata[$w*0x10+$x] = $z;
+                printf("%02X ",$z);
             }
+            printf("\n");
         }
-        printf("%02d:%c,%3d,%3d,%3d,%2d\n",$y,prt_LC_RTX($hexdata,"valid"),prt_LC_RTX($hexdata,"room"),
+        printf("%02d:%s,%3d,%3d,%3d,%2d\n",$y,prt_LC_RTX($hexdata,"valid"),prt_LC_RTX($hexdata,"room"),
                prt_LC_RTX($hexdata,"region"),prt_LC_RTX($hexdata,"order"),prt_LC_RTX($hexdata,"priority"));
 
     }
@@ -179,7 +187,7 @@ function prt_LC_INFO($dt,$k) {
 function prt_LC_RTX($dt,$k) {
     switch($k) {
     case "valid":
-        echo $dt[0];
+        echo $dt[0]." | ";
         if (($dt[0]&0xff)==1) {
             return("E");
         } else {
