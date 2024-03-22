@@ -113,15 +113,24 @@ void opeHttpd(EthernetClient ec) {
 	sendUECSpacket(0,"131076",0); // Success fetch via httpd 0x20004
         htbuf[bufcnt] = (char)NULL;
         if ( c=='\n' && currentLineIsBlank ) {
-	  sendHTTPheader(ec); // 2.3.5D
-          //          ec.print(F("<h1>FETCH</h1>"));
-          //          ec.print(F("<pre>htbuf="));
-          //          ec.println(htbuf);
-          strncpy(d,&htbuf[2],4);
-          d[4]=(char)NULL;
-          daddr = strtol(d,NULL,16);
-          fetch_EEPROM(daddr,ec);
-          //          ec.println(F("</html>"));
+	  sendHTTPheader(ec);
+	  if (!strcmp(&htbuf[0],"0A")) {
+	    fetch_EEPROM(0,0,8,ec);
+	  } else if (!strcmp(&htbuf[0],"0B")) {
+	    fetch_EEPROM(0x1000,0,(CCM_TBL_CNT_RX*4),ec);
+	  } else if (!strcmp(&htbuf[0],"0C")) {
+	    fetch_EEPROM(0x3000,0,(CCM_TBL_CNT_TX*4),ec);
+	  } else if (!strcmp(&htbuf[0],"0D")) {
+	    fetch_EEPROM(0x5000,0,(CCM_TBL_CNT_CMP*2),ec);
+	  } else if (!strcmp(&htbuf[0],"0V")) {
+	    fetch_EEPROM(0x7ff0,0,1,ec);
+	  } else {
+	    strncpy(d,&htbuf[2],4);
+	    d[4]=(char)NULL;
+	    daddr = strtol(d,NULL,16);
+	    daddr &= 0xff00;
+	    fetch_EEPROM(daddr,1,16,ec);
+	  }
           break;
         }
       } else if (mode==MD_HT_REMOCON) {
@@ -206,23 +215,23 @@ void mod_EEPROM(unsigned int addr,byte dt,EthernetClient ec) {
   return;
 }
 
-/*
-   1page fetch 1page=256bytes
- */
-void fetch_EEPROM(unsigned int addr,EthernetClient ec) {
+void fetch_EEPROM(unsigned int addr,int addrflag,int lines,EthernetClient ec) {
   int x,y,a;
   uint8_t d;
   char prnbuf[BUFSIZ];
-  addr &= 0xff00;
-  //  ec.println(F("<pre>"));
-  for (y=0;y<16;y++) {
-    sprintf(prnbuf,"0x%04X:",addr+(y*0x10));
+  for (y=0;y<lines;y++) {
+    if (addrflag!=0) {
+      sprintf(prnbuf,"0x%04X:",addr+(y*0x10));
+    } else {
+      prnbuf[0] = (char)NULL;
+    }
     for (x=0;x<16;x++) {
+      wdt_reset();
       a = addr + (y*16) + x;
       d = atmem.read(a);
       sprintf(prnbuf,"%s %02X",prnbuf,d);
     }
     ec.println(prnbuf);
+    wdt_reset();
   }
-  //  ec.println(F("</pre>"));
 }
