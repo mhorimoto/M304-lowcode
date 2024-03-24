@@ -85,13 +85,17 @@ void match_rro(int id) {
 	      dtostrf(rfval,5,2,ft);
               sprintf(lbf,"%d %s %s",id,flb_cmpope[id].ccm_type,ft);
 	      sendUECSpacket(9,lbf,0);
+              if (cmpope_result[id]==1) {
+                lcdd.CharWrite(0,19-id,3,'*');
+              } else {
+                lcdd.CharWrite(0,19-id,3,' ');
+              }
 	    }
 	  }
 	}
       }
     } else {
       //    Serial.println(F("NO MATCH "));
-      ;    
     }
   }
 }
