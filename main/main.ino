@@ -212,6 +212,13 @@ void setup(void) {
   cepoch = RTC.get();
   pinMode(7,OUTPUT);
   //
+  // debug signal for match_rro
+  //
+  pinMode(10,OUTPUT);
+  pinMode(11,OUTPUT);
+  pinMode(12,OUTPUT); // Humid
+  pinMode(13,OUTPUT); // Temp
+  //
   // Setup Timer1 Interrupt
   //
   TCCR1A  = 0;
@@ -292,7 +299,7 @@ void loop(void) {
       lcdd.LineWrite(cposp,3);
       //
       sendUECSpacket(0,"0",1);
-      UECSupdate16520port() ;
+      //      UECSupdate16520port() ;
     }
     ptr_crosskey = getCrossKey();
     if (ptr_crosskey->longf==true) {

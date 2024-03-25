@@ -225,6 +225,8 @@ void copyFromLC_uecsM304cmpope(uecsM304cmpope *tg,int a) {
   int i;
   uint8_t ordl,ordh;
   union CHARFLOAT crf;
+  Serial.print(F("E copyFromLC_uecsM304cmpope with "));
+  Serial.print(a);
   tg->valid    = atmem.read(a+LC_COPE_VALID);    
   tg->room     = atmem.read(a+LC_COPE_ROOM);         // 0x01
   tg->region   = atmem.read(a+LC_COPE_REGION);       // 0x02
@@ -240,6 +242,7 @@ void copyFromLC_uecsM304cmpope(uecsM304cmpope *tg,int a) {
     crf.c[i] = atmem.read(a+LC_COPE_FVAL+i);
   }
   tg->fval = crf.f;
+  Serial.println(F("X"));
 }
 
 void init_uecsTBL(void) {
