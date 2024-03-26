@@ -2,11 +2,12 @@
 
 void opeRUN(int hr,int mn) {
   static int pmn=61;  // Nothing 61minute
-  int id, i,j,k;
+  int id,i,j,k,x,y,p;
   byte s[2];
   int r;
   char t[81],buf[8];
   extern int rlyttl[];
+  extern byte cmpope_result[];
 
   //  1min interval
   if (mn!=pmn) {
@@ -20,6 +21,71 @@ void opeRUN(int hr,int mn) {
       sendUECSpacket(r,itoa(rlyttl[r-1],buf,DEC),60);
     }
   }
+  // 2.5.2De
+  for(id=0;id<CCM_TBL_CNT_RX;id++) {
+    wdt_reset();
+    if (flb_rx_ccm[id].valid!=0xff) {
+      x = 0;
+      y = flb_rx_ccm[id].dummy[0];
+      if ( y < 255 ) {
+        x = cmpope_result[y];
+        for (i=1;i<4;i++) {
+          j = 2*i;
+          p = flb_rx_ccm[id].dummy[j-1]; // operator (AND/OR)
+          y = flb_rx_ccm[id].dummy[j];   // value index;
+          if ((y==0xff)||(p==0xff)) {
+            i = 5;  // force exit
+            break;
+          }
+          //          Serial.print(F("i="));
+          //          Serial.print(i);
+          switch(p) {
+          case R_AND:
+            //            Serial.print(F(" R_AND "));
+            x &= cmpope_result[y];       // x &= result
+            break;
+          case R_OR:
+            //            Serial.print(F(" R_OR "));
+            x |= cmpope_result[y];       // x |= result
+            break;
+          }
+          //          Serial.print(F("p="));
+          //          Serial.print(p);
+          //          Serial.print(F(" x="));
+          //          Serial.print(x);
+          //          Serial.print(F(" y="));
+          //          Serial.println(y);
+        }
+        s[0] = flb_rx_ccm[id].rly_l;
+        s[1] = flb_rx_ccm[id].rly_h;
+        for(i=0;i<4;i++) {
+          j = (s[0]>>(i*2))&0x3;
+          k = (s[1]>>(i*2))&0x3;
+          if (x==0) {
+            if (j) {
+              rlyttl[3-i] = 0; // RLY1..4
+            }
+            if (k) {
+              rlyttl[7-i] = 0; // RLY5..8
+            }
+          } else {
+            if (j) {
+              if (rlyttl[3-i]==0) {
+                rlyttl[3-i] = ((int)flb_rx_ccm[id].dumn)*60; // RLY1..4
+              }
+            }
+            if (k) {
+              if (rlyttl[7-i]==0) {
+                rlyttl[7-i] = ((int)flb_rx_ccm[id].dumn)*60; // RLY5..8
+              }
+            }
+          }
+        }
+      } else {  // y==0xff ---> always true
+        x = 1;
+      }
+    }
+  }
 }
 
 void timeDecision(int id,int curhr,int curmn) {
@@ -27,7 +93,6 @@ void timeDecision(int id,int curhr,int curmn) {
   int  i,j,k,sttime,edtime,inmntm,dumntm,startmin,curtim,pmin,did;
   char t[81];
   extern int rlyttl[];
-  extern byte cmpope_result[];
   
   sthr   = (int)flb_rx_ccm[id].sthr;
   stmn   = (int)flb_rx_ccm[id].stmn;
@@ -40,31 +105,6 @@ void timeDecision(int id,int curhr,int curmn) {
   inmntm = (int)flb_rx_ccm[id].inmn;
   dumntm = (int)flb_rx_ccm[id].dumn;
   if ((inmntm+dumntm)==0) return; // If either is 0, the process is aborted and returns.
-  // 2.5.2D9
-  x = 0;
-  y = flb_rx_ccm[id].dummy[0];
-  if ( y != 0xff ) {
-    x = cmpope_result[y];
-    for (i=1;i<4;i++) {
-      j = 2*i;
-      p = flb_rx_ccm[id].dummy[j-1]; // operator (AND/OR)
-      y = flb_rx_ccm[id].dummy[j];   // value index;
-      if ((y==0xff)||(p==0xff)) {
-        i = 5;  // force exit
-        break;
-      }
-      switch(p) {
-      case R_AND:
-        x &= cmpope_result[y];       // x &= result
-        break;
-      case R_OR:
-        x |= cmpope_result[y];       // x |= result
-        break;
-      }
-    }
-  } else {  // y==0xff ---> always true
-    x = 1;
-  }
   curtim = curhr*60+curmn;
   
   for(startmin=sttime;startmin<edtime;startmin+=(inmntm+dumntm)) {

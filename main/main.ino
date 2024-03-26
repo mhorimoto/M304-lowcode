@@ -1,7 +1,7 @@
 #include <M304.h>
 
-#if _M304_H_V < 1313
-#pragma message("Library M304 is old. Version 1.3.13 or higher is required.")
+#if _M304_H_V < 1314
+#pragma message("Library M304 is old. Version 1.3.14 or higher is required.")
 #else
 
 #include <avr/wdt.h>
@@ -99,11 +99,10 @@ char lbf[81];
 extern bool debugMsgFlag(int);
 extern void debugMsgOutput(int,int);
 
-// 2.3.5D
 uecsM304  flb_rx_ccm[CCM_TBL_CNT_RX],flb_tx_ccm[CCM_TBL_CNT_TX];
 uecsM304cmpope flb_cmpope[CCM_TBL_CNT_CMP];
-// 2.3.7DBG5
 byte cmpope_result[CCM_TBL_CNT_CMP];
+byte cmpope_lifecnt[CCM_TBL_CNT_CMP];
 
 const char str_main0[] PROGMEM  = "NO NET MODE         ";
 const char str_main1[] PROGMEM  = "STATIC IP ADDRESS   ";
@@ -276,6 +275,17 @@ void loop(void) {
                tm.Year+1970,tm.Month,tm.Day,tm.Hour,tm.Minute,tm.Second);
       lcdd.setLine(cposp,1,line1);
       lcdd.LineWrite(cposp,1);
+      for (x=0;x<CCM_TBL_CNT_CMP;x++) {
+        if (cmpope_lifecnt[x]<=0) {
+          cmpope_result[x] = 0;
+          cmpope_lifecnt[x] = 0;
+        } else {
+          cmpope_lifecnt[x]--;
+        }
+      }
+      for (x=0;x<4;x++) { // Debug
+        digitalWrite(13-x,cmpope_result[x]);
+      }
       opeRUN(tm.Hour,tm.Minute);
       minsec = 0;
       for (x=0;x<8;x++) {
@@ -284,10 +294,10 @@ void loop(void) {
           if (minsec>rlyttl[x]) {
             minsec = rlyttl[x];
           }
-          digitalWrite(RLY1+x,LOW);
+          digitalWrite(RLY1+x,LOW);   // Relay MAKE
           rlyttl[x]--;
         } else {
-          digitalWrite(RLY1+x,HIGH);
+          digitalWrite(RLY1+x,HIGH);  // Relay BREAK
         }
       }
       if (minsec>0) {

@@ -52,7 +52,7 @@ void match_rro(int id) {
 	    // CCM type
 	    if (!strncmp(ptr_uecsxmldata->type,flb_cmpope[id].ccm_type,19)) {
 	      rfval = float(ptr_uecsxmldata->fval);
-
+              cmpope_lifecnt[id] = flb_cmpope[id].lifecnt;
 	      switch(flb_cmpope[id].cmpope) {
 	      case R_EQ: // ==
 		if (rfval==flb_cmpope[id].fval) {
@@ -89,15 +89,6 @@ void match_rro(int id) {
 		  cmpope_result[id] = 0;
 		}
 		break;
-	      }
-	      //	      if (cmpope_result[id]==1) {
-	      //		dtostrf(rfval,5,2,ft);
-	      //		sprintf(lbf,"%d %s %s",id,flb_cmpope[id].ccm_type,ft);
-	      //		sendUECSpacket(9,lbf,0);
-	      //		delay(10);
-	      //	      }
-	      for (i=0;i<4;i++) { // Debug
-		digitalWrite(13-i,cmpope_result[i]);
 	      }
 	    }
 	  }
