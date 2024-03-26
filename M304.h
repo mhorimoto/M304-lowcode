@@ -147,7 +147,7 @@
 #define   LC_COPE_ROOM     0x01
 #define   LC_COPE_REGION   0x02
 #define   LC_COPE_ORDER    0x03
-#define   LC_COPE_PRIORITY 0x05
+#define   LC_COPE_LIFECNT  0x05
 #define   LC_COPE_CCMTYPE  0x06
 #define   LC_COPE_OPE      0x1a
 #define   LC_COPE_FVAL     0x1b
@@ -207,7 +207,7 @@ typedef struct uecsM304cmpope {
   byte room;         // 0x01
   byte region;       // 0x02
   uint16_t order;    // 0x03
-  byte priority;     // 0x05
+  byte lifecnt;      // 0x05 sec
   char ccm_type[20]; // 0x06 ASCIZ
   byte cmpope;       // 0x1a
   float fval;        // 0x1b

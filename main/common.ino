@@ -148,7 +148,7 @@ void _dump_flb(int k, int f) {
       Serial.println(flb_cmpope[i].room);
       Serial.println(flb_cmpope[i].region);
       Serial.println(flb_cmpope[i].order);
-      Serial.println(flb_cmpope[i].priority);
+      Serial.println(flb_cmpope[i].lifecnt);
       Serial.println(flb_cmpope[i].ccm_type);
       Serial.println(flb_cmpope[i].cmpope);
       Serial.println(flb_cmpope[i].fval);
@@ -225,15 +225,14 @@ void copyFromLC_uecsM304cmpope(uecsM304cmpope *tg,int a) {
   int i;
   uint8_t ordl,ordh;
   union CHARFLOAT crf;
-  Serial.print(F("E copyFromLC_uecsM304cmpope with "));
-  Serial.print(a);
+
   tg->valid    = atmem.read(a+LC_COPE_VALID);    
   tg->room     = atmem.read(a+LC_COPE_ROOM);         // 0x01
   tg->region   = atmem.read(a+LC_COPE_REGION);       // 0x02
   ordl = atmem.read(a+LC_COPE_ORDER);
   ordh = atmem.read(a+LC_COPE_ORDER+1);
   tg->order    = (ordh<<8)+ordl;
-  tg->priority = atmem.read(a+LC_COPE_PRIORITY);     // 0x05
+  tg->lifecnt = atmem.read(a+LC_COPE_LIFECNT);     // 0x05
   for (i=0;i<20;i++) {
     tg->ccm_type[i] = atmem.read(a+LC_COPE_CCMTYPE+i); // 0x06 ASCIZ
   }
@@ -242,7 +241,6 @@ void copyFromLC_uecsM304cmpope(uecsM304cmpope *tg,int a) {
     crf.c[i] = atmem.read(a+LC_COPE_FVAL+i);
   }
   tg->fval = crf.f;
-  Serial.println(F("X"));
 }
 
 void init_uecsTBL(void) {
