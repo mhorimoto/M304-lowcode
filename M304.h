@@ -1,6 +1,6 @@
 #ifndef _M304_H_
 #define _M304_H_
-#define _M304_H_V  1314
+#define _M304_H_V  1315
 
 #include <avr/pgmspace.h>
 #include <LiquidCrystal.h>
@@ -217,14 +217,23 @@ typedef struct uecsM304cmpope {
 // Relational Operators
 
 #define R_NULL   0
-#define R_EQ     1  // == Equal
-#define R_GT     2  // >  Greater Than
-#define R_LT     3  // <  Less Than
-#define R_GE     4  // >= Greater Than Equal
-#define R_LE     5  // <= Less Than Equal
-#define R_AND    6  // &  Logical AND
-#define R_OR     7  // |  Logical OR
+#define R_EQ     1     // == Equal
+#define R_GT     2     // >  Greater Than
+#define R_LT     3     // <  Less Than
+#define R_GE     4     // >= Greater Than Equal
+#define R_LE     5     // <= Less Than Equal
+#define R_AND    6     // &  Logical AND
+#define R_OR     7     // |  Logical OR
+#define R_NE     8     // != Not Equal
+#define R_ADDFLG 0x80
 
+/*  Relay operation          */
+/*  Group semi 20230615 p.9  */
+
+#define RLY_DNTCARE 0x00
+#define RLY_NA      0x01
+#define RLY_BREAK   0x02
+#define RLY_MAKE    0x03
 
 /*  Cross Key Switch */
 
