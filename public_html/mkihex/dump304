@@ -110,9 +110,9 @@ function display_ope($fp,$ver) {
             }
             printf("\n");
         }
-        printf("%02d:%s,%3d,%3d,%3d,%2d,%s%s\n",$y,prt_LC_RTX($hexdata,"valid"),prt_LC_RTX($hexdata,"room"),
+        printf("%02d:%s,%3d,%3d,%3d,%2d,%s%s%s\n",$y,prt_LC_RTX($hexdata,"valid"),prt_LC_RTX($hexdata,"room"),
                prt_LC_RTX($hexdata,"region"),prt_LC_RTX($hexdata,"order"),prt_LC_RTX($hexdata,"lifecnt"),
-               prt_LC_RTX($hexdata,"ccmtype"),prt_LC_RTX($hexdata,"ope"));
+               prt_LC_RTX($hexdata,"ccmtype"),prt_LC_RTX($hexdata,"ope"),prt_LC_RTX($hexdata,"fval"));
     }
 }
 
@@ -215,14 +215,14 @@ function prt_LC_RTX($dt,$k) {
         return($dt[1]&0xff);
         break;
     case "region":
-        return((string)($dt[2]&0xff));
+        return($dt[2]&0xff);
         break;
     case "order":
         $z = ($dt[4]&0xff)*0x100+($dt[3]&0xff);
-        return((string)$z);
+        return($z);
     case "lifecnt":
     case "priority":
-        return((string)($dt[5]&0xff));
+        return($dt[5]&0xff);
     case "ccmtype":
         return(_LCText($dt,6,20));
     case "ope":
@@ -249,9 +249,25 @@ function prt_LC_RTX($dt,$k) {
         default:
             return("??");
         }
+        break;
+    case "fval":
+        return(_LCFloat($dt,0x1b));
+        break;
     }
 }
-    
+
+function _LCFloat($dt,$ofs) {
+    $d  = ($dt[$ofs+0]&0xff)*0x1000000;
+    $d += ($dt[$ofs+1]&0xff)*0x10000;
+    $d += ($dt[$ofs+2]&0xff)*0x100;
+    $d += ($dt[$ofs+3]&0xff);
+    $s = bin2hex($d);
+    var_dump($s);
+    $f = floatval($s);
+    var_dump($f);
+    return($f);
+}
+
 function _LCBitSW($dt,$ofs) {
     $d = $dt[$ofs];
     $odt = substr("00000000".decbin($d),-0,8);
