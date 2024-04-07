@@ -2,52 +2,58 @@
 
 <?php
 
+global $n;
+$n = 0;
 if (!empty($argv[1])) {
     $opts = getopt("d:u",[],$ri);
-    $url=@$argv[$ri];
+    $host = @$argv[$ri];
     $optd = $opts['d'];
     $ausm = @$opts['u'];
     $uasm = isset($ausm);
 
     switch ($optd) {
     case 'rx':
-        $addr = "L00100000";
+        $addr = 0x1000;
         $lcnt = 8;
         break;
     case 'tx':
-        $addr = "L00300000";
+        $addr = 0x3000;
         $lcnt = 3;
         break;
     case 'ope':
-        $addr = "L00500000";
+        $addr = 0x5000;
         $lcnt = 2;
         break;
     case 'info':
-        $addr = "L00000000";
+        $addr = 0x0000;
         $lcnt = 1;
         break;
     }
-    $ver = getVersion($url);
-    $url = sprintf("http://%s/%s",$url,$addr);
+    $ver = getVersion($host);
     $f = "";
     for ($lc=0;$lc<$lcnt;$lc++) {
+        $a = $addr+($lc*0x100);
+        $url = sprintf("http://%s/L00%X00",$host,$a);
         $f = fopen($url,"r");
-    }
-    if ($f) {
-        if ($uasm==1) {
-            switch($optd) {
-            case 'info':
-                display_info($f,$ver);
-                break;
-            case 'rx':
-                display_rx($f,$ver);
-                break;
-            case 'ope':
-                display_ope($f,$ver);
-                break;
+        if ($f) {
+            if ($uasm==1) {
+                switch($optd) {
+                case 'info':
+                    display_info($f,$ver);
+                    break;
+                case 'rx':
+                    display_rx($f,$ver);
+                    break;
+                case 'tx':
+                    display_tx($f,$ver);
+                    break;
+                case 'ope':
+                    display_ope($f,$ver);
+                    break;
+                }
+            } else {
+                normal_dump($f);
             }
-        } else {
-            normal_dump($f);
         }
         fclose($f);
     }
@@ -80,39 +86,81 @@ function display_info($fp,$ver) {
 }
 
 function display_rx($fp,$ver) {
-    for($y=0;$y<30;$y++) {  // CCM_TBL_CNT_RX
+    global $n;
+    for($y=0;$y<4;$y++) {
         for($w=0;$w<4;$w++) {  // 4records per an entry
             $buffer = fgets($fp,80);
             for($x=0;$x<16;$x++) {
                 $z = 0xff & hexdec(substr($buffer,(3*$x+8),3));
                 $hexdata[$w*0x10+$x] = $z;
-                printf("%02X ",$z);
+                //                printf("%02X ",$z);
             }
-            printf("\n");
+            //            printf("\n");
         }
-        printf("%02d:%s,%3d,%3d,%3d,%2d\n",$y,prt_LC_RTX($hexdata,"valid"),prt_LC_RTX($hexdata,"room"),
-               prt_LC_RTX($hexdata,"region"),prt_LC_RTX($hexdata,"order"),prt_LC_RTX($hexdata,"priority"));
-
+        printf("%02d:%s,%3d,%3d,%3d,%2d,%s,%d,%c,%s,%s,%d,%d,%d,%d,%d,%d,%s,%s,%s,%s,%s,%s,%s,%s%s\n",
+               $n,prt_LC_RTX($hexdata,"valid"),prt_LC_RTX($hexdata,"room"),
+               prt_LC_RTX($hexdata,"region"),prt_LC_RTX($hexdata,"order"),prt_LC_RTX($hexdata,"priority"),
+               prt_LC_RTX($hexdata,"lv"),prt_LC_RTX($hexdata,"cast"),prt_LC_RTX($hexdata,"sr"),
+               prt_LC_RTX($hexdata,"ccmtype"),prt_LC_RTX($hexdata,"unit"),
+               prt_LC_RTX($hexdata,"sthr"),prt_LC_RTX($hexdata,"stmn"),
+               prt_LC_RTX($hexdata,"edhr"),prt_LC_RTX($hexdata,"edmn"),
+               prt_LC_RTX($hexdata,"inmn"),prt_LC_RTX($hexdata,"dumn"),
+               prt_LC_RTX($hexdata,"rly1"),prt_LC_RTX($hexdata,"rly2"),
+               prt_LC_RTX($hexdata,"rly3"),prt_LC_RTX($hexdata,"rly4"),
+               prt_LC_RTX($hexdata,"rly5"),prt_LC_RTX($hexdata,"rly6"),
+               prt_LC_RTX($hexdata,"rly7"),prt_LC_RTX($hexdata,"rly8"),
+               prt_LC_RTX($hexdata,"cond"));
+        $n++;
+        if ($n>29) return;
     }
 }
 
+
 function display_tx($fp,$ver) {
+    global $n;
+    for($y=0;$y<4;$y++) {
+        for($w=0;$w<4;$w++) {  // 4records per an entry
+            $buffer = fgets($fp,80);
+            for($x=0;$x<16;$x++) {
+                $z = 0xff & hexdec(substr($buffer,(3*$x+8),3));
+                $hexdata[$w*0x10+$x] = $z;
+                //                printf("%02X ",$z);
+            }
+            //            printf("\n");
+        }
+        printf("%02d:%s,%3d,%3d,%3d,%2d,%s,%d,%c,%s,%s,%d,%d,%d,%d,%d,%d,%s,%s,%s,%s,%s,%s,%s,%s%s\n",
+               $n,prt_LC_RTX($hexdata,"valid"),prt_LC_RTX($hexdata,"room"),
+               prt_LC_RTX($hexdata,"region"),prt_LC_RTX($hexdata,"order"),prt_LC_RTX($hexdata,"priority"),
+               prt_LC_RTX($hexdata,"lv"),prt_LC_RTX($hexdata,"cast"),prt_LC_RTX($hexdata,"sr"),
+               prt_LC_RTX($hexdata,"ccmtype"),prt_LC_RTX($hexdata,"unit"),
+               prt_LC_RTX($hexdata,"sthr"),prt_LC_RTX($hexdata,"stmn"),
+               prt_LC_RTX($hexdata,"edhr"),prt_LC_RTX($hexdata,"edmn"),
+               prt_LC_RTX($hexdata,"inmn"),prt_LC_RTX($hexdata,"dumn"),
+               prt_LC_RTX($hexdata,"rly1"),prt_LC_RTX($hexdata,"rly2"),
+               prt_LC_RTX($hexdata,"rly3"),prt_LC_RTX($hexdata,"rly4"),
+               prt_LC_RTX($hexdata,"rly5"),prt_LC_RTX($hexdata,"rly6"),
+               prt_LC_RTX($hexdata,"rly7"),prt_LC_RTX($hexdata,"rly8"),
+               prt_LC_RTX($hexdata,"cond"));
+        $n++;
+        if ($n>9) return;
+    }
 }
 
 function display_ope($fp,$ver) {
-    for($y=0;$y<10;$y++) {
+    global $n;
+    for($y=0;$y<8;$y++) {
         for($w=0;$w<2;$w++) {
             $buffer = fgets($fp,80);
             for($x=0;$x<16;$x++) {
                 $z = 0xff & hexdec(substr($buffer,(3*$x+8),3));
                 $hexdata[$w*0x10+$x] = $z;
-                printf("%02X ",$z);
             }
-            printf("\n");
         }
-        printf("%02d:%s,%3d,%3d,%3d,%2d,%s%s%s\n",$y,prt_LC_RTX($hexdata,"valid"),prt_LC_RTX($hexdata,"room"),
+        printf("%02d:%s,%3d,%3d,%3d,%2d,%s%s%s\n",$n,prt_LC_RTX($hexdata,"valid"),prt_LC_RTX($hexdata,"room"),
                prt_LC_RTX($hexdata,"region"),prt_LC_RTX($hexdata,"order"),prt_LC_RTX($hexdata,"lifecnt"),
-               prt_LC_RTX($hexdata,"ccmtype"),prt_LC_RTX($hexdata,"ope"),prt_LC_RTX($hexdata,"fval"));
+               prt_LC_RTX($hexdata,"opeccmtype"),prt_LC_RTX($hexdata,"ope"),prt_LC_RTX($hexdata,"fval"));
+        $n++;
+        if ($n>9) return;
     }
 }
 
@@ -223,7 +271,17 @@ function prt_LC_RTX($dt,$k) {
     case "lifecnt":
     case "priority":
         return($dt[5]&0xff);
+    case "lv":
+        return(_LCLv($dt,6));
+    case "cast":
+        return($dt[7]&0xff);
+    case "sr":
+        return($dt[8]&0xff);
     case "ccmtype":
+        return(_LCText($dt,9,20));
+    case "unit":
+        return(_LCText($dt,0x1d,10));
+    case "opeccmtype":
         return(_LCText($dt,6,20));
     case "ope":
         switch($dt[0x1a]&0x7f) {
@@ -250,22 +308,107 @@ function prt_LC_RTX($dt,$k) {
             return("??");
         }
         break;
+    case "sthr":
+        return($dt[0x27]&0xff);
+    case "stmn":
+        return($dt[0x28]&0xff);
+    case "edhr":
+        return($dt[0x29]&0xff);
+    case "edmn":
+        return($dt[0x2a]&0xff);
+    case "inmn":
+        return($dt[0x2b]&0xff);
+    case "dumn":
+        return($dt[0x2c]&0xff);
+    case "rly1":
+        return(_LCRly($dt,1));
+    case "rly2":
+        return(_LCRly($dt,2));
+    case "rly3":
+        return(_LCRly($dt,3));
+    case "rly4":
+        return(_LCRly($dt,4));
+    case "rly5":
+        return(_LCRly($dt,5));
+    case "rly6":
+        return(_LCRly($dt,6));
+    case "rly7":
+        return(_LCRly($dt,7));
+    case "rly8":
+        return(_LCRly($dt,8));
     case "fval":
         return(_LCFloat($dt,0x1b));
         break;
+    case "cond":
+        if (($dt[0x30]==0xff)||($dt[0x00]!=1)) return("");
+        $z = ",";
+        $z .= sprintf("ope%02d",$dt[0x30]&0xff);
+        for($i=0;$i<4;$i++) {
+            switch($dt[0x31+$i]&0xff) {
+            case 6: // R_AND
+                $z .= "&&";
+                break;
+            case 7: // R_OR
+                $z .= "||";
+                break;
+            default:
+                return($z);
+            }
+            $y = $dt[0x32+$i]&0xff;
+            if ($y==0xff) return($z);
+            $z .= sprintf("ope%02d",$y);
+        }
+        return($z);
     }
 }
 
+/*  Relay operation          */
+/*  Group semi 20230615 p.9  */
+function _LCRly($dt,$rnum) {
+    switch($rnum) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        $x = $dt[0x2d];
+        $s = (4-$rnum)*2;
+        break;
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+        $x = $dt[0x2e];
+        $s = (8-$rnum)*2;
+        break;
+    }
+    $y = ($x>>$s)&0x03;
+
+    switch($y) {
+    case 0:
+        $z = "CONT";
+        break;
+    case 1:
+        $z = "N/A";
+        break;
+    case 2:
+        $z = "BREAK";
+        break;
+    case 3:
+        $z = "MAKE";
+        break;
+    }
+    return($z);
+}
+
 function _LCFloat($dt,$ofs) {
-    $d  = ($dt[$ofs+0]&0xff)*0x1000000;
-    $d += ($dt[$ofs+1]&0xff)*0x10000;
-    $d += ($dt[$ofs+2]&0xff)*0x100;
-    $d += ($dt[$ofs+3]&0xff);
-    $s = bin2hex($d);
-    var_dump($s);
-    $f = floatval($s);
-    var_dump($f);
-    return($f);
+    $d  = ($dt[$ofs+3]&0xff)*0x1000000;
+    $d += ($dt[$ofs+2]&0xff)*0x10000;
+    $d += ($dt[$ofs+1]&0xff)*0x100;
+    $d += ($dt[$ofs+0]&0xff);
+    if ($d==0xffffffff) return("NaN");
+    $f = ieee754_32($d);
+    $r = sprintf("%f",$f);
+    return($r);
 }
 
 function _LCBitSW($dt,$ofs) {
@@ -287,6 +430,33 @@ function _LCText($dt,$ofs,$len) {
     return($rt);
 }
 
+function _LCLv($dt,$ofs) {
+    switch($dt[$ofs]) {
+    case 1:
+        return("A-1S-0");
+    case 2:
+        return("A-1S-1");
+    case 3:
+        return("A-10S-0");
+    case 4:
+        return("A-10S-1");
+    case 5:
+        return("A-1M-0");
+    case 6:
+        return("A-1M-1");
+    case 7:
+        return("B0");
+    case 8:
+        return("B1");
+    case 9:
+        return("S-1S-0");
+    case 10:
+        return("S-1M-0");
+    default:
+        return("??");
+    }
+}
+
 function _IPaddress($dt,$ofs) {
     if ($dt[0x0c]!=00) {
         $ign = "(ignore)";
@@ -297,6 +467,13 @@ function _IPaddress($dt,$ofs) {
     return($odt);
 }
 
+function ieee754_32($v) {
+    $si = ($v & 0x80000000) >> 31;
+    $ex = ($v & 0x7F800000) >> 23;
+    $fr = ($v & 0x007fffff);
+    $fv = (-1)**$si*(2**($ex-127))*(1+($fr*2**(-23)));
+    return($fv);
+}
 
 # -*- mode: php-mode; -*-
 ?>

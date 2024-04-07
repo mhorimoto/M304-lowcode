@@ -1,52 +1,75 @@
 # Extended EEPROM Assignment
 
 ## LOW CORE
-0000H 999999    UECS-ID
-0006H XXXXXX    MAC Address
-000CH X         Static os DHCP flag
+0000H byte[6]   UECS-ID
+0006H byte[6]   MAC Address
+000CH byte      Static os DHCP flag
 000DH-000FH     Reserved
-0010H XXXX      Fixed IP Address
-0014H XXXX      Fixed Netmask
-0018H XXXX      Fixed Default Gateway
-001CH XXXX      Fixed DNS
+0010H byte[4]   Fixed IP Address
+0014H byte[4]   Fixed Netmask
+0018H byte[4]   Fixed Default Gateway
+001CH byte[4]   Fixed DNS
 0020H-003FH     Reserved
-0040H AAAAAAAAAAAAAAA0  Vender Name
-0050H AAAAAAAAAAAAAAA0  Node Name
-0080H X                 Debug Message available
+0040H char[16]  Vender Name (ASCIZ)
+0050H char[16]  Node Name (ASCIZ)
+0060H byte      Debug Message available
+0062H byte      CMODE
 
-## CCM (for cnd) Table
-0FC0H byte     0x01      Valid
-0FC1H byte     X         ROOM
-0FC2H byte     X         REGION
-0FC3H uint16_t XX        ORDER
-0FC5H byte     X         PRIORITY
-0FC6H byte     0         LV (=A-1S-0)
-0FC7H byte     0         CAST
-0FC8H byte     'S'       SR
-0FC9H char[20] "cnd"0    CCMTYPE ASCIZ
-0FDDH char[10] 0         UNIT (NULL)
+## CCM (Schedule)
+1000H
+ xx00H byte             Valid Flag (0x01:valid, 0xff:invalid)
+ xx01H byte             ROOM
+ xx02H byte             REGION
+ xx03H uint16_t         ORDER (Little Endian 2bytes)
+ xx05H byte             PRIORITY
+ xx06H byte             Level (A-1S-0 etc.)
+ xx07H byte             cast
+ xx08H char             SR (Fixed 'R')
+ xx09H char[20]         CCMTYPE (ASCIZ)
+ xx1DH char[10]         UNIT (ASCIZ)
+ xx27H byte             Start of time (Hour)
+ xx28H byte             Start of time (Minute)
+ xx29H byte             End of time (Hour)
+ xx2AH byte             End of time (Minute)
+ xx2BH byte             Interval time (Minute)
+ xx2CH byte             During time (Minute)
+ xx2DH byte             Relay 1..4
+ xx2EH byte             Relay 5..8
+ xx2FH                  Reserved
+ xx30H byte             Condition compare value 1
+ xx31H byte             Conditional Expression 2
+ xx32H byte             Condition compare value 2
+ xx33H byte             Conditional Expression 3
+ xx34H byte             Condition compare value 3
+ xx35H byte             Conditional Expression 4
+ xx36H byte             Condition compare value 4
+*** 64bytes/1CCM  30records
 
-## CCM Table
-1000H CCM_TABLE 64bytes/1CCM
+## CCM (TX)
+3000H
+ xx00H byte             Valid Flag (0x01:valid, 0xff:invalid)
+ xx01H byte             ROOM
+ xx02H byte             REGION
+ xx03H uint16_t         ORDER (Little Endian 2bytes)
+ xx05H byte             PRIORITY
+ xx06H byte             Level (A-1S-0 etc.)
+ xx07H byte             cast
+ xx08H char             SR (Fixed 'S')
+ xx09H char[20]         CCMTYPE (ASCIZ)
+ xx1DH char[10]         UNIT (ASCIZ)
+ xx27H-xx3FH            Reserved
+*** 64bytes/1CCM  10records
 
-xx00H byte     X         Valid Flag (0x01:valid, 0xff:invalid)
-xx01H byte     X         ROOM
-xx02H byte     X         REGION
-xx03H uint16_t XX        ORDER
-xx05H byte     X         PRIORITY
-xx06H byte     9         LV
-xx07H byte     9         CAST
-xx08H byte     A         SR
-xx09H char[20] AAAAAAAAAAAAAAAAAAAA   CCMTYPE
-xx1DH char[10] AAAAAAAAAA             UNIT
-xx27H byte     X                      STHR Start of time (Hour)
-xx28H byte     X                      STMN Start of time (Minute)
-xx29H byte     X                      EDHR End of time (Hour)
-xx2AH byte     X                      EDMN End of time (Minute)
-xx2BH byte     X                      INMN Interval time (minutes)
-xx2CH byte     X                      DUMN During time (minutes)
-xx2DH byte     X                      RLY_L Relay Low side
-xx2EH byte     X                      RLY_H Relay High side
-xx2FH                                 Reserved
-xx30H-xx3FH                           Reserved
+## CCM (OPE)
+5000H
+ xx00H byte             Valid Flag (0x01:valid, 0xff:invalid)
+ xx01H byte             ROOM
+ xx02H byte             REGION
+ xx03H uint16_t         ORDER (Little Endian 2bytes)
+ xx05H byte             LIFECNT
+ xx06H char[20]         CCNTYOE (ASCIZ)
+ xx1AH byte             OPERATOR
+ xx1BH float(4bytes)    FVAL (Comparison value)
+ xx1FH byte             RESULT
+*** 32bytes/1CCM  10records
 
