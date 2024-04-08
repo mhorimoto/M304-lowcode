@@ -2,11 +2,18 @@
 #coding: utf-8
 #
 
-# Version: 1.50
+# Version: 2.00
 # Author: Masafumi Horimoto <mh@ys-lab.tech>
 #
+# Comments:
+# The conditions for relay operation were changed to a four-value setting.
+#    0,N : 0b00: Don't care (Compatibility with older versions)
+#    T   : 0b01: Both (same as toggle)
+#    B   : 0b10: Break
+#    1,M : 0b11: Make (Compatibility with older versions)
+#
 # arguments are as following
-#  id room region order priority lv cast sr ccm_type unit sthr stmn edhr edmn inmn dumn rly
+#  id room region order priority lv cast sr ccm_type unit sthr stmn edhr edmn inmn dumn rly(8characters)
 
 import sys
 import struct
@@ -29,11 +36,48 @@ def string_arrange(s,l):
         cnt += 1
     return rt
 
-
+def rly_setting(r,x):
+    if ((x>=0) and (x<4)):
+        s = 6-(x*2)
+    elif (x<8):
+        s = 6-((x-4)*2)
+    else:
+        print("ERROR in rly_setting() out of range x")
+        quit()
+    if ((r[x]=="0") or (r[x]=="N")):
+        return 0<<s
+    elif (r[x]=="T"):
+        return (0b01<<s)
+    elif (r[x]=="B"):
+        return (0b10<<s)
+    elif ((r[x]=="1") or (r[x]=="M")):
+        return (0b11<<s)
+    else:
+        print("ERROR in rly_setting()")
+    quit()
+    
 ##########################################################
 if __name__ == '__main__':
     args = sys.argv
+    argc = len(args)
 
+    if (argc != 18):
+        print("Usage:")
+        print("arguments are as following")
+        print(" id room region order priority lv cast sr ccm_type unit sthr stmn edhr edmn inmn dumn rly(8characters)")
+        print("----------------")
+        print(" id:")
+        print(" room,region,order,priority: UECS number")
+        print(" lv: A-1S-0=1,A-1S-1=2,A-10S-0=3,A-10S-1=4,A-1M-0=5,A-1M-1=6,B-0=7,B-1=8,S-1S-0=9,S-1M-0=10")
+        print(" cast:")
+        print(" sr: Sender=S, Receiver=R")
+        print(" ccm_type:")
+        print(" unit:")
+        print(" sthr,stmn: hour/minute of start")
+        print(" edhr,edmn: hour/minute of end")
+        print(" inmn,dumn: interval(minutes),during(minutes)")
+        print(" rly: rly1,2,3 from leftside, 0,N=Dont care,T=BOTH/Toggle,B=Break,1,M=Make")
+        quit()
     id = int(args[1])
     room = int(args[2])
     region = int(args[3])
@@ -54,11 +98,17 @@ if __name__ == '__main__':
     rly_l = 0
     rly_h = 0
     for x in range(4):
-        if (rly[x]=="1"):
-            rly_l |= 0b11 << 6-(x*2)
+        rly_l |= rly_setting(rly,x)
     for x in range(4,8):
-        if (rly[x]=="1"):
-            rly_h |= 0b11 << 6-((x-4)*2)
+        rly_h |= rly_setting(rly,x)
+
+######### OLD version
+#    for x in range(4):
+#        if (rly[x]=="1"):
+#            rly_l |= 0b11 << 6-(x*2)
+#    for x in range(4,8):
+#        if (rly[x]=="1"):
+#            rly_h |= 0b11 << 6-((x-4)*2)
 
     if sr=="S":
         sr = "53"

@@ -61,25 +61,46 @@ void opeRUN(int hr,int mn) {
         for(i=0;i<4;i++) {
           j = (s[0]>>(i*2))&0x3;
           k = (s[1]>>(i*2))&0x3;
-          if (x==0) {
-            if (j) {
-              rlyttl[3-i] = 0; // RLY1..4
-            }
-            if (k) {
-              rlyttl[7-i] = 0; // RLY5..8
-            }
-          } else {
-            if (j) {
-              if (rlyttl[3-i]==0) {
-                rlyttl[3-i] = ((int)flb_rx_ccm[id].dumn)*60; // RLY1..4
-              }
-            }
-            if (k) {
-              if (rlyttl[7-i]==0) {
-                rlyttl[7-i] = ((int)flb_rx_ccm[id].dumn)*60; // RLY5..8
-              }
-            }
-          }
+	  set_rlyttl(x,i,j,1,id);
+	  set_rlyttl(x,i,k,5,id);
+	
+          // if (x==0) { // 条件に合わない (BOTHならBREAK,他ならDONTCARE)
+	  //   switch(j) {
+	  //   case RLY_BOTH:
+	  //     rlyttl[3-i] = 0; /* RLY1..4 */
+	  //     break;
+	  //   }
+	  //   switch(k) {
+	  //   case RLY_BOTH:
+	  //     rlyttl[7-i] = 0; /* RLY5..8 */
+	  //     break;
+	  //   }
+	  //   // if (j) {
+	  //   //   rlyttl[3-i] = 0; // RLY1..4
+	  //   // }
+	  //   // if (k) {
+	  //   //   rlyttl[7-i] = 0; // RLY5..8
+	  //   // }
+          // } else {    /* 条件に合う (MAKE,BREAK,BOTHの判定後処理を書く) */
+          //   switch(j) {
+	  //   case RLY_BOTH:
+          //     if (rlyttl[3-i]==0) {
+          //       rlyttl[3-i] = ((int)flb_rx_ccm[id].dumn)*60; // RLY1..4
+          //     }
+	  //     break;
+	  //   case RLY_MAKE:
+	  //     rlyttl[3-i] = ((int)flb_rx_ccm[id].dumn)*60; // RLY1..4
+	  //     break;
+	  //   case RLY_BREAK:
+	  //     rlyttl[3-i] = 0;
+	  //     break;
+          //   }
+          //   if (k) {
+          //     if (rlyttl[7-i]==0) {
+          //       rlyttl[7-i] = ((int)flb_rx_ccm[id].dumn)*60; // RLY5..8
+          //     }
+          //   }
+	  // }
         }
       } else {  // y==0xff ---> always true
         x = 1;
@@ -88,6 +109,36 @@ void opeRUN(int hr,int mn) {
   }
 }
 
+void set_rlyttl(int x,int i,int j,int r,int id) {
+  extern int rlyttl[];
+  if (r==1) {
+    r = 3;
+  } else {
+    r = 7;
+  }
+  if (x==0) {
+    switch(j) {
+    case RLY_BOTH:
+      rlyttl[r-i] = 0; /* r==1:RLY1..4  r!=1:RLY5..8 */
+      break;
+    }
+  } else {    /* 条件に合う (MAKE,BREAK,BOTHの判定後処理を書く) */
+    switch(j) {
+    case RLY_BOTH:
+      if (rlyttl[r-i]==0) {
+	rlyttl[r-i] = ((int)flb_rx_ccm[id].dumn)*60; /* r==1:RLY1..4  r!=1:RLY5..8 */
+      }
+      break;
+    case RLY_MAKE:
+      rlyttl[r-i] = ((int)flb_rx_ccm[id].dumn)*60; /* r==1:RLY1..4  r!=1:RLY5..8 */
+      break;
+    case RLY_BREAK:
+      rlyttl[r-i] = 0;
+      break;
+    }
+  }
+}
+    
 void timeDecision(int id,int curhr,int curmn) {
   byte d,sthr,stmn,edhr,edmn,inmn,dumn,s[2],x,y,p;
   int  i,j,k,sttime,edtime,inmntm,dumntm,startmin,curtim,pmin,did;
@@ -114,7 +165,7 @@ void timeDecision(int id,int curhr,int curmn) {
       for(i=0;i<4;i++) {
 	j = (s[0]>>(i*2))&0x3;
 	k = (s[1]>>(i*2))&0x3;
-        if (x!=0) x=1;  // True is true
+	//        if (x!=0) x=1;  // True is true
 	if (j) {
 	  rlyttl[3-i] = dumntm*60*x; // RLY1..4
 	}

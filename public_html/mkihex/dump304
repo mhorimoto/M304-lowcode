@@ -1,7 +1,9 @@
 #! /usr/bin/env php
-
 <?php
-
+//
+//  dump304
+//    Version 1.50
+//
 global $n;
 $n = 0;
 if (!empty($argv[1])) {
@@ -388,7 +390,7 @@ function _LCRly($dt,$rnum) {
         $z = "CONT";
         break;
     case 1:
-        $z = "N/A";
+        $z = "BOTH";
         break;
     case 2:
         $z = "BREAK";

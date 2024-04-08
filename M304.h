@@ -232,6 +232,7 @@ typedef struct uecsM304cmpope {
 
 #define RLY_DNTCARE 0x00
 #define RLY_NA      0x01
+#define RLY_BOTH    0x01
 #define RLY_BREAK   0x02
 #define RLY_MAKE    0x03
 
