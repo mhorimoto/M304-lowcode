@@ -8,41 +8,69 @@ $AFN=$_POST["afn"];
 $VEN=$_POST["ven"];
 $UECSID=$_POST["uecsid"];
 $MACA=$_POST["mac"];
-$DHCPF=$_POST["DHCPF"];
+$DHCPF=$_POST["dhcpf"];
 $FIXEDIP=@$_POST["FIXIP"];
 $BITMASK=@$_POST["BITMASK"];
 $GATEWAY=@$_POST["GATEWAY"];
 $DNS=@$_POST["DNS"];
 $AAA=$_POST;
+$target = "192.168.11.26";
+$vender = array(
+    array("code"=>"AMPSD", "name"=>"AMPSD"),
+    array("code"=>"HOLLY", "name"=>"HOLLY&amp;Co.,Ltd."),
+    array("code"=>"YSL",   "name"=>"LLC YS Lab")
+);
+
+$rlyopt = array(
+    array("v"=>"N", "name"=>"-"),
+    array("v"=>"B", "name"=>"B"),
+    array("v"=>"M", "name"=>"M"),
+    array("v"=>"T", "name"=>"T")
+);
+
+if ($EM=="NodeInfo Build") {
+    $uecs  = uecsid2hex($UECSID);
+    $maca = mac2hex($MACA);
+    $nodn = chr2hex($AFN,16);
+    $venn = chr2hex($VEN,16);
+    if ($DHCPF=="on") {
+        $s->assign("DHCPCHECK","checked");
+        $ipc = "FFFFFFFF";
+        $nmk = "FFFFFFFF";
+        $gwy = "FFFFFFFF";
+        $dns = "FFFFFFFF";
+        $dhc = "FF";
+    } else {
+        $s->assign("DHCPCHECK","");
+        $ipac = explode('.',$FIXEDIP);
+        $ipc  = sprintf("%02X%02X%02X%02X",intval($ipac[0]),intval($ipac[1]),intval($ipac[2]),intval($ipac[3]));
+        $nmkc = explode('.',$BITMASK); 
+        $nmk  = sprintf("%02X%02X%02X%02X",intval($nmkc[0]),intval($nmkc[1]),intval($nmkc[2]),intval($nmkc[3]));
+        $gtwc = explode('.',$GATEWAY); 
+        $gwy  = sprintf("%02X%02X%02X%02X",intval($gtwc[0]),intval($gtwc[1]),intval($gtwc[2]),intval($gtwc[3]));
+        $dnsc = explode('.',$DNS); 
+        $dns  = sprintf("%02X%02X%02X%02X",intval($dnsc[0]),intval($dnsc[1]),intval($dnsc[2]),intval($dnsc[3]));
+        $dhc = "00";
+    }
+    $ihex  = sprintf("a2sender http://%s/:10000000%s%s%sFFFFFFFF\n",$target,$uecs,$maca,$dhc);
+    $ihex .= sprintf("a2sender http://%s/:10101000%s%s%s%sFF\n",$target,$ipc,$nmk,$gwy,$dns);
+    $ihex .= sprintf("a2sender http://%s/:10102000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\n",$target);
+    $ihex .= sprintf("a2sender http://%s/:10103000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\n",$target);
+    $ihex .= sprintf("a2sender http://%s/:10104000%sFF\n",$target,$venn);
+    $ihex .= sprintf("a2sender http://%s/:10105000%sFF\n",$target,$nodn);
+    $s->assign("ihex",$ihex);
+    $s->assign("AFN",$AFN);
+    $s->assign("MAC",$MACA);
+    $s->assign("VENCODE",$VEN);
+} else {
+    $s->assign("DHCPCHECK","checked");
+    $s->assign("MAC","02:a2:73:");
+    $s->assign("ihex","NON");
+    $s->assign("VENCODE","");
+}
+$s->assign("RLY",$rlyopt);
+$s->assign("VEN",$vender);
 if ($EM=="Build") {
-    $eepromtxt = "";
-    $v  = uecsid2hex($UECSID);
-    $bv = hex2bin($UECSID);
-    $hv = mk4hexdump($v,6);
-    $tv = hex2chr($hv,6);
-    printf("%s<br>%x<br>",$UECSID,$bv);
-    exit;
-    $ep = mk4eepromimage($hv,6,0);
-    $s->assign("hUECSID",$hv);
-    $s->assign("tUECSID",$tv);
-    $v = mac2hex($MACA);
-    $hv = mk4hexdump($v,6);
-    $tv = hex2chr($hv,6);
-    $ep .= mk4eepromimage($hv,6,6);
-    $s->assign("hMACA",$hv);
-    $s->assign("tMACA",$tv);
-    $v = chr2hex($VEN,16);
-    $hv = mk4hexdump($v,16);
-    $tv = hex2chr($hv,16);
-    $ep .= mk4eepromimage($hv,16,0x20);
-    $s->assign("hVEN",$hv);
-    $s->assign("tVEN",$tv);
-    $v = chr2hex($AFN,16);
-    $hv = mk4hexdump($v,16);
-    $tv = hex2chr($hv,16);
-    $ep .= mk4eepromimage($hv,16,0x30);
-    $s->assign("hAFN",$hv);
-    $s->assign("tAFN",$tv);
     for ($i=0;$i<8;$i++) {
         $ccmtbl=mk4ccmtbl($AAA,$i);
         $hv = mk4hexdump($ccmtbl,16);
