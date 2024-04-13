@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>UECS for M304</title>
+    <meta version="0.50" driver_version="0.50">
     <link href="css/main.css" rel="stylesheet" type="text/css">
   </head>
   <body id="tools">
@@ -36,6 +37,7 @@
 	    <tr>
 	      <td>
 		<input type="SUBMIT" name="EXECMODE" value="NodeInfo Build">
+		<input type="SUBMIT" name="EXECMODE" value="Ope Build">
 		<input type="RESET" name="EXECMODE" value="Cancel">
 	      </td>
 	    </tr>
@@ -44,120 +46,25 @@
 	<h2>動作条件情報設定</h2>
 	<div class="d02 ws-padding">
 	  <table class="t05">
+	    {include file="rx_part.tpl"}
 	    <tr>
-	      <th rowspan="2">No.</th>
-	      <th width="400px">反映時間帯</th>
-	      <th>桁数</th>
-	      <th>単位</th>
-	      <th>Lev</th>
-	      <th>ROOM/REGION/ORDER/PRIORITY</th>
-	    </tr>
-	    <tr>
-	      <th colspan="3">CCM名称　　　　　　　　　　　　　複合条件</th>
-	      <th colspan="2">リレー状態設定</th>
-	    </tr>
-	  {for $idx=1 to 30}
-	    <tr>
-	      <td rowspan="2">{$idx}</td>
-	      <td>
-		<input type="CHECKBOX" name="RX_VALID[{$idx}]">
-		<input type="NUMBER" name="RX_STHR[{$idx}]" class="txt3" min="0" max="23" size="2" maxlength="2" value="0">:
-		<input type="NUMBER" name="RX_STMN[{$idx}]" class="txt3" min="0" max="59" size="2" maxlength="2" value="0">&#126;
-		<input type="NUMBER" name="RX_EDHR[{$idx}]" class="txt3" min="0" max="23" size="2" maxlength="2" value="0">:
-		<input type="NUMBER" name="RX_EDMN[{$idx}]" class="txt3" min="0" max="59" size="2" maxlength="2" value="0">
-		&nbsp;
-		<input type="NUMBER" name="RX_EDHR[{$idx}]" class="txt3" min="0" max="23" size="2" maxlength="2" value="0">分間隔
-		<input type="NUMBER" name="RX_EDMN[{$idx}]" class="txt3" min="0" max="59" size="2" maxlength="2" value="0">分間
-	      </td>
-	      <td><input type="NUMBER" name="RX_CAST[{$idx}]" class="txt3" size="2" min="0" max="18" value="0"></td>
-	      <td><input type="TEXT" name="RX_UNIT[{$idx}]" size="8" placeholder="単位" value=""></td>
-	      <td>
-		<select name="RX_Lev[{$idx}]">
-		  <option>A-1S-0</option>
-		  <option>A-1S-1</option>
-		  <option>A-10S-0</option>
-		  <option>A-10S-1</option>
-		  <option>A-1M-0</option>
-		  <option>A-1M-1</option>
-		  <option>B-0</option>
-		  <option>B-1</option>
-		  <option>S-1S-0</option>
-		  <option>S-1M-0</option>
-		</select>
-	      </td>
-	      <td>
-		<input type="NUMBER" name="RX_ROOM[{$idx}]" class="txt3" min="0" max="127" size="3" maxlength="3" value="1">/
-		<input type="NUMBER" name="RX_REGION[{$idx}]" class="txt3" min="0" max="127" size="3" maxlength="3" value="1">/
-		<input type="NUMBER" name="RX_ORD[{$idx}]" class="txt5" min="0" max="30000" size="5" maxlength="5" value="1">/
-		<input type="NUMBER" name="RX_PRIORITY[{$idx}]" class="txt3" min="0" max="30" size="2" maxlength="2" value="15">
+	      <td colspan="6">
+		<input type="SUBMIT" name="EXECMODE" value="RX Build">
+		<input type="RESET" name="EXECMODE" value="Cancel">
 	      </td>
 	    </tr>
-	    <tr>
-	      <td colspan="3">
-		<input type="TEXT" name="RX_CCMTYPE[{$idx}]" size="20" value="">
-	      </td>
-	      <td colspan="2">
-		{for $rn=1 to 8}
-		<select name="RX_RLY{$rn}[{$idx}]">
-		  {foreach $RLY as $rly}
-		  {html_options values=$rly.v output=$rly.name selected=$RLYCODE}
-		  {/foreach}
-		</select>
-		{/for}
-	      </td>
-	    </tr>
-	    {/for}
 	  </table>
 	</div>
 	<h2>比較条件設定</h2>
 	<div class="d02 ws-padding">
 	  <table class="t05">
+	    {include file="ope_part.tpl"}
 	    <tr>
-	      <th rowspan="2">No.</th>
-	      <th width="400">条件設定&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#x2611;有効 CCMTYPE 条件 値</th>
-	      <th>Lev</th>
-	      <th>ROOM/REGION/ORDER/LIFETIME</th>
-	    </tr>
-	    <tr>
-	      <th>CCM名称</th>
-	      <th colspan="4"></th>
-	    </tr>
-	    {for $idx=0 to 9}
-	    <tr>
-	      <td>{$idx}</td>
-	      <td>
-		<input type="CHECKBOX" name="OPE_VALID[{$idx}]">
-		<input type="TEXT" name="OPE_CCMTYPE[{$idx}]">
-		<select name="OPE_CMP[{$idx}]">
-		  <option value="1">==</option>
-		  <option value="2">&gt;</option>
-		  <option value="3">&lt;</option>
-		  <option value="4">&ge;</option>
-		  <option value="5">&le;</option>
-		</select>
-		<input type="NUMBER" name="OPE_FVAL[{$idx}]" class="txt5" size="6" maxlength="6">
+	      <td colspan="4">
+		<input type="SUBMIT" name="EXECMODE" value="Ope Build">
+		<input type="RESET" name="EXECMODE" value="Cancel">
 	      </td>
-	      <td>
-		<select name="OPE_LEV[{$idx}]">
-		  <option value="A1S0">A-1S-0</option>
-		  <option value="A1S1">A-1S-1</option>
-		  <option value="A10S0" selected>A-10S-0</option>
-		  <option value="A10S1">A-10S-1</option>
-		  <option value="A1M0">A-1M-0</option>
-		  <option value="A1M1">A-1M-1</option>
-		  <option value="B0">B-0</option>
-		  <option value="B1">B-1</option>
-		  <option value="S1S0">S-1S-0</option>
-		  <option value="S1M0">S-1M-0</option>
-		</select>
-	      </td>
-	      <td>
-		<input type="NUMBER" name="OPE_ROOM[{$idx}]" class="txt3" min="0" max="127" size="3" maxlength="3" value="1">/
-		<input type="NUMBER" name="OPE_REGION[{$idx}]" class="txt3" min="0" max="127" size="3" maxlength="3" value="1">/
-		<input type="NUMBER" name="OPE_ORD[{$idx}]" class="txt5" min="0" max="30000" size="5" maxlength="5" value="1">/
-		<input type="NUMBER" name="OPE_LIFECNT[{$idx}]" class="txt3" min="0" max="30" size="2" maxlength="2" value="30">
 	    </tr>
-	  {/for}
 	  </table>
 	</div>
 	<h2>送信CCM情報設定</h2>
@@ -177,63 +84,43 @@
 	    </tr>
 	    <tr>
 	      <td rowspan="2">0</td>
-	      <td>[詳細設定](未サポート)</td>
-	      <input type="HIDDEN" name="TX_SENSOR[0]" value="condition">
-	      <td><input type="HIDDEN" name="TX_CAST[0]" value="0">0</td>
-	      <td><input type="HIDDEN" name="TX_UNIT[0]" value="">None</td>
+	      <td>{$TXMETHOD[0].desc}</td>
+	      <td><input type="HIDDEN" name="TX[0].cast" value="{$TXMETHOD[0].cast}">{$TXMETHOD[0].cast}</td>
+	      <td><input type="HIDDEN" name="TX[0].unit" value="{$TXMETHOD[0].unit}">{$TXMETHOD[0].unit}</td>
 	      <td>A-1S-1</td>
-	      <input type="HIDDEN" name="TX_Lev[0]" value="A-1S-1">
+	      <input type="HIDDEN" name="TX[0].Lev" value="{$TXMETHOD[0].lv}">
 	      <td>
-		<input type="NUMBER" name="TX_ROOM[0]" class="txt3" min="0" max="127" size="3" maxlength="3" value="1">/
-		<input type="NUMBER" name="TX_REGION[0]" class="txt3" min="0" max="127" size="3" maxlength="3" value="1">/
-		<input type="NUMBER" name="TX_ORD[0]" class="txt5" min="0" max="30000" size="5" maxlength="5" value="1">/29
-		<input type="HIDDEN" name="TX_PRIORITY[0]" value="29">
+		<input type="NUMBER" name="TX[0].room" class="txt3" min="0" max="127" size="3" maxlength="3" value="{$TXMETHOD[0].room}">/
+		<input type="NUMBER" name="TX[0].region" class="txt3" min="0" max="127" size="3" maxlength="3" value="{$TXMETHOD[0].region}">/
+		<input type="NUMBER" name="TX[0].order" class="txt5" min="0" max="30000" size="5" maxlength="5" value="{$TXMETHOD[0].order}">/29
+		<input type="HIDDEN" name="TX[0].priority" value="{$TXMETHOD[0].pri}">
 	      </td>
 	    </tr>
 	    <tr>
-	      <td><input type="TEXT" name="TX_CCMTYPE[0]" size="20" maxlength="20" value="cnd"></td>
-	      <td colspan="4">設定内容<input type="HIDDEN" name="TX_DEVICE[0]" value=""></td>
+	      <td><input type="TEXT" name="TX[0].ccmtype" size="20" maxlength="20" value="{$TXMETHOD[0].ccm}"></td>
+	      <td colspan="4">設定内容</td>
 	    </tr>
 	    {for $idx=1 to 9}
 	    <tr>
 	      <td rowspan="2">{$idx}</td>
+	      <td>{$TXMETHOD[$idx].desc}</td>
+	      <td><input type="NUMBER" name="TX[{$idx}].cast" class="txt3" min="0" max="9" size="1" maxlength="1" value="0"></td>
+	      <td><input type="TEXT" name="TX[{$idx}].unit" size="10" maxlength="10" placeholder="単位" value=""></td>
 	      <td>
-		<select name="TX_VAL[{$idx}]">
-		  <option value="ALLRLYSTAT">すべてのRelayの状態</option>
-		  <option value="RLY1STAT">Relay1の状態</option>
-		  <option value="RLY2STAT">Relay2の状態</option>
-		  <option value="RLY3STAT">Relay3の状態</option>
-		  <option value="RLY4STAT">Relay4の状態</option>
-		  <option value="RLY5STAT">Relay5の状態</option>
-		  <option value="RLY6STAT">Relay6の状態</option>
-		  <option value="RLY7STAT">Relay7の状態</option>
-		  <option value="RLY8STAT">Relay8の状態</option>
-		</select>
-	      </td>
-	      <td><input type="NUMBER" name="TX_CAST[{$idx}]" class="txt3" min="0" max="9" size="1" maxlength="1" value="0"></td>
-	      <td><input type="TEXT" name="TX_UNIT[{$idx}]" size="10" maxlength="10" placeholder="単位" value=""></td>
-	      <td>
-		<select name="TX_LEV[{$idx}]">
-		  <option value="A1S0">A-1S-0</option>
-		  <option value="A1S1">A-1S-1</option>
-		  <option value="A10S0" selected>A-10S-0</option>
-		  <option value="A10S1">A-10S-1</option>
-		  <option value="A1M0">A-1M-0</option>
-		  <option value="A1M1">A-1M-1</option>
-		  <option value="B0">B-0</option>
-		  <option value="B1">B-1</option>
-		  <option value="S1S0">S-1S-0</option>
-		  <option value="S1M0">S-1M-0</option>
+		<select name="TX[{$idx}].Lev">
+		  {foreach $LV as $txlev}
+		  {html_options values=$txlev.v output=$txlev.name selected=$TXLEVSEL}
+		  {/foreach}
 		</select>
 	      </td>
 	      <td>
-		<input type="NUMBER" name="ROOM[{$idx}]" class="txt3" min="0" max="127" size="3" maxlength="3" value="1">/
-		<input type="NUMBER" name="REGION[{$idx}]" class="txt3" min="0" max="127" size="3" maxlength="3" value="1">/
-		<input type="NUMBER" name="ORD[{$idx}]" class="txt5" min="0" max="30000" size="5" maxlength="5" value="1">/
-		<input type="NUMBER" name="PRIORITY[{$idx}]" class="txt3" min="0" max="30" size="2" maxlength="2" value="15">
+		<input type="NUMBER" name="TX_ROOM[{$idx}]" class="txt3" min="0" max="127" size="3" maxlength="3" value="{$TXMETHOD[$idx].room}">/
+		<input type="NUMBER" name="TX_REGION[{$idx}]" class="txt3" min="0" max="127" size="3" maxlength="3" value="{$TXMETHOD[$idx].region}">/
+		<input type="NUMBER" name="TX_ORD[{$idx}]" class="txt5" min="0" max="30000" size="5" maxlength="5" value="{$TXMETHOD[$idx].order}">/
+		<input type="NUMBER" name="TX_PRIORITY[{$idx}]" class="txt3" min="0" max="30" size="2" maxlength="2" value="{$TXMETHOD[$idx].pri}">
 	    </tr>
 	    <tr>
-	      <td><input type="TEXT" name="CCMTYPE[{$idx}]" size="20" maxlength="20" value=""></td>
+	      <td><input type="TEXT" name="TX_CCMTYPE[{$idx}]" size="20" maxlength="20" value="{$TXMETHOD[$idx].ccm}"></td>
 	      <td colspan="3">出力内容</td>
 	    </tr>
 	  {/for}
