@@ -368,7 +368,7 @@ default:
     $s->assign("RX_CCMT",$RXCCMT);
     $s->assign("DHCPCHECK","checked");
     $s->assign("MAC","02:a2:73:00:00:00");
-    $s->assign("ihex","PASS");
+    $s->assign("ihex","NON");
     $s->assign("ihexope","NON");
     $s->assign("VENCODE","");
     $s->assign("RLYCODE","");
