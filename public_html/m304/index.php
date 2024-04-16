@@ -2,7 +2,7 @@
 require_once('Smarty.class.php');
 require_once('ope_ccmtbl.php');
 
-// Version: 0.50
+// Version: 0.60
     
 $s = new Smarty();
 $AAA    = $_POST;
@@ -153,6 +153,8 @@ $s->assign("CMPOPE",$cmpope);
 $s->assign("RLY",$rlyopt);
 $s->assign("VEN",$vender);
 $s->assign("LV",$lvarr);
+$s->assign("TXMETHOD",$txmethod);
+//$s->assign("LVL",$lvarr);
 
 if (!@$AAA["EXECMODE"]) {
     $AAA["EXECMODE"] = null;
@@ -288,32 +290,41 @@ case "RX Build":
 case "TX Build":
     // a2.py id room region order priority lv cast sr ccm_type unit sthr stmn edhr edmn inmn dumn rly(8characters)
     $ihextx = "";
-    for ($k=0;$k<10;$k++) {
-        if ($tx_valid[$k]=="on") {
-            if ($tx_unit[$k]=="") {
-                $tx_unit[$k]="none";
-            }
-            if ($tx_cast[$k]=="") {
-                $tx_cast[$k]=0;
-            }
-            $c = sprintf("/home/staff/horimoto/bin/a2.py %d %s %s %s %s %s %s R %s %s %s %s %s %s %s %s %s%s%s%s%s%s%s%s",
-                         $k,$rx_room[$k],$rx_region[$k],$rx_order[$k],$rx_priority[$k],$rx_lev[$k],$rx_cast[$k],
-                         $rx_ccmtype[$k],$rx_unit[$k],$rx_sthr[$k],$rx_stmn[$k],$rx_edhr[$k],$rx_edmn[$k],
-                         $rx_inmn[$k],$rx_dumn[$k],
-                         $rx_rly1[$k],$rx_rly2[$k],$rx_rly3[$k],$rx_rly4[$k],$rx_rly5[$k],
-                         $rx_rly6[$k],$rx_rly7[$k],$rx_rly8[$k]);
-            unset($r);
-            if (exec($c,$r)) {
-                for ($i=0;$i<count($r);$i++) {
-                    $ihexrx .= sprintf("a2sender http://%s/%s\n",$target,$r[$i]);
-                }
-                $adr = 0x1030 + (0x40*$k);
-                $ihexrx .= sprintf("a2sender http://%s/:10%04X00%s%s%s%s%s%s%s%s%sFFFFFFFFFFFFFFFF\n",$target,
-                                   $adr,$rx_cond0[$k],$rx_cmp1[$k],$rx_cond1[$k],$rx_cmp2[$k],$rx_cond2[$k],
-                                   $rx_cmp3[$k],$rx_cond3[$k],$rx_cmp4[$k],$rx_cond4[$k]);
+    $txmethod[0]['ccm']    = $AAA["TX_CCMTYPE"][0];
+    $c = sprintf("/home/staff/horimoto/bin/a2.py 0 %s %s %s 29 2 0 S %s none 0 0 0 0 0 0 NNNNNNNN",
+                 $AAA["TX_ROOM"][0],$AAA["TX_REGION"][0],$AAA["TX_ORDER"][0],$AAA["TX_CCMTYPE"][0]);
+    $ihextx = "";
+    unset($r);
+    if (exec($c,$r)) {
+        for ($i=0;$i<count($r);$i++) {
+            $ihextx .= sprintf("a2sender http://%s/%s\n",$target,$r[$i]);
+        }
+    }
+    for ($i=1;$i<10;$i++) {
+        $txmethod[$i]['room']   = $AAA["TX_ROOM"][$i];
+        $txmethod[$i]['region'] = $AAA["TX_REGION"][$i];
+        $txmethod[$i]['order']  = $AAA["TX_ORDER"][$i];
+        $txmethod[$i]['pri']    = $AAA["TX_PRIORITY"][$i];
+        $txmethod[$i]['lv']     = $AAA["TX_LEV"][$i];
+        $txmethod[$i]['ccm']    = $AAA["TX_CCMTYPE"][$i];
+        $txmethod[$i]['cast']   = $AAA["TX_CAST"][$i];
+        if ($AAA["TX_UNIT"][$i]=="") {
+            $u = "none";
+        } else {
+            $u = $AAA["TX_UNIT"][$i];
+        }
+        $c = sprintf("/home/staff/horimoto/bin/a2.py %d %s %s %s %s %s %s S %s %s 0 0 0 0 0 0 NNNNNNNN",
+                     $i,$AAA["TX_ROOM"][$i],$AAA["TX_REGION"][$i],$AAA["TX_ORDER"][$i],$AAA["TX_PRIORITY"][$i],
+                     $AAA["TX_LEV"][$i],$AAA["TX_CAST"][$i],$AAA["TX_CCMTYPE"][$i],$u);
+        unset($r);
+        if (exec($c,$r)) {
+            for ($n=0;$n<count($r);$n++) {
+                $ihextx .= sprintf("a2sender http://%s/%s\n",$target,$r[$n]);
             }
         }
     }
+    $s->assign("TXMETHOD",$txmethod);
+    $s->assign("ihextx",$ihextx);
     break;
 case "Ope Build":
     $ihexope = "";
@@ -369,6 +380,8 @@ default:
     $s->assign("DHCPCHECK","checked");
     $s->assign("MAC","02:a2:73:00:00:00");
     $s->assign("ihex","NON");
+    $s->assign("ihexrx","NON");
+    $s->assign("ihextx","NON");
     $s->assign("ihexope","NON");
     $s->assign("VENCODE","");
     $s->assign("RLYCODE","");

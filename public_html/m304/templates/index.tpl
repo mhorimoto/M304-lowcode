@@ -70,9 +70,17 @@
 	<div class="d02 ws-padding">
 	  <table class="t05">
 	    {include file="tx_part.tpl"}
+	    <tr>
+	      <td colspan="6">
+		<input type="SUBMIT" name="EXECMODE" value="TX Build">
+		<input type="RESET" name="EXECMODE" value="Cancel">
+	      </td>
+	    </tr>
 	  </table>
 	</div>
       </form>
+
+
       <script>
 	function setIpChange(event){
 	    if (DHCPFid.checked){
