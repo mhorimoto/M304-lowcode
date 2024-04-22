@@ -9,11 +9,12 @@
   <tr>
     <td class="t-center">C0{$idx}</td>
     <td class="t-center">
-      <input type="CHECKBOX" name="OPE_VALID[{$idx}]" {$OPE_CHECKED[$idx]}>
+<!--      <input type="CHECKBOX" name="OPE_VALID[{$idx}]" {$OPE_CHECKED[$idx]}> -->
+      <input type="CHECKBOX" name="OPE_VALID[{$idx}]" {$OPEMETHOD[$idx].checked}>
       <input type="TEXT" name="OPE_CCMTYPE[{$idx}]" value="{$OPE_CCMTYPE[{$idx}]}">
       <select name="OPE_CMP[{$idx}]">
 	{foreach $CMPOPE as $cope}
-	{html_options values=$cope.ope output=$cope.name selected=$OPE_CMPSEL[$idx]}
+	{html_options values=$cope.ope output=$cope.name selected=$OPEMETHOD[$idx].cmpsel}
 	{/foreach}
       </select>
       <input type="NUMBER" name="OPE_FVAL[{$idx}]" class="txt5" size="6" maxlength="6" step="0.1" value="{$OPE_FVAL[$idx]}">
@@ -26,6 +27,7 @@
       <input type="NUMBER" name="OPE_LIFECNT[{$idx}]" class="txt3" min="0" max="30" size="2" maxlength="2" value="{$OPE_LIFECNT[$idx]}">
   </tr>
   {/for}
+  <input type="HIDDEN" name="IHEXOPE" value="{$ihexope}">
   {if $ihexope!="NON"}
 <tr>
   <td colspan="3">

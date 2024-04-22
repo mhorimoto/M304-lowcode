@@ -1,180 +1,37 @@
 <?php
+$Version="0.70";
+
+require_once('./init_data.php');
 require_once('Smarty.class.php');
-require_once('ope_ccmtbl.php');
-
-// Version: 0.60
-    
+$AAA = $_POST;
 $s = new Smarty();
-$AAA    = $_POST;
-$EM     = @$_POST["EXECMODE"];
+$s->assign("VERSION",$Version);
+init_data($_POST,$infomethod,$r,$opemethod,$txmethod);
+require_once('ope_ccmtbl.php');
+require_once('./pushPOST.php');
 
-//
-// For Node and IP
-//
-$AFN        = @$_POST["afn"];
-$VEN        = @$_POST["ven"];
-$UECSID     = @$_POST["uecsid"];
-$MACA       = @$_POST["mac"];
-$DHCPF      = @$_POST["dhcpf"];
-$FIXEDIP    = @$_POST["FIXIP"];
-$BITMASK    = @$_POST["BITMASK"];
-$GATEWAY    = @$_POST["GATEWAY"];
-$DNS        = @$_POST["DNS"];
-//
-// For RX
-//
-$rx_valid   = @$_POST["RX_VALID"];
-$rx_sthr    = @$_POST["RX_STHR"];
-$rx_stmn    = @$_POST["RX_STMN"];
-$rx_edhr    = @$_POST["RX_EDHR"];
-$rx_edmn    = @$_POST["RX_EDMN"];
-$rx_inmn    = @$_POST["RX_INMN"];
-$rx_dumn    = @$_POST["RX_DUMN"];
-$rx_inmn    = @$_POST["RX_INMN"];
-$rx_dumn    = @$_POST["RX_DUMN"];
-$rx_cast    = @$_POST["RX_CAST"];
-$rx_unit    = @$_POST["RX_UNIT"];
-$rx_lev     = @$_POST["RX_Lev"];
-$rx_room    = @$_POST["RX_ROOM"];
-$rx_region  = @$_POST["RX_REGION"];
-$rx_order   = @$_POST["RX_ORD"];
-$rx_priority= @$_POST["RX_PRIORITY"];
-$rx_ccmtype = @$_POST["RX_CCMTYPE"];
-$rx_rly1    = @$_POST["RX_RLY1"];
-$rx_rly2    = @$_POST["RX_RLY2"];
-$rx_rly3    = @$_POST["RX_RLY3"];
-$rx_rly4    = @$_POST["RX_RLY4"];
-$rx_rly5    = @$_POST["RX_RLY5"];
-$rx_rly6    = @$_POST["RX_RLY6"];
-$rx_rly7    = @$_POST["RX_RLY7"];
-$rx_rly8    = @$_POST["RX_RLY8"];
-$rx_cond0   = @$_POST["cond0"];
-$rx_cmp1    = @$_POST["cmp1"];
-$rx_cond1   = @$_POST["cond1"];
-$rx_cmp2    = @$_POST["cmp2"];
-$rx_cond2   = @$_POST["cond2"];
-$rx_cmp3    = @$_POST["cmp3"];
-$rx_cond3   = @$_POST["cond3"];
-$rx_cmp4    = @$_POST["cmp4"];
-$rx_cond4   = @$_POST["cond4"];
-//
-// For OPE
-//
-$ope_valid   = @$_POST["OPE_VALID"];
-$ope_ccmtype = @$_POST["OPE_CCMTYPE"];
-$ope_cmp     = @$_POST["OPE_CMP"];
-$ope_fval    = @$_POST["OPE_FVAL"];
-$ope_room    = @$_POST["OPE_ROOM"];
-$ope_region  = @$_POST["OPE_REGION"];
-$ope_order   = @$_POST["OPE_ORD"];
-$ope_lifecnt = @$_POST["OPE_LIFECNT"];
-//echo "<pre>\n";
-//echo $AAA["EXECMODE"]."\n";
-//echo $EM."\n";
-//var_dump($AAA);
-//exit;
 $target = "192.168.11.26";
-$vender = array(
-    array("code"=>"AMPSD", "name"=>"AMPSD"),
-    array("code"=>"HOLLY", "name"=>"HOLLY&amp;Co.,Ltd."),
-    array("code"=>"YSL",   "name"=>"LLC YS Lab")
-);
 
-$rlyopt = array(
-    array("v"=>"N", "name"=>"-"),
-    array("v"=>"B", "name"=>"B"),
-    array("v"=>"M", "name"=>"M"),
-    array("v"=>"T", "name"=>"T")
-);
+$s->assign("INFOMETHOD",$infomethod);
+$s->assign("OPEMETHOD",$opemethod);
 
-$cmpfunc = array(
-    array("f"=>"FF", "name"=>"-"),
-    array("f"=>"00", "name"=>"C00"),
-    array("f"=>"01", "name"=>"C01"),
-    array("f"=>"02", "name"=>"C02"),
-    array("f"=>"03", "name"=>"C03"),
-    array("f"=>"04", "name"=>"C04"),
-    array("f"=>"05", "name"=>"C05"),
-    array("f"=>"06", "name"=>"C06"),
-    array("f"=>"07", "name"=>"C07"),
-    array("f"=>"08", "name"=>"C08"),
-    array("f"=>"09", "name"=>"C09")
-);
-
-$funcope = array(
-    array("f"=>"FF", "name"=>"-"),
-    array("f"=>"06", "name"=>"&amp;&amp;"),
-    array("f"=>"07", "name"=>"||")
-);
-
-$cmpope = array(
-    array("ope"=>"FF", "name"=>"-"),
-    array("ope"=>"01", "name"=>"=="),
-    array("ope"=>"02", "name"=>"&gt;"),
-    array("ope"=>"03", "name"=>"&lt;"),
-    array("ope"=>"04", "name"=>"&ge;"),
-    array("ope"=>"05", "name"=>"&le;"),
-    array("ope"=>"08", "name"=>"!="),
-);
-
-$lvarr = array(
-    array("v"=>"01", "name"=>"A-1S-0"),
-    array("v"=>"02", "name"=>"A-1S-1"),
-    array("v"=>"03", "name"=>"A-10S-0"),
-    array("v"=>"04", "name"=>"A-10S-1"),
-    array("v"=>"05", "name"=>"A-1M-0"),
-    array("v"=>"06", "name"=>"A-1M-1"),
-    array("v"=>"07", "name"=>"B-0"),
-    array("v"=>"08", "name"=>"B-1"),
-    array("v"=>"09", "name"=>"S-1S-0"),
-    array("v"=>"0A", "name"=>"S-1M-0")
-);
-
-$txmethod = array(
-    array("ccm"=>"cnd",  "desc"=>"機器状態", "room"=>"1","region"=>"1","order"=>"1","pri"=>"29","cast"=>"0","unit"=>"none","lv"=>"02"),
-    array("ccm"=>"RelayOpr1", "desc"=>"リレー1の状態", "room"=>"1","region"=>"1","order"=>"1","pri"=>"15","cast"=>"0","unit"=>"none","lv"=>"02"),
-    array("ccm"=>"RelayOpr2", "desc"=>"リレー2の状態", "room"=>"1","region"=>"1","order"=>"1","pri"=>"15","cast"=>"0","unit"=>"none","lv"=>"02"),
-    array("ccm"=>"RelayOpr3", "desc"=>"リレー3の状態", "room"=>"1","region"=>"1","order"=>"1","pri"=>"15","cast"=>"0","unit"=>"none","lv"=>"02"),
-    array("ccm"=>"RelayOpr4", "desc"=>"リレー4の状態", "room"=>"1","region"=>"1","order"=>"1","pri"=>"15","cast"=>"0","unit"=>"none","lv"=>"02"),
-    array("ccm"=>"RelayOpr5", "desc"=>"リレー5の状態", "room"=>"1","region"=>"1","order"=>"1","pri"=>"15","cast"=>"0","unit"=>"none","lv"=>"02"),
-    array("ccm"=>"RelayOpr6", "desc"=>"リレー6の状態", "room"=>"1","region"=>"1","order"=>"1","pri"=>"15","cast"=>"0","unit"=>"none","lv"=>"02"),
-    array("ccm"=>"RelayOpr7", "desc"=>"リレー7の状態", "room"=>"1","region"=>"1","order"=>"1","pri"=>"15","cast"=>"0","unit"=>"none","lv"=>"02"),
-    array("ccm"=>"RelayOpr8", "desc"=>"リレー8の状態", "room"=>"1","region"=>"1","order"=>"1","pri"=>"15","cast"=>"0","unit"=>"none","lv"=>"02"),
-    array("ccm"=>"aux", "desc"=>"予備", "room"=>"1","region"=>"1","order"=>"1","pri"=>"29","cast"=>"0","unit"=>"none","lv"=>"02")
-);
-    
-//$s->assign("DHCPCHECK","");
-//$s->assign("ihex","NON");
-//$s->assign("ihexope","NON");
-
-$s->assign("CMPFUNC",$cmpfunc);
-$s->assign("FUNCOPE",$funcope);
-$s->assign("CMPOPE",$cmpope);
-$s->assign("RLY",$rlyopt);
-$s->assign("VEN",$vender);
-$s->assign("LV",$lvarr);
-$s->assign("TXMETHOD",$txmethod);
-//$s->assign("LVL",$lvarr);
-
-if (!@$AAA["EXECMODE"]) {
-    $AAA["EXECMODE"] = null;
-}
+//echo "<pre>\n";
+//var_dump($opemethod);
+//echo "</pre>\n";
 
 switch ($AAA["EXECMODE"]) {
 case "NodeInfo Build":
-    $uecs = uecsid2hex($UECSID);
-    $maca = mac2hex($MACA);
-    $nodn = chr2hex($AFN,16);
-    $venn = chr2hex($VEN,16);
-    if ($DHCPF=="on") {
-        $s->assign("DHCPCHECK","checked");
+    $uecs = uecsid2hex($AAA['INFO_UECSID']);
+    $maca = mac2hex($AAA['INFO_MAC']);
+    $nodn = chr2hex($AAA['INFO_NODENAME'],16);
+    $venn = chr2hex($AAA['INFO_VEN'],16);
+    if ($AAA['INFO_DHCPF']=="on") {
         $ipc = "FFFFFFFF";
         $nmk = "FFFFFFFF";
         $gwy = "FFFFFFFF";
         $dns = "FFFFFFFF";
         $dhc = "FF";
     } else {
-        $s->assign("DHCPCHECK","");
         $ipac = explode('.',$FIXEDIP);
         $ipc  = sprintf("%02X%02X%02X%02X",intval($ipac[0]),intval($ipac[1]),intval($ipac[2]),intval($ipac[3]));
         $nmkc = explode('.',$BITMASK); 
@@ -191,10 +48,11 @@ case "NodeInfo Build":
     $ihex .= sprintf("a2sender http://%s/:10103000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\n",$target);
     $ihex .= sprintf("a2sender http://%s/:10104000%sFF\n",$target,$venn);
     $ihex .= sprintf("a2sender http://%s/:10105000%sFF\n",$target,$nodn);
-    $s->assign("ihex",$ihex);
-    $s->assign("AFN",$AFN);
-    $s->assign("MAC",$MACA);
-    $s->assign("VENCODE",$VEN);
+    $infomethod['ihex'] = $ihex;
+    // $infomethod['nodename'] = $AAA['INFO_NODENAME'];
+    // $infomethod['uecsid'] = $AAA['INFO_UECSID'];
+    // $infomethod['mac'] = $AAA['INFO_MAC'];
+    // $infomethod['vencode'] = $AAA['INFO_VEN'];
     break;
 case "RX Build":
     // a2.py id room region order priority lv cast sr ccm_type unit sthr stmn edhr edmn inmn dumn rly(8characters)
@@ -235,8 +93,6 @@ case "RX Build":
             $rx_checked[$i] = "";
         }
     }
-    $s->assign("ihex",$ihex);
-    $s->assign("AFN",$AFN);
     $s->assign("MAC",$MACA);
     $s->assign("VENCODE",$VEN);
     $s->assign("RX_CHECKED",$rx_checked);
@@ -341,24 +197,10 @@ case "Ope Build":
             }
         }
     }
-    if ($DHCPF=="on") {
-        $s->assign("DHCPCHECK","checked");
-    } else {
-        $s->assign("DHCPCHECK","");
-    }
-    $s->assign("OPE_VALID",$ope_valid);
-    $s->assign("OPE_CHECKED",$ope_checked);
-    $s->assign("OPE_CCMTYPE",$ope_ccmtype);
-    $s->assign("OPE_CMPSEL",$ope_cmpsel);
-    $s->assign("OPE_FVAL",$ope_fval);
-    $s->assign("OPE_ROOM",$ope_room);
-    $s->assign("OPE_REGION",$ope_region);
-    $s->assign("OPE_ORD",$ope_order);
-    $s->assign("OPE_LIFECNT",$ope_lifecnt);
+    $ihexope .= $c;
     $s->assign("ihexope",$ihexope);
-    $s->assign("AFN",$AFN);
-    $s->assign("MAC",$MACA);
-    $s->assign("VENCODE",$VEN);
+    include("./assignPOP.php");
+    //    $s->assign("VENCODE",$VEN);
     $s->assign("RLYCODE","");
     $s->assign("TXLEVSEL","");
     break;
@@ -370,20 +212,14 @@ default:
         $none[$k] = "none";
         $zero[$k] = 0;
     }
-
+    $s->assign("INFOMETHOD",$infomethod);
+    $s->assign("OPEMETHOD",$opemethod);
     $s->assign("RXUNIT","");
     $s->assign("RXROOM",$init_rro);
     $s->assign("RXREGION",$init_rro);
     $s->assign("RXORDER",$init_rro);
     $s->assign("RXPRIORITY",$init_prio);
     $s->assign("RX_CCMT",$RXCCMT);
-    $s->assign("DHCPCHECK","checked");
-    $s->assign("MAC","02:a2:73:00:00:00");
-    $s->assign("ihex","NON");
-    $s->assign("ihexrx","NON");
-    $s->assign("ihextx","NON");
-    $s->assign("ihexope","NON");
-    $s->assign("VENCODE","");
     $s->assign("RLYCODE","");
     $s->assign("CMPFUNCSEL","");
     $s->assign("FUNCOPESEL","");
@@ -393,8 +229,7 @@ default:
     $s->assign("OPE_SUM_CHECKED","");
     $s->assign("TXMETHOD",$txmethod);
 }
-
-
+include("./assignPOP.php");
 $s->display("index.tpl");
 exit;
 

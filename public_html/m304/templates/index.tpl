@@ -3,17 +3,17 @@
   <head>
     <meta charset="utf-8">
     <title>UECS for M304</title>
-    <meta version="0.50" driver_version="0.50">
+    <meta version="0.70" driver_version="0.70">
     <link href="css/main.css" rel="stylesheet" type="text/css">
   </head>
   <body id="tools">
     <div id="t-header">
       <a name="pagetop"></a>
-      <h1 id="tools">M304 builder</h1>
+      <h1 id="tools">M304 builder Version:{$VERSION}</h1>
     </div>
     <div id="wrapper">
-      <h2>NODE INFO</h2>
       <form action="index.php" method="POST">
+      <h2>NODE INFO  <input type="checkbox" name="DBGF"></h2>
 	<div class="d02 ws-padding">
 	  <table class="t04">
 	    <tr>
@@ -24,6 +24,7 @@
 		{include file='ip_part.tpl'}
 	      </td>
 	    </tr>
+	    <input type="HIDDEN" name="ihex" value="{$ihex}">
 	    {if $ihex!="NON"}
 	    <tr>
 	      <td colspan="2">
@@ -31,6 +32,16 @@
 <pre>
 {$ihex}
 </pre>
+	      </td>
+	    </tr>
+	    {/if}
+	    {if $DBG}
+	    <tr>
+	      <td colspan="2">デバッグ結果 EXECMODE:{$EXECM}
+		<ul>
+		{foreach from=$INFOMETHOD key=k item=v}
+		<li>{$k}: {$v}</li>
+		{/foreach}
 	      </td>
 	    </tr>
 	    {/if}
@@ -54,7 +65,7 @@
 	    </tr>
 	  </table>
 	</div>
-	<h2>比較条件設定</h2>
+	<h2>比較条件設定  <input type="checkbox" name="DBGF"></h2>
 	<div class="d02 ws-padding">
 	  <table class="t05">
 	    {include file="ope_part.tpl"}
@@ -64,12 +75,38 @@
 		<input type="RESET" name="EXECMODE" value="Cancel">
 	      </td>
 	    </tr>
+	    {if $DBG}
+	    <tr>
+	      <td colspan="4">デバッグ結果 EXECMODE:{$EXECM}
+		<ul>
+		  {for $o=0 to 10}
+		  {foreach from=$OPEMETHOD[$o] key=k item=v}
+		<li>{$o}: {$k}: {$v}</li>
+		{/foreach}
+		{/for}
+		</ul>
+	      </td>
+	    </tr>
+	    {/if}
 	  </table>
 	</div>
-	<h2>送信CCM情報設定</h2>
+	<h2>送信CCM情報設定  <input type="checkbox" name="DBGF"></h2>
 	<div class="d02 ws-padding">
 	  <table class="t05">
 	    {include file="tx_part.tpl"}
+	    {if $DBG}
+	    <tr>
+	      <td colspan="6">デバッグ結果 EXECMODE:{$EXECM}
+		<ul>
+		  {for $o=0 to 10}
+		  {foreach from=$TXMETHOD[$o] key=k item=v}
+		<li>{$o}: {$k}: {$v}</li>
+		{/foreach}
+		{/for}
+		</ul>
+	      </td>
+	    </tr>
+	    {/if}
 	    <tr>
 	      <td colspan="6">
 		<input type="SUBMIT" name="EXECMODE" value="TX Build">
