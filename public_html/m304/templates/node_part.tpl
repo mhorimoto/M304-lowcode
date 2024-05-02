@@ -3,27 +3,28 @@
 <table class="t04">
   <tr>
     <th class="t-right">Node Name</th>
-    <td><input type="TEXT" name="afn" size="18" value="{$AFN}"></td>
+    <td><input type="TEXT" name="INFO_NODENAME" size="18" value="{$INFOMETHOD.nodename}"></td>
   </tr>
   <tr>
     <th class="t-right">Vender Name</th>
     <td>
-      <select name="ven" size="1">
+      <select name="INFO_VEN" size="1">
 	{foreach $VEN as $vend}
-	{html_options values=$vend.code output=$vend.name selected=$VENCODE}
+	{html_options values=$vend.code output=$vend.name selected=$INFOMETHOD.vencode}
 	{/foreach}
       </select>
     </td>
   </tr>
   <tr>
     <th class="t-right">UECS-ID</th>
-    <td><input type="TEXT" name="uecsid" size="12" maxlength="12" value="01100C00000B" pattern="^[0-9A-Fa-f]*$">
+    <td><input type="TEXT" name="INFO_UECSID" size="12" maxlength="12" value="{$INFOMETHOD.uecsid}" pattern="^[0-9A-Fa-f]*$">
       <span class="s2-color">RECOMMEND</span></td>
   </tr>
   <tr>
     <th class="t-right">MAC Address</th>
     <td>
-      <input type="TEXT" name="mac" size="17" maxlength="17" value="{$MAC}" pattern="^[0-9A-Fa-f].:[0-9A-Fa-f].:[0-9A-Fa-f].:[0-9A-Fa-f].:[0-9A-Fa-f].:[0-9A-Fa-f].$">
+<!--      <input type="TEXT" name="INFO_MAC" size="17" maxlength="17" value="{$INFOMETHOD.mac}"> -->
+      <input type="TEXT" name="INFO_MAC" size="17" maxlength="17" value="{$INFOMETHOD.mac}" pattern="^[0-9A-Fa-f].:[0-9A-Fa-f].:[0-9A-Fa-f].:[0-9A-Fa-f].:[0-9A-Fa-f].:[0-9A-Fa-f].$">
       <span class="s2-color">REQUIRED</span></td>
   </tr>
   <tr>

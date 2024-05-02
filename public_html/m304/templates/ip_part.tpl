@@ -5,7 +5,7 @@
       DHCP
     </td>
     <td>
-      <input type="checkbox" name="dhcpf" id="DHCPFid" {$DHCPCHECK}>
+      <input type="checkbox" name="INFO_DHCPF" id="DHCPFid" {$INFOMETHOD.dhcpf}>
     </td>
   </tr>
   <tr>
@@ -14,7 +14,7 @@
     </td>
     <td>
       {literal}
-      <input type="TEXT" name="FIXIP" size="15" maxlength="15" pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" id="FIXIPid" disabled>
+      <input type="TEXT" name="INFO_FIXIP" size="15" maxlength="15" pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" id="FIXIPid" disabled value="192.168.1.1">
       {/literal}
     </td>
   </tr>
@@ -24,7 +24,7 @@
     </td>
     <td>
       {literal}
-      <input type="TEXT" name="BITMASK" size="15" maxlength="15" pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" id="BITMASKid" disabled>
+      <input type="TEXT" name="INFO_BITMASK" size="15" maxlength="15" pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" id="BITMASKid" disabled>
       {/literal}
     </td>
   </tr>
@@ -34,7 +34,7 @@
     </td>
     <td>
       {literal}
-      <input type="TEXT" name="GATEWAY" size="15" maxlength="15" pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" id="GATEWAYid" disabled>
+      <input type="TEXT" name="INFO_GATEWAY" size="15" maxlength="15" pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" id="GATEWAYid" disabled>
       {/literal}
     </td>
   </tr>
@@ -44,7 +44,7 @@
     </td>
     <td>
       {literal}
-      <input type="TEXT" name="DNS" size="15" maxlength="15" pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" id="DNSid" disabled>
+      <input type="TEXT" name="INFO_DNS" size="15" maxlength="15" pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" id="DNSid" disabled>
       {/literal}
     </td>
   </tr>

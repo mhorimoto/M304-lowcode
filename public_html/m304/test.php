@@ -1,4 +1,9 @@
 <?php
+require_once('Smarty.class.php');
+$s = new Smarty();
+require_once('./init_data.php');
+var_dump($infomethod);
+exit;
 
 // 16進数のテキスト
 $hexText = "01100C00000B"; // "Hello World"
