@@ -5,7 +5,7 @@
       DHCP
     </td>
     <td>
-      <input type="checkbox" name="DHCPF" id="DHCPFid" checked>
+      <input type="checkbox" name="dhcpf" id="DHCPFid" {$DHCPCHECK}>
     </td>
   </tr>
   <tr>
