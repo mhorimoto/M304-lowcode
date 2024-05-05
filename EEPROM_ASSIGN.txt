@@ -15,7 +15,7 @@
 0060H byte      Debug Message available
 0062H byte      CMODE
 
-## CCM (Schedule)
+## CCM (Schedule) for V2.6.0
 1000H
  xx00H byte             Valid Flag (0x01:valid, 0xff:invalid)
  xx01H byte             ROOM
@@ -37,6 +37,36 @@
  xx2EH byte             Relay 5..8
  xx2FH                  Reserved
  xx30H byte             Condition compare value 1
+ xx31H byte             Conditional Expression 2
+ xx32H byte             Condition compare value 2
+ xx33H byte             Conditional Expression 3
+ xx34H byte             Condition compare value 3
+ xx35H byte             Conditional Expression 4
+ xx36H byte             Condition compare value 4
+*** 64bytes/1CCM  30records
+
+## CCM (Schedule) for V3.x.x
+1000H
+ xx00H byte             Valid Flag (0x01:valid, 0xff:invalid)
+ xx01H byte             ROOM
+ xx02H byte             REGION
+ xx03H uint16_t         ORDER (Little Endian 2bytes)
+ xx05H byte             PRIORITY
+ xx06H byte             Level (A-1S-0 etc.)
+ xx07H byte             cast
+ xx08H char             SR (Fixed 'R')
+ xx09H char[20]         CCMTYPE (ASCIZ)
+ xx1DH char[10]         UNIT (ASCIZ)
+ xx27H byte             Start of time (Hour)
+ xx28H byte             Start of time (Minute)
+ xx29H byte             End of time (Hour)
+ xx2AH byte             End of time (Minute)
+ xx2BH byte             Interval time (Minute)
+ xx2CH byte             During time (Minute)
+ xx2DH byte             Relay 1..4
+ xx2EH byte             Relay 5..8
+ xx2FH                  Reserved
+ xx30H byte             compare ccmtype 1
  xx31H byte             Conditional Expression 2
  xx32H byte             Condition compare value 2
  xx33H byte             Conditional Expression 3
