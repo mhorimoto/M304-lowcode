@@ -71,7 +71,8 @@ void debugMsgOutput(int kind,int f=0) {
 }
 
 void _dump_flb(int k, int f) {
-  extern uecsM304  flb_rx_ccm[],flb_tx_ccm[];
+  extern uecsM304Sched  flb_rx_ccm[];
+  extern uecsM304Send   flb_tx_ccm[];
   extern uecsM304cmpope flb_cmpope[];
   extern bool debugMsgFlag(int);
   int i,imax;
@@ -188,37 +189,40 @@ void eeprom_update(unsigned int a,uint8_t v) {
   }
 }
 
-void copyFromLC_uecsM304(uecsM304 *tg,int a) {
+void copyFromLC_uecsM304Sched(uecsM304Sched *tg,int a) {
   int i;
-  uint8_t ordl,ordh;
-  tg->valid    = atmem.read(a+LC_VALID);    
-  tg->room     = atmem.read(a+LC_ROOM);         // 0x01
-  tg->region   = atmem.read(a+LC_REGION);       // 0x02
-  ordl = atmem.read(a+LC_ORDER);
-  ordh = atmem.read(a+LC_ORDER+1);
-  tg->order    = (ordh<<8)+ordl;
-  tg->priority = atmem.read(a+LC_PRIORITY);     // 0x05
-  tg->lv       = atmem.read(a+LC_LV);    
-  tg->cast     = atmem.read(a+LC_CAST);         // 0x07
-  tg->sr       = atmem.read(a+LC_SR);           // 0x08
-  for (i=0;i<20;i++) {
-    tg->ccm_type[i] = atmem.read(a+LC_CCMTYPE+i); // 0x09 ASCIZ
+  tg->valid    = atmem.read(a+LC_SCH_VALID);    
+  tg->sthr     = atmem.read(a+LC_SCH_STHR);         // 0x27
+  tg->stmn     = atmem.read(a+LC_SCH_STMN);         // 0x28
+  tg->edhr     = atmem.read(a+LC_SCH_EDHR);         // 0x29
+  tg->edmn     = atmem.read(a+LC_SCH_EDMN);         // 0x2a
+  tg->mnflag   = atmem.read(a+LC_SCH_MNFLAG);
+  tg->inmn     = atmem.readInt(a+LC_SCH_INMN);      // 0x2b
+  tg->dumn     = atmem.readInt(a+LC_SCH_DUMN);      // 0x2c
+  tg->rly_l    = atmem.read(a+LC_SCH_RLY_L);        // 0x2d
+  tg->rly_h    = atmem.read(a+LC_SCH_RLY_H);        // 0x2e
+  for(i=0;i<5;i++) {
+    if (i==0) {
+      tg->cmbcmp[i] = R_AND;
+    } else {
+      tg->cmbcmp[i] = atmem.read(a+LC_SCH_CMBCMP1+((i-1)*7));
+    }
+    tg->cmpccmid[i] = atmem.read(a+LC_SCH_CMPCCMID0+(i*7));
+    tg->cmpope[i]   = atmem.read(a+LC_SCH_CMPOPE0+(i*7));
+    tg->cmpval[i]   = atmem.readFloat(a+LC_SCH_CMPVAL0+(i*7));
   }
-  for (i=0;i<10;i++) {
-    tg->unit[i] = atmem.read(a+LC_UNIT+i);      // 0x1d ASCIZ
-  }
-  tg->sthr     = atmem.read(a+LC_STHR);         // 0x27
-  tg->stmn     = atmem.read(a+LC_STMN);         // 0x28
-  tg->edhr     = atmem.read(a+LC_EDHR);         // 0x29
-  tg->edmn     = atmem.read(a+LC_EDMN);         // 0x2a
-  tg->inmn     = atmem.read(a+LC_INMN);         // 0x2b
-  tg->dumn     = atmem.read(a+LC_DUMN);         // 0x2c
-  tg->rly_l    = atmem.read(a+LC_RLY_L);        // 0x2d
-  tg->rly_h    = atmem.read(a+LC_RLY_H);        // 0x2e
-  // 2.5.2D7
-  for(i=0;i<16;i++) {
-    tg->dummy[i] = atmem.read(a+LC_CPXCONDS+i); // COPY Complex Conditions
-  }
+}
+
+void copyFromLC_uecsM304Send(uecsM304Send *tg,int a) {
+  tg->valid    = atmem.read(a+LC_SEND_VALID);    
+  tg->room     = atmem.read(a+LC_SEND_ROOM);         // 0x01
+  tg->region   = atmem.read(a+LC_SEND_REGION);       // 0x02
+  tg->order    = atmem.readInt(a+LC_SEND_ORDER);
+  tg->priority = atmem.read(a+LC_SEND_PRIORITY);     // 0x05
+  tg->lv       = atmem.read(a+LC_SEND_LV);    
+  tg->cast     = atmem.read(a+LC_SEND_CAST);         // 0x07
+  atmem.readChars(a+LC_SEND_CCMTYPE,&tg->ccmtype[0],20);
+  atmem.readChars(a+LC_SEND_UNIT,&tg->unit[0],10);
 }
 
 void copyFromLC_uecsM304cmpope(uecsM304cmpope *tg,int a) {
@@ -250,12 +254,12 @@ void init_uecsTBL(void) {
   // 2.3.5D Read fast lookup buffer for CCM table
   for (j=0;j<CCM_TBL_CNT_RX;j++) {
     a = LC_SCH_START+(j*LC_SCH_REC_SIZE);
-    copyFromLC_uecsM304(&flb_rx_ccm[j],a);
+    copyFromLC_uecsM304Sched(&flb_rx_ccm[j],a);
   }
   debugMsgOutput(2,w); // rx_ccm display
   for (j=0;j<CCM_TBL_CNT_TX;j++) {
     a = LC_SEND_START+(j*LC_SEND_REC_SIZE);
-    copyFromLC_uecsM304(&flb_tx_ccm[j],a);
+    copyFromLC_uecsM304Send(&flb_tx_ccm[j],a);
   }
   debugMsgOutput(3,w); // tx_ccm display
   for (j=0;j<CCM_TBL_CNT_CMP;j++) {
