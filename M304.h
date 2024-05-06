@@ -1,6 +1,6 @@
 #ifndef _M304_H_
 #define _M304_H_
-#define _M304_H_V  1315
+#define _M304_H_V  1318
 
 #include <avr/pgmspace.h>
 #include <LiquidCrystal.h>
@@ -92,6 +92,12 @@
 /*** UECS TEXT ***/
 #define CCMFMT "<?xml version=\"1.0\"?><UECS ver=\"1.00-E10\"><DATA type=\"%s\" room=\"%d\" region=\"%d\" order=\"%d\" priority=\"%d\">%s</DATA><IP>%s</IP></UECS>"
 
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+//  OPERATION MEMORY MAPS //////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+
 /*** EEPROM LOWCORE ASSIGN ***/
 #define LC_UECS_ID        0x00
 #define LC_MAC            0x06
@@ -107,6 +113,138 @@
 #define   LCD_MSG   0x40
 #define   SO_INFO   0x02
 #define LC_CMODE          0x62  /* Force CMODE Change */
+
+typedef struct stM304 {
+  byte mac[6];
+  bool dhcpflag=true;
+  byte set_ip[4];
+  IPAddress ip;
+  IPAddress gw;
+  IPAddress dns;
+  IPAddress subnet;
+  int cidr;
+};
+
+#ifdef M304V3 // Ver 3.x.x以降のメモリマップ
+//
+//  SCHEDULE(previous RX) Table
+//
+#define LC_SCH_START          0x1000
+#define LC_SCH_REC_SIZE       0x40 // reserve to 0x3f step by 0x40
+#define   LC_SCH_VALID        0x00 // Valid Flag (0x01:valid, 0xff:invalid)
+#define   LC_SCH_STHR         0x01 // Start of time (Hour) and validation flag
+#define   LC_SCH_STMN         0x02 // Start of time (minute)
+#define   LC_SCH_EDHR         0x03 // End of time (hour)
+#define   LC_SCH_EDMN         0x04 // End of time (minute)
+#define   LC_SCH_MNFLAG       0x05 // MINUTES/SECONDS FLAG (FF:MINUTES,00:SECONDS)
+#define   LC_SCH_INMN         0x06 // Interval time (mins/sec) unsigned int (2bytes)
+#define   LC_SCH_DUMN         0x08 // During time (mins/sec) unsigned int (2bytes)
+//define  LC_SCH_DUMMY        0x09-0x0d (5bytes)
+#define   LC_SCH_RLY_L        0x0e // RLY 1..4
+#define   LC_SCH_RLY_H        0x0f // RLY 5..8
+#define   LC_SCH_CPXCONDS     0x10 // Complex Conditions 16bytes but current 8bytes
+
+#define   LC_SCH_CMPCCMID0    0x10 // compare value opeID 1 byte
+#define   LC_SCH_CMPOPE0      0x11 // relational operator 1 byte
+#define   LC_SCH_CMPVAL0      0x12 // Numerical values to compare 1 float (4bytes)
+
+#define   LC_SCH_CMBCMP1      0x16 // Combined expression-expression comparison operators 1
+#define   LC_SCH_CMPCCMID1    0x17 // compare value opeID 1 byte
+#define   LC_SCH_CMPOPE1      0x18 // relational operator 1 byte
+#define   LC_SCH_CMPVAL1      0x19 // Numerical values to compare 1 float (4bytes)
+
+#define   LC_SCH_CMBCMP2      0x1d // Combined expression-expression comparison operators 1
+#define   LC_SCH_CMPCCMID2    0x1e // compare value opeID 1 byte
+#define   LC_SCH_CMPOPE2      0x1f // relational operator 1 byte
+#define   LC_SCH_CMPVAL2      0x20 // Numerical values to compare 1 float (4bytes)
+
+#define   LC_SCH_CMBCMP3      0x24 // Combined expression-expression comparison operators 1
+#define   LC_SCH_CMPCCMID3    0x25 // compare value opeID 1 byte
+#define   LC_SCH_CMPOPE3      0x26 // relational operator 1 byte
+#define   LC_SCH_CMPVAL3      0x27 // Numerical values to compare 1 float (4bytes)
+
+#define   LC_SCH_CMBCMP4      0x2b // Combined expression-expression comparison operators 1
+#define   LC_SCH_CMPCCMID4    0x2c // compare value opeID 1 byte
+#define   LC_SCH_CMPOPE4      0x2d // relational operator 1 byte
+#define   LC_SCH_CMPVAL4      0x2e // Numerical values to compare 1 float (4bytes)
+//                            0x2f-0x3f Reserved
+
+typedef struct uecsM304Sched {
+  byte valid;        // 0x00
+  byte sthr;         // 0x01
+  byte stmn;         // 0x02
+  byte edhr;         // 0x03
+  byte edmn;         // 0x04
+  byte mnflag;       // 0x05
+  unsigned int inmn; // 0x06
+  unsigned int dumn; // 0x08
+  byte rly_l;        // 0x0e
+  byte rly_h;        // 0x0f
+  byte cmbcmp[5];    // 0:R_AND,1:0x16,2:0x1d,3:0x24,4:0x2b
+  byte cmpccmid[5];  // 0:0x10, 1:0x17,2:0x1e,3:0x25,4:0x2c
+  byte cmpope[5];    // 0:0x11, 1:0x18,2:0x1f,3:0x26,4:0x2d
+  float cmpval[5];   // 0:0x12, 1:0x19,2:0x20,3:0x27,4:0x2e
+};  // 64bytes/1unit
+
+//
+//  CCM SEND FORMAT (Previous TX Table)
+//
+#define LC_SEND_START       0x3000   // CCM for data sending (for example cnd.aMC)
+#define LC_SEND_REC_SIZE    0x30 // reserve to 0x2f step by 0x30
+#define   LC_SEND_VALID     0x00 // Valid Flag (0x01:valid, 0xff:invalid)
+#define   LC_SEND_ROOM      0x01
+#define   LC_SEND_REGION    0x02
+#define   LC_SEND_ORDER     0x03
+#define   LC_SEND_PRIORITY  0x05
+#define   LC_SEND_LV        0x06 // reference LV define
+#define   LC_SEND_CAST      0x07
+#define   LC_SEND_CCMTYPE   0x08 // char[20]
+#define   LC_SEND_UNIT      0x1c // char[10]
+
+typedef struct uecsM304Send {
+  byte valid;        // 0x00
+  byte room;         // 0x01
+  byte region;       // 0x02
+  int  order;        // 0x03
+  byte priority;     // 0x05
+  byte lv;           // 0x06
+  byte cast;         // 0x07
+  char ccmtype[20];  // 0x08
+  char unit[10];     // 0x1c
+};
+
+//  受信CCMに応じた比較演算テーブル
+//  Comparison operation table according to received CCM
+//
+#define LC_CMPOPE_START     0x5000 // Compare Operators
+#define LC_CMPOPE_REC_SIZE  0x20 //
+#define   LC_COPE_VALID     0x00
+#define   LC_COPE_ROOM      0x01
+#define   LC_COPE_REGION    0x02
+#define   LC_COPE_ORDER     0x03
+#define   LC_COPE_LIFECNT   0x05
+#define   LC_COPE_CCMTYPE   0x06 // char[20]
+#define   LC_COPE_OPE       0x1a // char[10]
+#define   LC_COPE_FVAL      0x1b
+#define   LC_COPE_RESULT    0x1f
+#define LC_END      0x7fff
+
+typedef struct uecsM304cmpope {
+  byte valid;        // 0x00
+  byte room;         // 0x01
+  byte region;       // 0x02
+  uint16_t order;    // 0x03
+  byte lifecnt;      // 0x05 sec
+  char ccm_type[20]; // 0x06 ASCIZ
+  byte cmpope;       // 0x1a
+  float fval;        // 0x1b current recieving data
+  // LAST            // 0x1f
+};  // 32bytes/1unit
+
+////////////// v3.x.x ここまで
+//--------------------------------------------------------------------------------------
+////////////// v2.6.0D1 までは以下のフォーマット
+#else
 
 #define LC_SCH_START 0x1000
 #define   LC_VALID        0x00 // Valid Flag (0x01:valid, 0xff:invalid)
@@ -130,52 +268,11 @@
 #define   LC_CPXCONDS     0x30 // Complex Conditions 16bytes but current 8bytes
 #define   LC_CONDVAL1     0x30 // Condition compare value 1
 #define   LC_CONDEXP2     0x31 // Conditional Expression 2
-#define   LC_CONDVAL2     0x32 // Condition compare value 1
-#define   LC_CONDEXP3     0x33 // Conditional Expression 2
-#define   LC_CONDVAL3     0x34 // Condition compare value 1
-#define   LC_CONDEXP4     0x35 // Conditional Expression 2
-#define   LC_CONDVAL4     0x36 // Condition compare value 1
-
-
-
-#define LC_SCH_REC_SIZE   0x40 // reserve to 0x3f step by 0x40
-#define LC_SEND_START 0x3000   // CCM for data sending (for example cnd.aMC)
-#define LC_SEND_REC_SIZE  0x40 // reserve to 0x3f step by 0x40
-#define LC_CMPOPE_START 0x5000 // Compare Operators
-#define LC_CMPOPE_REC_SIZE 0x20 //
-#define   LC_COPE_VALID    0x00
-#define   LC_COPE_ROOM     0x01
-#define   LC_COPE_REGION   0x02
-#define   LC_COPE_ORDER    0x03
-#define   LC_COPE_LIFECNT  0x05
-#define   LC_COPE_CCMTYPE  0x06
-#define   LC_COPE_OPE      0x1a
-#define   LC_COPE_FVAL     0x1b
-#define   LC_COPE_RESULT   0x1f
-#define LC_END      0x7fff
-
-/*** LV define ***/
-#define LV_A1S0    1      // A-1S-0
-#define LV_A1S1    2      // A-1S-1
-#define LV_A10S0   3      // A-10S-0
-#define LV_A10S1   4      // A-10S-1
-#define LV_A1M0    5      // A-1M-0
-#define LV_A1M1    6      // A-1M-1
-#define LV_B0      7      // B-0
-#define LV_B1      8      // B-1
-#define LV_S1S0    9      // S-1S-0
-#define LV_S1M0   10      // S-1M-0
-
-typedef struct stM304 {
-  byte mac[6];
-  bool dhcpflag=true;
-  byte set_ip[4];
-  IPAddress ip;
-  IPAddress gw;
-  IPAddress dns;
-  IPAddress subnet;
-  int cidr;
-};
+#define   LC_CONDVAL2     0x32 // Condition compare value 2
+#define   LC_CONDEXP3     0x33 // Conditional Expression 3
+#define   LC_CONDVAL3     0x34 // Condition compare value 3
+#define   LC_CONDEXP4     0x35 // Conditional Expression 4
+#define   LC_CONDVAL4     0x36 // Condition compare value 4
 
 /*** EEPROM 0x1000..0x2900 CCM DATA ***/
 typedef struct uecsM304 {
@@ -201,6 +298,22 @@ typedef struct uecsM304 {
   byte dummy[16];    // 0x30-0x3f   // relational operations are written here.
 };  // 64bytes/1unit
 
+#define LC_SCH_REC_SIZE   0x40 // reserve to 0x3f step by 0x40
+#define LC_SEND_START 0x3000   // CCM for data sending (for example cnd.aMC)
+#define LC_SEND_REC_SIZE  0x40 // reserve to 0x3f step by 0x40
+#define LC_CMPOPE_START 0x5000 // Compare Operators
+#define LC_CMPOPE_REC_SIZE 0x20 //
+#define   LC_COPE_VALID    0x00
+#define   LC_COPE_ROOM     0x01
+#define   LC_COPE_REGION   0x02
+#define   LC_COPE_ORDER    0x03
+#define   LC_COPE_LIFECNT  0x05
+#define   LC_COPE_CCMTYPE  0x06
+#define   LC_COPE_OPE      0x1a
+#define   LC_COPE_FVAL     0x1b
+#define   LC_COPE_RESULT   0x1f
+#define LC_END      0x7fff
+
 /*** EEPROM Relational Operators DATA ***/
 typedef struct uecsM304cmpope {
   byte valid;        // 0x00
@@ -213,6 +326,21 @@ typedef struct uecsM304cmpope {
   float fval;        // 0x1b
   // LAST            // 0x1f
 };  // 32bytes/1unit
+
+#endif
+////////////////////////////////////////////////////////////////////////////////////////
+
+/*** LV define ***/
+#define LV_A1S0    1      // A-1S-0
+#define LV_A1S1    2      // A-1S-1
+#define LV_A10S0   3      // A-10S-0
+#define LV_A10S1   4      // A-10S-1
+#define LV_A1M0    5      // A-1M-0
+#define LV_A1M1    6      // A-1M-1
+#define LV_B0      7      // B-0
+#define LV_B1      8      // B-1
+#define LV_S1S0    9      // S-1S-0
+#define LV_S1M0   10      // S-1M-0
 
 // Relational Operators
 

@@ -1,14 +1,15 @@
 #define M304V3
 #include <M304.h>
 
-#if _M304_H_V < 1315
-#pragma message("Library M304 is old. Version 1.3.15 or higher is required.")
-#else
-
 #include <avr/wdt.h>
 #include <avr/pgmspace.h>
 #include <yxml.h>
 #include <string.h>
+
+#if _M304_H_V < 1317
+#pragma message("Library M304 is old. Version 1.3.15 or higher is required.")
+
+#else
 
 uint8_t mcusr_mirror __attribute__ ((section (".noinit")));
 void get_mcusr(void)     \
@@ -100,7 +101,8 @@ char lbf[81];
 extern bool debugMsgFlag(int);
 extern void debugMsgOutput(int,int);
 
-uecsM304  flb_rx_ccm[CCM_TBL_CNT_RX],flb_tx_ccm[CCM_TBL_CNT_TX];
+uecsM304Sched  flb_rx_ccm[CCM_TBL_CNT_RX];
+uecsM304Send   flb_tx_ccm[CCM_TBL_CNT_TX];
 uecsM304cmpope flb_cmpope[CCM_TBL_CNT_CMP];
 byte cmpope_result[CCM_TBL_CNT_CMP];
 byte cmpope_lifecnt[CCM_TBL_CNT_CMP];
