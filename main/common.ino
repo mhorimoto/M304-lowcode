@@ -76,13 +76,15 @@ void _dump_flb(int k, int f) {
   extern uecsM304cmpope flb_cmpope[];
   extern bool debugMsgFlag(int);
   int i,imax;
-  uecsM304 *flb;
+  uecsM304Sched  *ptr_flb_rx;
+  uecsM304Send   *ptr_flb_tx;
+  uecsM304cmpope *ptr_flb_cmpope;
   
   if (k==2) {
-    flb = &flb_rx_ccm[0];
+    ptr_flb_rx = &flb_rx_ccm[0];
     imax = CCM_TBL_CNT_RX;
   } else if (k==3) {
-    flb = &flb_tx_ccm[0];
+    ptr_flb_tx = &flb_tx_ccm[0];
     imax = CCM_TBL_CNT_TX;
   }
   switch(k) {
