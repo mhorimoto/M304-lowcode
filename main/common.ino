@@ -76,6 +76,7 @@ void _dump_flb(int k, int f) {
   extern uecsM304cmpope flb_cmpope[];
   extern bool debugMsgFlag(int);
   int i,imax;
+  char lbftxt[80],rly1[5],rly5[5],*mnflag,*lv;
   uecsM304Sched  *ptr_flb_rx;
   uecsM304Send   *ptr_flb_tx;
   uecsM304cmpope *ptr_flb_cmpope;
@@ -96,52 +97,76 @@ void _dump_flb(int k, int f) {
     Serial.println(st_m.cidr);
     Serial.println(broadcastIP);
     break;
-  case 2:
-  case 3:
+  case 2: // uecsM304Sched (RX)
     for(i=0;i<imax;i++) {
-      if ((f==2)&&(flb->valid!=1)) continue;
-      //      sprintf(lbftxt,"%d,%d,%d,%d,%d,%d,%d,%c,%s,%s,%d,%d,%d,%d,%d,%d,%02x,%02x",
-      //              flb->valid,flb->room,flb->region,flb->order,flb->priority,flb->lv,
-      //              flb->cast,flb->sr,flb->ccm_type,flb->unit,
-      //              flb->sthr,flb->stmn,flb->edhr,flb->edmn,flb->inmn,flb->dumn,
-      //              flb->rly_l,flb->rly_h);
-      //      Serial.println(lbftxt);
-      Serial.print(flb->valid);
-      Serial.print(F(","));
-      Serial.print(flb->room);
-      Serial.print(F(","));
-      Serial.print(flb->region);
-      Serial.print(F(","));
-      Serial.print(flb->order);
-      Serial.print(F(","));
-      Serial.print(flb->priority);
-      Serial.print(F(","));
-      Serial.print(flb->lv);
-      Serial.print(F(","));
-      Serial.print(flb->cast);
-      Serial.print(F(","));
-      Serial.print((char)flb->sr);
-      Serial.print(F(","));
-      Serial.print(flb->ccm_type);
-      Serial.print(F(","));
-      Serial.print(flb->unit);
-      Serial.print(F(","));
-      Serial.print(flb->sthr);
-      Serial.print(F(","));
-      Serial.print(flb->stmn);
-      Serial.print(F(","));
-      Serial.print(flb->edhr);
-      Serial.print(F(","));
-      Serial.print(flb->edmn);
-      Serial.print(F(","));
-      Serial.print(flb->inmn);
-      Serial.print(F(","));
-      Serial.print(flb->dumn);
-      Serial.print(F(","));
-      Serial.print(flb->rly_l,BIN);
-      Serial.print(F(","));
-      Serial.println(flb->rly_h,BIN);
-      flb++;
+      if ((f==2)&&(ptr_flb_rx->valid!=1)) {
+        ptr_flb_rx++;
+        continue;
+      }
+      switch(ptr_flb_rx->mnflag) {
+      case 0:
+        mnflag = "SECS";
+        break;
+      case 0xff:
+        mnflag = "MINU";
+        break;
+      default:
+        mnflag = "????";
+      }
+      conv_relay(ptr_flb_rx->rly_l,&rly1[0]);
+      conv_relay(ptr_flb_rx->rly_h,&rly5[0]);
+      sprintf(lbftxt,"%2d,%02x,%02d:%02d-%02d:%02d,%s(%02x),%d/%d,%s%s(%02x%02x),\n",
+              i,ptr_flb_rx->valid,ptr_flb_rx->sthr,ptr_flb_rx->stmn,ptr_flb_rx->edhr,
+              ptr_flb_rx->edmn,mnflag,ptr_flb_rx->mnflag,ptr_flb_rx->inmn,ptr_flb_rx->dumn,
+              rly1,rly5,ptr_flb_rx->rly_l,ptr_flb_rx->rly_h);
+      ptr_flb_rx++;
+    }
+    break;
+      
+  case 3: // uecsM304Send (TX)
+    for(i=0;i<imax;i++) {
+      if ((f==2)&&(ptr_flb_tx->valid!=1)) {
+        ptr_flb_tx++;
+        continue;
+      }
+      switch(ptr_flb_tx->lv) {
+      case LV_A1S0:
+        lv = "A-1S-0";
+        break;
+      case LV_A1S1:
+        lv = "A-1S-1";
+        break;
+      case LV_A10S0:
+        lv = "A-10S-0";
+        break;
+      case LV_A10S1:
+        lv = "A-10S-1";
+        break;
+      case LV_A1M0:
+        lv = "A-1M-0";
+        break;
+      case LV_A1M1:
+        lv = "A-1M-1";
+        break;
+      case LV_B0:
+        lv = "B-0";
+        break;
+      case  LV_B1:
+        lv = "B-1";
+        break;
+      case LV_S1S0:
+        lv = "S-1S-0";
+        break;
+      case LV_S1M0:
+        lv = "S-1M-0";
+        break;
+      }
+
+      sprintf(lbftxt,"%2d,%d,%d,%d,%d,%d,%s(%d),%d,%s,%s",
+              i,ptr_flb_tx->valid,ptr_flb_tx->room,ptr_flb_tx->region,ptr_flb_tx->order,
+              ptr_flb_tx->priority,lv,ptr_flb_tx->lv,ptr_flb_tx->cast,
+              ptr_flb_tx->ccmtype,ptr_flb_tx->unit);
+      ptr_flb_tx++;
     }
     break;
   case 4:
@@ -270,3 +295,28 @@ void init_uecsTBL(void) {
   }
   debugMsgOutput(4,w); // cmpope display
 }
+
+
+ void conv_relay(byte a,char o[]) {
+  byte b;
+  int  i;
+  for(i=0;i<4;i++) {
+    b = (a>>(i*2))*0x03;
+    switch(b) {
+    case RLY_DNTCARE:
+      o[3-i] = '-';
+      break;
+    case RLY_BOTH:
+      o[3-i] = 'T';
+      break;
+    case RLY_BREAK:
+      o[3-i] = 'B';
+      break;
+    case RLY_MAKE:
+      o[3-i] = 'M';
+      break;
+    }
+  }
+  o[4] = (char)NULL;
+}
+ 
