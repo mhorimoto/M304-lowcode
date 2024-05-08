@@ -21,7 +21,7 @@ void opeRUN(int hr,int mn) {
       sendUECSpacket(r,itoa(rlyttl[r-1],buf,DEC),60);
     }
   }
-  // 2.5.2De
+
   for(id=0;id<CCM_TBL_CNT_RX;id++) {
     wdt_reset();
     if (flb_rx_ccm[id].valid!=0xff) {

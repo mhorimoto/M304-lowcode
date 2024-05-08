@@ -155,17 +155,17 @@ void opeSCH(void) {
     }
     addr = LC_SCH_START+id*LC_SCH_REC_SIZE;
     if ((sthr==0)&&(stmn==0)&&(edhr==0)&&(edmn==0)||(dumn==0)) {
-      atmem.write(addr+LC_VALID,0xff);
+      atmem.write(addr+LC_SCH_VALID,0xff);
     } else {
-      atmem.write(addr+LC_VALID,0x01);
-      atmem.write(addr+LC_STHR,sthr);
-      atmem.write(addr+LC_STMN,stmn);
-      atmem.write(addr+LC_EDHR,edhr);
-      atmem.write(addr+LC_EDMN,edmn);
-      atmem.write(addr+LC_INMN,inmn);
-      atmem.write(addr+LC_DUMN ,dumn);
-      atmem.write(addr+LC_RLY_L,rly[0]);
-      atmem.write(addr+LC_RLY_H,rly[1]);
+      atmem.write(addr+LC_SCH_VALID,0x01);
+      atmem.write(addr+LC_SCH_STHR,sthr);
+      atmem.write(addr+LC_SCH_STMN,stmn);
+      atmem.write(addr+LC_SCH_EDHR,edhr);
+      atmem.write(addr+LC_SCH_EDMN,edmn);
+      atmem.write(addr+LC_SCH_INMN,inmn);
+      atmem.write(addr+LC_SCH_DUMN ,dumn);
+      atmem.write(addr+LC_SCH_RLY_L,rly[0]);
+      atmem.write(addr+LC_SCH_RLY_H,rly[1]);
     }
     sprintf(eebuf,"EEPROM %04XH %02X%02X,%02X%02X,%02X%02X,%02X%02X",
             id,sthr,stmn,edhr,edmn,inmn,dumn,rly[0],rly[1]);
@@ -212,16 +212,16 @@ void getSCHData(int p,int id) {
   Serial.print(F("addr=0x")); // debug 2.2.1
   Serial.println(addr,HEX); // debug 2.2.1
 
-  valid= atmem.read(addr+LC_VALID);
+  valid= atmem.read(addr+LC_SCH_VALID);
   if (valid==1) { // debug 2.2.1
-    sthr = atmem.read(addr+LC_STHR);
-    stmn = atmem.read(addr+LC_STMN);
-    edhr = atmem.read(addr+LC_EDHR);
-    edmn = atmem.read(addr+LC_EDMN);
-    inmn = atmem.read(addr+LC_INMN);
-    dumn = atmem.read(addr+LC_DUMN);
-    rly[0] = atmem.read(addr+LC_RLY_L);
-    rly[1] = atmem.read(addr+LC_RLY_H);
+    sthr = atmem.read(addr+LC_SCH_STHR);
+    stmn = atmem.read(addr+LC_SCH_STMN);
+    edhr = atmem.read(addr+LC_SCH_EDHR);
+    edmn = atmem.read(addr+LC_SCH_EDMN);
+    inmn = atmem.read(addr+LC_SCH_INMN);
+    dumn = atmem.read(addr+LC_SCH_DUMN);
+    rly[0] = atmem.read(addr+LC_SCH_RLY_L);
+    rly[1] = atmem.read(addr+LC_SCH_RLY_H);
   } else { // debug 2.2.1
     sthr = 0; // debug 2.2.1
     stmn = 0; // debug 2.2.1

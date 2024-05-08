@@ -600,7 +600,7 @@ void sendUECSpacket(int id,char *v,int lvo) {
     order = flb_tx_ccm[id].order;
     priority = flb_tx_ccm[id].priority;
     for (j=0;j<20;j++) {
-      ccm_type[j] = flb_tx_ccm[id].ccm_type[j];
+      ccm_type[j] = flb_tx_ccm[id].ccmtype[j];
     }
     sprintf(t,xmlDT,ccm_type,room,region,
             order,priority,v,itoaddr(st_m.ip));
