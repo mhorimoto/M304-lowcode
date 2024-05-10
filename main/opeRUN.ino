@@ -6,8 +6,13 @@ void opeRUN(int hr,int mn) {
   byte s[2];
   int r;
   char t[81],buf[8];
+  float cval,rval; // cval: 現在の値(flb_cmpope.fval)
+                   // rval: 比較数値(flb_rx_ccm.cmpval)
   extern int rlyttl[];
   extern byte cmpope_result[];
+  extern uecsM304Sched  flb_rx_ccm[];
+  extern uecsM304Send   flb_tx_ccm[];
+  extern uecsM304cmpope flb_cmpope[];
 
   //  1min interval
   if (mn!=pmn) {
@@ -23,30 +28,18 @@ void opeRUN(int hr,int mn) {
   }
 
   for(id=0;id<CCM_TBL_CNT_RX;id++) {
+    x = 0;
     wdt_reset();
     if (flb_rx_ccm[id].valid!=0xff) {
-      x = 0;
-      y = flb_rx_ccm[id].dummy[0];
-      if ( y < 255 ) {
-        x = cmpope_result[y];
-        for (i=1;i<4;i++) {
-          j = 2*i;
-          p = flb_rx_ccm[id].dummy[j-1]; // operator (AND/OR)
-          y = flb_rx_ccm[id].dummy[j];   // value index;
-          if ((y==0xff)||(p==0xff)) {
-            i = 5;  // force exit
-            break;
-          }
-          //          Serial.print(F("i="));
-          //          Serial.print(i);
-          switch(p) {
-          case R_AND:
-            //            Serial.print(F(" R_AND "));
-            x &= cmpope_result[y];       // x &= result
-            break;
-          case R_OR:
-            //            Serial.print(F(" R_OR "));
-            x |= cmpope_result[y];       // x |= result
+      for (i=0;i<5;i++) {
+        y = flb_rx_ccm[id].cmpccmid[i];  // 比較するuecsM304cmpopeの位置を決定
+        if ( y < 255 ) { // 比較するCCMTYPEがある場合
+          rval = flb_rx_ccm[id].cmpval[i];   // value index;
+          switch(flb_rx_ccm[id].cmpope[i]) {
+          case R_EQ: // ==
+            
+          default:
+            i = 5;  // 比較演算子が無効の場合、離脱 force exit
             break;
           }
         }
