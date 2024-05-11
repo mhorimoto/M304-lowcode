@@ -4,7 +4,7 @@ void opeRUN(int hr,int mn) {
   static int pmn=61;  // Nothing 61minute
   int id,i,j,k,x,y,p;
   byte s[2];
-  int r;
+  int cmpresult,r;
   char t[81],buf[8];
   float cval,rval; // cval: 現在の値(flb_cmpope.fval)
                    // rval: 比較数値(flb_rx_ccm.cmpval)
@@ -28,31 +28,66 @@ void opeRUN(int hr,int mn) {
   }
 
   for(id=0;id<CCM_TBL_CNT_RX;id++) {
-    x = 0;
+    cmpresult = 0;
     wdt_reset();
     if (flb_rx_ccm[id].valid!=0xff) {
       for (i=0;i<5;i++) {
+        x = 0;  // cmpresultを生成するために必要な中間結果
         y = flb_rx_ccm[id].cmpccmid[i];  // 比較するuecsM304cmpopeの位置を決定
         if ( y < 255 ) { // 比較するCCMTYPEがある場合
           rval = flb_rx_ccm[id].cmpval[i];   // value index;
           switch(flb_rx_ccm[id].cmpope[i]) {
           case R_EQ: // ==
-            
+            if (flb_cmpope[y].fval==rval) {
+              x = 1;
+            } else {
+              x = 0;
+            }
+            break;
+          case R_GT: // >
+            if (flb_cmpope[y].fval > rval) {
+              x = 1;
+            } else {
+              x = 0;
+            }
+            break;
+          case R_LT: // >
+            if (flb_cmpope[y].fval < rval) {
+              x = 1;
+            } else {
+              x = 0;
+            }
+            break;
+          case R_GE: // >=
+            if (flb_cmpope[y].fval >= rval) {
+              x = 1;
+            } else {
+              x = 0;
+            }
+            break;
+          case R_LE: // <=
+            if (flb_cmpope[y].fval <= rval) {
+              x = 1;
+            } else {
+              x = 0;
+            }
+            break;
           default:
             i = 5;  // 比較演算子が無効の場合、離脱 force exit
             break;
           }
+        } else {
+          x = 1;   // y==0xff
+          i = 5;   // 比較演算子が無効の場合、離脱 force exit
         }
         s[0] = flb_rx_ccm[id].rly_l;
         s[1] = flb_rx_ccm[id].rly_h;
-        for(i=0;i<4;i++) {
-          j = (s[0]>>(i*2))&0x3;
-          k = (s[1]>>(i*2))&0x3;
-	  set_rlyttl(x,i,j,1,id);
-	  set_rlyttl(x,i,k,5,id);
+        for(r=0;r<4;r++) {
+          j = (s[0]>>(r*2))&0x3;
+          k = (s[1]>>(r*2))&0x3;
+	  set_rlyttl(x,r,j,1,id);
+	  set_rlyttl(x,r,k,5,id);
         }
-      } else {  // y==0xff ---> always true
-        x = 1;
       }
     }
   }
