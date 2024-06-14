@@ -36,10 +36,10 @@ function init_data($AAA,&$infomethod,&$rxmethod,&$opemethod,&$txmethod) {
     $s->assign("INFOMETHOD",$infomethod);
 
     $rlyopt = array(
-        array("v"=>"N", "name"=>"-"),
-        array("v"=>"B", "name"=>"B"),
-        array("v"=>"M", "name"=>"M"),
-        array("v"=>"T", "name"=>"T")
+        array("v"=>"N", "name"=>"無関係"),
+        array("v"=>"B", "name"=>"遮断"),
+        array("v"=>"M", "name"=>"接続"),
+        array("v"=>"T", "name"=>"トグル")
     );
     $s->assign("RLY",$rlyopt);
 
