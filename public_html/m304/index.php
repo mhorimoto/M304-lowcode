@@ -1,5 +1,5 @@
 <?php
-$Version="0.70";
+$Version="3.0.0";
 
 require_once('./init_data.php');
 require_once('Smarty.class.php');
@@ -65,9 +65,8 @@ case "RX Build":
             if ($rx_cast[$k]=="") {
                 $rx_cast[$k]=0;
             }
-            $c = sprintf("/home/staff/horimoto/bin/a2.py %d %s %s %s %s %s %s R %s %s %s %s %s %s %s %s %s%s%s%s%s%s%s%s",
-                         $k,$rx_room[$k],$rx_region[$k],$rx_order[$k],$rx_priority[$k],$rx_lev[$k],$rx_cast[$k],
-                         $rx_ccmtype[$k],$rx_unit[$k],$rx_sthr[$k],$rx_stmn[$k],$rx_edhr[$k],$rx_edmn[$k],
+            $c = sprintf("/home/staff/horimoto/bin/a2-3.py %d 0 0 0 0 0 0 R DUMMY UNIT %s %s %s %s %s %s %s%s%s%s%s%s%s%s",
+                         $k,$rx_sthr[$k],$rx_stmn[$k],$rx_edhr[$k],$rx_edmn[$k],
                          $rx_inmn[$k],$rx_dumn[$k],
                          $rx_rly1[$k],$rx_rly2[$k],$rx_rly3[$k],$rx_rly4[$k],$rx_rly5[$k],
                          $rx_rly6[$k],$rx_rly7[$k],$rx_rly8[$k]);
@@ -85,6 +84,8 @@ case "RX Build":
     }
     if ($ihexrx!="") {
         $s->assign("ihexrx",$ihexrx);
+    } else {
+        $s->assign("ihexrx","NON");
     }
     for($i=0;$i<30;$i++) {
         if ($rx_valid[$i]=="on") {
@@ -181,6 +182,11 @@ case "TX Build":
     }
     $s->assign("TXMETHOD",$txmethod);
     $s->assign("ihextx",$ihextx);
+    if ($ihexrx!="") {
+        $s->assign("ihexrx",$ihexrx);
+    } else {
+        $s->assign("ihexrx","NON");
+    }
     break;
 case "Ope Build":
     $ihexope = "";
@@ -189,9 +195,9 @@ case "Ope Build":
             unset($r);
             $ope_checked[$k] = "checked";
             $ope_cmpsel[$k] = $ope_cmp[$k];
-            $c = sprintf("/home/staff/horimoto/bin/a1.py %s %s %s %s %s %s %s %s\n",
+            $c = sprintf("/home/staff/horimoto/bin/a1-3.py %s %s %s %s %s %s\n",
                          $k,$ope_room[$k],$ope_region[$k],$ope_order[$k],$ope_lifecnt[$k],
-                         $ope_ccmtype[$k],$ope_cmp[$k],$ope_fval[$k]);
+                         $ope_ccmtype[$k]);
             if (exec($c,$r)) {
                 $ihexope .= sprintf("a2sender http://%s/%s\n",$target,$r[0]);
             }
@@ -203,6 +209,11 @@ case "Ope Build":
     //    $s->assign("VENCODE",$VEN);
     $s->assign("RLYCODE","");
     $s->assign("TXLEVSEL","");
+    if ($ihexrx!="") {
+        $s->assign("ihexrx",$ihexrx);
+    } else {
+        $s->assign("ihexrx","NON");
+    }
     break;
 default:
     for ($k=0;$k<30;$k++) {
@@ -226,7 +237,7 @@ default:
     $s->assign("RXLEVSEL","");
     $s->assign("TXLEVSEL","");
     $s->assign("EXECMODE","");
-    $s->assign("OPE_SUM_CHECKED","");
+    //    $s->assign("OPE_SUM_CHECKED","");
     $s->assign("TXMETHOD",$txmethod);
 }
 include("./assignPOP.php");
