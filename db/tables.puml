@@ -1,0 +1,101 @@
+@startuml tables
+entity custom as "**custom**\nCustomer Table" <<(E,#FFAAAA)>> #PaleTurquoise {
+    + cid : int [UK]
+    --
+    name : text
+    address : text
+    **somethings** : .....
+    ..
+    seq : bigint auto_increment [PK]
+}
+
+entity blk_a as "**blk_a**\nNode Information" <<(E,#FFAAAA)>> #PaleTurquoise {
+  + pkg_name text [UK]
+  --
+  uecsid : binary(6)
+  macaddr : binary(6)
+  dhcpflag : tinyint unsigned
+  fixed_ipaddress : binary(4)
+  fixed_netmask : binary(4)
+  fixed_defgw : binary(4)
+  fixed_dns : binary(4)
+  vender_name : char(16)
+  node_name : char(16)
+  # cid : int [FK]
+  ..
+  seq : bigint auto_increment [PK]
+}
+
+entity blk_b as "**blk_b**\nOperation Definition" {
+    + pkg_name text [FK]
+    --
+    id tinyint unsigned (ID number 0..29)
+    valid tinyint unsigned (valid flag)
+    sthr tinyint unsigned (Hour of start)
+    stmn tinyint unsigned (Minute of start)
+    enhr tinyint unsigned (Hour of end)
+    enmn tinyint unsigned (Minite of end)
+    MNFLAG tinyint unsigned (sec/min flag)
+    INMN smallint unsigned (Interval)
+    DUMN smallint unsigned (Operation during)
+    RLY_L tinyint unsigned (RLY 1-4)
+    RLY_H tinyint unsigned (RLY 5-8)
+    ..
+    + CMPCCMID0 tinyint unsigned [FK]
+    CMPOPE0 tinyint unsigned
+    CMPVAL0 float (Values to compare)
+    ..
+    CMBCMP1 tinyint unsigned
+    + CMPCCMID1 tinyint unsigned [FK]
+    CMPOPE1 tinyint unsigned
+    CMPVAL1 float (Values to compare)
+    ..
+    CMBCMP2 tinyint unsigned
+    + CMPCCMID2 tinyint unsigned [FK]
+    CMPOPE2 tinyint unsigned
+    CMPVAL2 float (Values to compare)
+    ..
+    CMBCMP3 tinyint unsigned
+    + CMPCCMID3 tinyint unsigned [FK]
+    CMPOPE3 tinyint unsigned
+    CMPVAL3 float (Values to compare)
+    ..
+    CMBCMP4 tinyint unsigned
+    + CMPCCMID4 tinyint unsigned [FK]
+    CMPOPE4 tinyint unsigned
+    CMPVAL4 float (Values to compare)
+    ..
+    seq bigint auto_increment [PK]
+}
+
+entity blk_c as "**blk_c**\nCompare CCMTYPE" {
+    + pkg_name text [FK]
+    --
+    # id tinyint unsigned (ID number 0..9)
+    valid tinyint unsigned (valid flag)
+    room tinyint unsigned
+    region tinyint unsigned
+    ord smallint unsigned (ORDER)
+    lifecnt tinyint unsigned (data validity time)
+    ccmtype char(20)
+    sum tinyint
+    ..
+    seq bigint auto_increment [PK]
+}
+
+entity blk_d as "**blk_d**\nSend data" {
+    + pkg_name text [FK]
+    --
+    id tinyint unsigned (ID number 0..9)
+    valid tinyint unsigned (valid flag)
+    room tinyint unsigned
+    region tinyint unsigned
+    ord smallint unsigned (ORDER)
+    priority tinyint unsigned
+    lv tinyint unsigned
+    cast tinyint unsigned
+    ccmtype char(20)
+    unit char(10)
+    ..
+    seq bigint auto_increment [PK]
+}

@@ -1,0 +1,92 @@
+MariaDB [m304]> show fields from blk_a;
++-----------------+---------------------+------+-----+---------+----------------+
+| Field           | Type                | Null | Key | Default | Extra          |
++-----------------+---------------------+------+-----+---------+----------------+
+| pkg_name        | text                | YES  | UNI | NULL    |                |
+| uecsid          | binary(6)           | YES  |     | NULL    |                |
+| macaddr         | binary(6)           | YES  |     | NULL    |                |
+| dhcpflag        | tinyint(3) unsigned | YES  |     | 255     |                |
+| fixed_ipaddress | binary(4)           | YES  |     | NULL    |                |
+| fixed_netmask   | binary(4)           | YES  |     | NULL    |                |
+| fixed_defgw     | binary(4)           | YES  |     | NULL    |                |
+| fixed_dns       | binary(4)           | YES  |     | NULL    |                |
+| vender_name     | char(16)            | YES  |     | NULL    |                |
+| node_name       | char(16)            | YES  |     | NULL    |                |
+| cid             | int(11)             | YES  |     | NULL    |                |
+| seq             | bigint(20) unsigned | NO   | PRI | NULL    | auto_increment |
++-----------------+---------------------+------+-----+---------+----------------+
+
+
+MariaDB [m304]> show fields from blk_b;
++-----------+----------------------+------+-----+---------+----------------+
+| Field     | Type                 | Null | Key | Default | Extra          |
++-----------+----------------------+------+-----+---------+----------------+
+| pkg_name  | text                 | YES  |     | NULL    |                |
+| id        | tinyint(3) unsigned  | NO   |     | NULL    |                |
+| valid     | tinyint(3) unsigned  | YES  |     | 255     |                |
+| sthr      | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| stmn      | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| edhr      | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| edmn      | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| MNFLAG    | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| INMN      | smallint(5) unsigned | YES  |     | NULL    |                |
+| DUMN      | smallint(5) unsigned | YES  |     | NULL    |                |
+| RLY_L     | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| RLY_H     | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| CMPCCMID0 | tinyint(3) unsigned  | YES  |     | 255     |                |
+| CMPOPE0   | tinyint(3) unsigned  | YES  |     | 255     |                |
+| CMPVAL0   | float                | YES  |     | NULL    |                |
+| CMBCMP1   | tinyint(3) unsigned  | YES  |     | 255     |                |
+| CMPCCMID1 | tinyint(3) unsigned  | YES  |     | 255     |                |
+| CMPOPE1   | tinyint(3) unsigned  | YES  |     | 255     |                |
+| CMPVAL1   | float                | YES  |     | NULL    |                |
+| CMBCMP2   | tinyint(3) unsigned  | YES  |     | 255     |                |
+| CMPCCMID2 | tinyint(3) unsigned  | YES  |     | 255     |                |
+| CMPOPE2   | tinyint(3) unsigned  | YES  |     | 255     |                |
+| CMPVAL2   | float                | YES  |     | NULL    |                |
+| CMBCMP3   | tinyint(3) unsigned  | YES  |     | 255     |                |
+| CMPCCMID3 | tinyint(3) unsigned  | YES  |     | 255     |                |
+| CMPOPE3   | tinyint(3) unsigned  | YES  |     | 255     |                |
+| CMPVAL3   | float                | YES  |     | NULL    |                |
+| CMBCMP4   | tinyint(3) unsigned  | YES  |     | 255     |                |
+| CMPCCMID4 | tinyint(3) unsigned  | YES  |     | 255     |                |
+| CMPOPE4   | tinyint(3) unsigned  | YES  |     | 255     |                |
+| CMPVAL4   | float                | YES  |     | NULL    |                |
+| seq       | bigint(20) unsigned  | NO   | PRI | NULL    | auto_increment |
++-----------+----------------------+------+-----+---------+----------------+
+
+
+MariaDB [m304]> show fields from blk_c;
++----------+----------------------+------+-----+---------+----------------+
+| Field    | Type                 | Null | Key | Default | Extra          |
++----------+----------------------+------+-----+---------+----------------+
+| pkg_name | text                 | YES  |     | NULL    |                |
+| id       | tinyint(3) unsigned  | NO   |     | NULL    |                |
+| valid    | tinyint(3) unsigned  | YES  |     | 255     |                |
+| room     | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| region   | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| ord      | smallint(5) unsigned | YES  |     | NULL    |                |
+| lifecnt  | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| ccmtype  | char(20)             | YES  |     | NULL    |                |
+| sum      | tinyint(1)           | YES  |     | 0       |                |
+| seq      | bigint(20) unsigned  | NO   | PRI | NULL    | auto_increment |
++----------+----------------------+------+-----+---------+----------------+
+
+
+MariaDB [m304]> show fields from blk_d;
++----------+----------------------+------+-----+---------+----------------+
+| Field    | Type                 | Null | Key | Default | Extra          |
++----------+----------------------+------+-----+---------+----------------+
+| pkg_name | text                 | YES  |     | NULL    |                |
+| id       | tinyint(3) unsigned  | NO   |     | NULL    |                |
+| valid    | tinyint(3) unsigned  | YES  |     | 255     |                |
+| room     | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| region   | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| ord      | smallint(5) unsigned | YES  |     | NULL    |                |
+| priority | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| lv       | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| cast     | tinyint(3) unsigned  | YES  |     | NULL    |                |
+| ccmtype  | char(20)             | YES  |     | NULL    |                |
+| unit     | char(10)             | YES  |     | NULL    |                |
+| seq      | bigint(20) unsigned  | NO   | PRI | NULL    | auto_increment |
++----------+----------------------+------+-----+---------+----------------+
