@@ -1,43 +1,45 @@
 @startuml
 hide empty description
-[*] --> MainMenu
+[*] --> メインメニュー
 
-state MainMenu  {
-    MainMenu : newData
-    MainMenu : modifyData
-    MainMenu : utility
+state メインメニュー  {
+    メインメニュー : 新機作成
+    メインメニュー : 変更
+    メインメニュー : ユーティリティ
 }
 
-MainMenu --> newData : choose\nnewData
-MainMenu --> modifyData : choose\nmodifyData
-MainMenu --> utility : choose\nutility
-utility --> MainMenu : back
-modifyData --> MainMenu : abort
-modifyData --> Update : update&finish
-Update --> MainMenu
-newData --> MainMenu : abort
-newData --> Save : save&finish
-Save --> MainMenu
+メインメニュー --> 新機作成 : [新機作成]選択
+メインメニュー --> 変更 : [変更]選択
+メインメニュー --> ユーティリティ : [ユーティリティ]選択
+ユーティリティ --> メインメニュー : 戻る
+変更 --> メインメニュー : 中断
+変更 --> 更新 : 更新&終了
+更新 --> メインメニュー
+新機作成 --> メインメニュー : 中断
+新機作成 --> 保存 : 保存&終了
+保存 --> メインメニュー
 
-state utility {
-    utility : dropData
-    utility : rename pkg_name
-    utility : edit Alias
+state ユーティリティ {
+    ユーティリティ : データ削除
+    ユーティリティ : pkg_name変更
+    ユーティリティ : 別名編集
+    ユーティリティ : M304へ転送
+    ユーティリティ : M304から転送
 }
 
-state newData {
-    newData : blk_a : ID and Network data
-    newData : blk_b : RLY control sequence data
-    newData : blk_c : compare CCMTYPE define
-    newData : blk_d : sending data
+state 新機作成 {
+    新機作成 : blk_a : ID and Network data
+    新機作成 : blk_b : RLY control sequence data
+    新機作成 : blk_c : compare CCMTYPE define
+    新機作成 : blk_d : sending data
 }
 
-state modifyData {
-    modifyData : blk_a : ID and Network data
-    modifyData : blk_b : RLY control sequence data
-    modifyData : blk_c : compare CCMTYPE define
-    modifyData : blk_d : sending data
+state 変更 {
+    変更 : blk_a : ID and Network data
+    変更 : blk_b : RLY control sequence data
+    変更 : blk_c : compare CCMTYPE define
+    変更 : blk_d : sending data
 }
-newData --> newData : editting
-modifyData --> modifyData : editting
+新機作成 --> 新機作成 : [編集]
+変更 --> 変更 : [編集]
 @enduml
