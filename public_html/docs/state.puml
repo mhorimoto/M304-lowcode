@@ -1,0 +1,43 @@
+@startuml
+hide empty description
+[*] --> MainMenu
+
+state MainMenu  {
+    MainMenu : newData
+    MainMenu : modifyData
+    MainMenu : utility
+}
+
+MainMenu --> newData : choose\nnewData
+MainMenu --> modifyData : choose\nmodifyData
+MainMenu --> utility : choose\nutility
+utility --> MainMenu : back
+modifyData --> MainMenu : abort
+modifyData --> Update : update&finish
+Update --> MainMenu
+newData --> MainMenu : abort
+newData --> Save : save&finish
+Save --> MainMenu
+
+state utility {
+    utility : dropData
+    utility : rename pkg_name
+    utility : edit Alias
+}
+
+state newData {
+    newData : blk_a : ID and Network data
+    newData : blk_b : RLY control sequence data
+    newData : blk_c : compare CCMTYPE define
+    newData : blk_d : sending data
+}
+
+state modifyData {
+    modifyData : blk_a : ID and Network data
+    modifyData : blk_b : RLY control sequence data
+    modifyData : blk_c : compare CCMTYPE define
+    modifyData : blk_d : sending data
+}
+newData --> newData : editting
+modifyData --> modifyData : editting
+@enduml
