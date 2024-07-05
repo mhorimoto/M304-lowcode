@@ -3,20 +3,21 @@ hide empty description
 [*] --> メインメニュー
 
 state メインメニュー  {
-    メインメニュー : 新機作成
+    メインメニュー : 新規作成
     メインメニュー : 変更
     メインメニュー : ユーティリティ
 }
 
-メインメニュー --> 新機作成 : [新機作成]選択
-メインメニュー --> 変更 : [変更]選択
+メインメニュー --> 空レコード生成 : [新規作成]選択
+メインメニュー --> DBから対象レコードSELECT : [変更]選択
+空レコード生成 --> 変更
+DBから対象レコードSELECT --> 変更
 メインメニュー --> ユーティリティ : [ユーティリティ]選択
 ユーティリティ --> メインメニュー : 戻る
 変更 --> メインメニュー : 中断
 変更 --> 更新 : 更新&終了
 更新 --> メインメニュー
-新機作成 --> メインメニュー : 中断
-新機作成 --> 保存 : 保存&終了
+変更 --> 保存 : 保存&終了
 保存 --> メインメニュー
 
 state ユーティリティ {
@@ -27,19 +28,11 @@ state ユーティリティ {
     ユーティリティ : M304から転送
 }
 
-state 新機作成 {
-    新機作成 : blk_a : ID and Network data
-    新機作成 : blk_b : RLY control sequence data
-    新機作成 : blk_c : compare CCMTYPE define
-    新機作成 : blk_d : sending data
-}
-
 state 変更 {
     変更 : blk_a : ID and Network data
     変更 : blk_b : RLY control sequence data
     変更 : blk_c : compare CCMTYPE define
     変更 : blk_d : sending data
 }
-新機作成 --> 新機作成 : [編集]
 変更 --> 変更 : [編集]
 @enduml
