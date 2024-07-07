@@ -10,7 +10,6 @@ entity custom as "**custom**\nCustomer Table" <<(E,#FFAAAA)>> #PaleTurquoise {
 }
 
 entity blk_a as "**blk_a**\nNode Information" <<(E,#FFAAAA)>> #PaleTurquoise {
-  + pkg_name text [UK]
   --
   uecsid : binary(6)
   macaddr : binary(6)
@@ -21,6 +20,9 @@ entity blk_a as "**blk_a**\nNode Information" <<(E,#FFAAAA)>> #PaleTurquoise {
   fixed_dns : binary(4)
   vender_name : char(16)
   node_name : char(16)
+  pkg_name text [FK]
+  jname : text
+  comment : text
   # cid : int [FK]
   ..
   seq : bigint auto_increment [PK]
@@ -78,6 +80,7 @@ entity blk_c as "**blk_c**\nCompare CCMTYPE" {
     ord smallint unsigned (ORDER)
     lifecnt tinyint unsigned (data validity time)
     ccmtype char(20)
+    jname text
     sum tinyint
     ..
     seq bigint auto_increment [PK]
@@ -99,3 +102,12 @@ entity blk_d as "**blk_d**\nSend data" {
     ..
     seq bigint auto_increment [PK]
 }
+
+entity pkg_c as "**pkg_c\nPackage Description**" {
+    + pkg_name text [UK]
+    --
+    comment text
+    reg_date timestamp
+    author text
+}
+@enduml
