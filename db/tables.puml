@@ -1,47 +1,49 @@
 @startuml tables
-entity custom as "**custom**\nCustomer Table" <<(E,#FFAAAA)>> #PaleTurquoise {
-    + cid : int [UK]
+entity tbl_custom as "**custom**\n顧客 table" <<(E,#FFAAAA)>> #PaleTurquoise {
+    SEQ bigint auto_increment [PK]
+    + COM_ID int unsigned [UK] : 会社のID
+    + FARM_ID int unsigned [UK] : 農場のID
     --
-    name : text
-    address : text
-    **somethings** : .....
-    ..
-    seq : bigint auto_increment [PK]
+    NAME text : 会社の名前
+    ADDRESS text : 住所
+    **その他未定** : .....
 }
 
-entity blk_a as "**blk_a**\nNode Information" <<(E,#FFAAAA)>> #PaleTurquoise {
-  --
-  uecsid : binary(6)
-  macaddr : binary(6)
-  dhcpflag : tinyint unsigned
-  fixed_ipaddress : binary(4)
-  fixed_netmask : binary(4)
-  fixed_defgw : binary(4)
-  fixed_dns : binary(4)
-  vender_name : char(16)
-  node_name : char(16)
-  pkg_name text [FK]
-  jname : text
-  comment : text
-  # cid : int [FK]
+entity blk_a as "**blk_a**\nノード情報 table" {
+  SEQ bigint auto_increment [PK]
+--
+  + M304ID int unsigned [UK] : 機台番号
+  UECSID binary(6)
+  MACADDR binary(6) : MACアドレス
+  DHCPFLAG tinyint unsigned DHCPの有無(0:FIXED)
+  FIXED_IPADDRESS binary(4)
+  FIXED_NETMASK binary(4)
+  FIXED_DEFGW binary(4)
+  FIXED_DNS binary(4)
+  VENDER_NAME char(16)
+  NODE_NAME char(16)
+  PKG_ID int unsigned [FK] : 制御パッケージにつけるID
+  COMMENT text
   ..
-  seq : bigint auto_increment [PK]
+  # COM_ID int unsigned [FK]
+  # FARM_ID int unsigned [FK]
 }
+  
 
-entity blk_b as "**blk_b**\nOperation Definition" {
-    + pkg_name text [FK]
+entity blk_b as "**blk_b**\n制御定義 table" {
+    SEQ bigint auto_increment [PK]
+    + PKG_ID int unsigned [FK]
     --
-    id tinyint unsigned (ID number 0..29)
-    valid tinyint unsigned (valid flag)
-    sthr tinyint unsigned (Hour of start)
-    stmn tinyint unsigned (Minute of start)
-    enhr tinyint unsigned (Hour of end)
-    enmn tinyint unsigned (Minite of end)
-    MNFLAG tinyint unsigned (sec/min flag)
-    INMN smallint unsigned (Interval)
-    DUMN smallint unsigned (Operation during)
-    RLY_L tinyint unsigned (RLY 1-4)
-    RLY_H tinyint unsigned (RLY 5-8)
+    ID tinyint unsigned : (ID number 0..29)
+    VALID tinyint unsigned : (0:有効)
+    STHR tinyint unsigned : 開始時
+    STMN tinyint unsigned : 開始分
+    EDHR tinyint unsigned : 終了時
+    EDMN tinyint unsigned : 終了分
+    MNFLAG tinyint unsigned : 動作時間の秒・分切替 (0:秒)
+    INMN smallint unsigned : 動作間隔
+    DUMN smallint unsigned : 動作時間
+    # OPE_ID int unsigned [FK] : リレー動作定義ID
     ..
     + CMPCCMID0 tinyint unsigned [FK]
     CMPOPE0 tinyint unsigned
@@ -67,47 +69,63 @@ entity blk_b as "**blk_b**\nOperation Definition" {
     CMPOPE4 tinyint unsigned
     CMPVAL4 float (Values to compare)
     ..
-    seq bigint auto_increment [PK]
 }
 
-entity blk_c as "**blk_c**\nCompare CCMTYPE" {
-    + pkg_name text [FK]
+entity blk_c as "**blk_c**\n比較したいCCMTYPE table" {
+    SEQ bigint auto_increment [PK]
+    + PKG_ID int unsigned [FK]
     --
-    # id tinyint unsigned (ID number 0..9)
-    valid tinyint unsigned (valid flag)
-    room tinyint unsigned
-    region tinyint unsigned
-    ord smallint unsigned (ORDER)
-    lifecnt tinyint unsigned (data validity time)
-    ccmtype char(20)
-    jname text
-    sum tinyint
-    ..
-    seq bigint auto_increment [PK]
+    # ID tinyint unsigned (ID number 0..9)
+    VALID tinyint unsigned : (0:有効)
+    ROOM tinyint unsigned
+    REGION tinyint unsigned
+    ORD smallint unsigned (ORDER)
+    LIFECOUNT tinyint unsigned (data validity time)
+    CCMTYPE char(20)
+    NAME text : 日本語名など
 }
 
-entity blk_d as "**blk_d**\nSend data" {
-    + pkg_name text [FK]
+entity blk_d as "**blk_d**\n送信したいCCMTYPE table" {
+    SEQ bigint auto_increment [PK]
+    + PKG_ID int unsigned [FK]
     --
-    id tinyint unsigned (ID number 0..9)
-    valid tinyint unsigned (valid flag)
-    room tinyint unsigned
-    region tinyint unsigned
-    ord smallint unsigned (ORDER)
-    priority tinyint unsigned
-    lv tinyint unsigned
-    cast tinyint unsigned
-    ccmtype char(20)
-    unit char(10)
-    ..
-    seq bigint auto_increment [PK]
+    ID tinyint unsigned (ID number 0..9)
+    VALID tinyint unsigned : (0:有効)
+    ROOM tinyint unsigned
+    REGION tinyint unsigned
+    ORD smallint unsigned (ORDER)
+    PRIORITY tinyint unsigned
+    LV tinyint unsigned
+    CAST tinyint unsigned
+    UNIT char(10)
+    CCMTYPE char(20)
+    NAME text : 日本語名など
 }
 
-entity pkg_c as "**pkg_c\nPackage Description**" {
-    + pkg_name text [UK]
+entity pkg_c as "**pkg_c**\nパッケージ内容 table" {
+    SEQ bigint auto_increment [PK]
+    + PKG_ID int unsigned [UK] : 制御パッケージにつけるID
     --
-    comment text
-    reg_date timestamp
-    author text
+    NAME text : パッケージ名
+    COMMENT text : パッケージ内容の紹介文
+    REG_DATE timestamp : 登録変更日時
+    AUTHOR text : 作者
+}
+
+entity blk_ope as "**blk_ope**\nリレー出力組合せ table" {
+    SEQ bigint auto_increment [PK]
+    # OPE_ID int unsigned [FK] : リレー出力組み合わせID
+    --
+    # M304ID int unsigned [FK] : 機台番号
+    RLY int unsigned : リレー番号
+    RLYSTATUS tinyint unsigned : リレー出力状態
+}
+
+entity ope_c as "**ope_c**\nリレー出力組合せ代表 table" {
+    SEQ bigint auto_increment [PK]
+    + OPE_ID int unsigned [UK] : リレー出力組み合わせID
+    --
+    NAME text : 組合せ名称
+    COMMENT text
 }
 @enduml
