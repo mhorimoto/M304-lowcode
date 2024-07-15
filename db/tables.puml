@@ -1,8 +1,8 @@
 @startuml tables
 entity tbl_custom as "**custom**\n顧客 table" <<(E,#FFAAAA)>> #PaleTurquoise {
     SEQ bigint auto_increment [PK]
-    + COM_ID int unsigned [UK] : 会社のID
-    + FARM_ID int unsigned [UK] : 農場のID
+    + COM_ID int unsigned  : 会社のID
+    + FARM_ID bigint auto_increment [UK] : 農場のID
     --
     NAME text : 会社の名前
     ADDRESS text : 住所
@@ -26,7 +26,7 @@ entity blk_a as "**blk_a**\nノード情報 table" {
   COMMENT text
   ..
   # COM_ID int unsigned [FK]
-  # FARM_ID int unsigned [FK]
+  # FARM_ID bigint [FK]
 }
   
 
