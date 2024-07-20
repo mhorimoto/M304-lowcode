@@ -16,10 +16,10 @@ entity blk_a as "**blk_a**\nノード情報 table" {
   UECSID binary(6)
   MACADDR binary(6) : MACアドレス
   DHCPFLAG tinyint unsigned DHCPの有無(0:FIXED)
-  FIXED_IPADDRESS binary(4)
-  FIXED_NETMASK binary(4)
-  FIXED_DEFGW binary(4)
-  FIXED_DNS binary(4)
+  FIXED_IPADDRESS int unsigned
+  FIXED_NETMASK int unsigned
+  FIXED_DEFGW int unsigned
+  FIXED_DNS int unsigned
   VENDER_NAME char(16)
   NODE_NAME char(16)
   PKG_ID int unsigned [FK] : 制御パッケージにつけるID
