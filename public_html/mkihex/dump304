@@ -2,19 +2,27 @@
 <?php
 //
 //  dump304
-//    Version 1.50
+//    Version 3.00
+//       M304 Version 3.x.x 対応
+//            Version 2.x.x に対しては、-2 オプションをつける。
 //
 global $n;
 $n = 0;
 if (!empty($argv[1])) {
-    $opts = getopt("d:u",[],$ri);
+    $opts = getopt("d:u2",[],$ri);
     $host = @$argv[$ri];
     $optd = $opts['d'];
     $ausm = @$opts['u'];
     $uasm = isset($ausm);
+    if (isset($opts['2'])) {
+        $verc = 2;
+    } else {
+        $verc = 3;
+    }  // Version 2.x.x なら2がセットされる
 
     switch ($optd) {
     case 'rx':
+    case 'sched':
         $addr = 0x1000;
         $lcnt = 8;
         break;
@@ -87,7 +95,7 @@ function display_info($fp,$ver) {
     printf("   DEBUG MSG: %s\n",prt_LC_INFO($hexdata,"dbgmsg"));
 }
 
-function display_rx($fp,$ver) {
+function display_rx($fp,$verc) {
     global $n;
     for($y=0;$y<4;$y++) {
         for($w=0;$w<4;$w++) {  // 4records per an entry
@@ -99,19 +107,49 @@ function display_rx($fp,$ver) {
             }
             //            printf("\n");
         }
-        printf("%02d:%s,%3d,%3d,%3d,%2d,%s,%d,%c,%s,%s,%d,%d,%d,%d,%d,%d,%s,%s,%s,%s,%s,%s,%s,%s%s\n",
-               $n,prt_LC_RTX($hexdata,"valid"),prt_LC_RTX($hexdata,"room"),
-               prt_LC_RTX($hexdata,"region"),prt_LC_RTX($hexdata,"order"),prt_LC_RTX($hexdata,"priority"),
-               prt_LC_RTX($hexdata,"lv"),prt_LC_RTX($hexdata,"cast"),prt_LC_RTX($hexdata,"sr"),
-               prt_LC_RTX($hexdata,"ccmtype"),prt_LC_RTX($hexdata,"unit"),
-               prt_LC_RTX($hexdata,"sthr"),prt_LC_RTX($hexdata,"stmn"),
-               prt_LC_RTX($hexdata,"edhr"),prt_LC_RTX($hexdata,"edmn"),
-               prt_LC_RTX($hexdata,"inmn"),prt_LC_RTX($hexdata,"dumn"),
-               prt_LC_RTX($hexdata,"rly1"),prt_LC_RTX($hexdata,"rly2"),
-               prt_LC_RTX($hexdata,"rly3"),prt_LC_RTX($hexdata,"rly4"),
-               prt_LC_RTX($hexdata,"rly5"),prt_LC_RTX($hexdata,"rly6"),
-               prt_LC_RTX($hexdata,"rly7"),prt_LC_RTX($hexdata,"rly8"),
-               prt_LC_RTX($hexdata,"cond"));
+        switch($verc) {
+            case 2:
+                printf("%02d:%s,%3d,%3d,%3d,%2d,%s,%d,%c,%s,%s,%d,%d,%d,%d,%d,%d,%s,%s,%s,%s,%s,%s,%s,%s%s\n",
+                    $n,
+                    prt_LC_RTX($hexdata,"valid",$verc),prt_LC_RTX($hexdata,"room",$verc),
+                    prt_LC_RTX($hexdata,"region",$verc),prt_LC_RTX($hexdata,"order",$verc),
+                    prt_LC_RTX($hexdata,"priority",$verc),prt_LC_RTX($hexdata,"lv",$verc),
+                    prt_LC_RTX($hexdata,"cast",$verc),prt_LC_RTX($hexdata,"sr",$verc),
+                    prt_LC_RTX($hexdata,"ccmtype",$verc),prt_LC_RTX($hexdata,"unit",$verc),
+                    prt_LC_RTX($hexdata,"sthr",$verc),prt_LC_RTX($hexdata,"stmn",$verc),
+                    prt_LC_RTX($hexdata,"edhr",$verc),prt_LC_RTX($hexdata,"edmn",$verc),
+                    prt_LC_RTX($hexdata,"inmn",$verc),prt_LC_RTX($hexdata,"dumn",$verc),
+                    prt_LC_RTX($hexdata,"rly1",$verc),prt_LC_RTX($hexdata,"rly2",$verc),
+                    prt_LC_RTX($hexdata,"rly3",$verc),prt_LC_RTX($hexdata,"rly4",$verc),
+                    prt_LC_RTX($hexdata,"rly5",$verc),prt_LC_RTX($hexdata,"rly6",$verc),
+                    prt_LC_RTX($hexdata,"rly7",$verc),prt_LC_RTX($hexdata,"rly8",$verc),
+                    prt_LC_RTX($hexdata,"cond",$verc));
+                break;
+            case 3:
+                printf("%02d:%s,%3d,%3d,%3d,%2d,%s,%d,%c,%s,%s,%d,%d,%d,%d,%d,%d,%s,%s,%s,%s,%s,%s,%s,%s%s\n",
+                    $n,
+                    prt_LC_RTX($hexdata,"valid",$verc),
+                    prt_LC_RTX($hexdata,"sthr",$verc),prt_LC_RTX($hexdata,"stmn",$verc),
+                    prt_LC_RTX($hexdata,"edhr",$verc),prt_LC_RTX($hexdata,"edmn",$verc),
+                    prt_LC_RTX($hexdata,"mnflag",$verc),
+                    prt_LC_RTX($hexdata,"inmn",$verc),prt_LC_RTX($hexdata,"dumn",$verc),
+                    prt_LC_RTX($hexdata,"rly1",$verc),prt_LC_RTX($hexdata,"rly2",$verc),
+                    prt_LC_RTX($hexdata,"rly3",$verc),prt_LC_RTX($hexdata,"rly4",$verc),
+                    prt_LC_RTX($hexdata,"rly5",$verc),prt_LC_RTX($hexdata,"rly6",$verc),
+                    prt_LC_RTX($hexdata,"rly7",$verc),prt_LC_RTX($hexdata,"rly8",$verc),
+                    prt_LC_RTX($hexdata,"cmpccmid0",$verc),
+                    prt_LC_RTX($hexdata,"cmpope0",$verc),prt_LC_RTX($hexdata,"cmpval0",$verc),
+                    prt_LC_RTX($hexdata,"cmbcmp1",$verc),prt_LC_RTX($hexdata,"cmpccmid1",$verc),
+                    prt_LC_RTX($hexdata,"cmpope1",$verc),prt_LC_RTX($hexdata,"cmpval1",$verc),
+                    prt_LC_RTX($hexdata,"cmbcmp2",$verc),prt_LC_RTX($hexdata,"cmpccmid2",$verc),
+                    prt_LC_RTX($hexdata,"cmpope2",$verc),prt_LC_RTX($hexdata,"cmpval2",$verc),
+                    prt_LC_RTX($hexdata,"cmbcmp3",$verc),prt_LC_RTX($hexdata,"cmpccmid3",$verc),
+                    prt_LC_RTX($hexdata,"cmpope3",$verc),prt_LC_RTX($hexdata,"cmpval3",$verc),
+                    prt_LC_RTX($hexdata,"cmbcmp4",$verc),prt_LC_RTX($hexdata,"cmpccmid4",$verc),
+                    prt_LC_RTX($hexdata,"cmpope4",$verc),prt_LC_RTX($hexdata,"cmpval4",$verc),
+                );
+                break;
+            }
         $n++;
         if ($n>29) return;
     }
@@ -252,115 +290,156 @@ function prt_LC_INFO($dt,$k) {
     return $odt;
 }
 
-function prt_LC_RTX($dt,$k) {
-    switch($k) {
-    case "valid":
-        if (($dt[0]&0xff)==1) {
-            return("E");
-        } else {
-            return("N");
-        }
-        break;
-    case "room":
-        return($dt[1]&0xff);
-        break;
-    case "region":
-        return($dt[2]&0xff);
-        break;
-    case "order":
-        $z = ($dt[4]&0xff)*0x100+($dt[3]&0xff);
-        return($z);
-    case "lifecnt":
-    case "priority":
-        return($dt[5]&0xff);
-    case "lv":
-        return(_LCLv($dt,6));
-    case "cast":
-        return($dt[7]&0xff);
-    case "sr":
-        return($dt[8]&0xff);
-    case "ccmtype":
-        return(_LCText($dt,9,20));
-    case "unit":
-        return(_LCText($dt,0x1d,10));
-    case "opeccmtype":
-        return(_LCText($dt,6,20));
-    case "ope":
-        switch($dt[0x1a]&0x7f) {
-        case 0x00:
-        case 0x7f:
-            return(" ");
-        case 0x01:
-            return("==");
-        case 0x02:
-            return(">");
-        case 0x03:
-            return("<");
-        case 0x04:
-            return(">=");
-        case 0x05:
-            return("<=");
-        case 0x06:
-            return("&&");
-        case 0x07:
-            return("||");
-        case 0x08:
-            return("!=");
-        default:
-            return("??");
-        }
-        break;
-    case "sthr":
-        return($dt[0x27]&0xff);
-    case "stmn":
-        return($dt[0x28]&0xff);
-    case "edhr":
-        return($dt[0x29]&0xff);
-    case "edmn":
-        return($dt[0x2a]&0xff);
-    case "inmn":
-        return($dt[0x2b]&0xff);
-    case "dumn":
-        return($dt[0x2c]&0xff);
-    case "rly1":
-        return(_LCRly($dt,1));
-    case "rly2":
-        return(_LCRly($dt,2));
-    case "rly3":
-        return(_LCRly($dt,3));
-    case "rly4":
-        return(_LCRly($dt,4));
-    case "rly5":
-        return(_LCRly($dt,5));
-    case "rly6":
-        return(_LCRly($dt,6));
-    case "rly7":
-        return(_LCRly($dt,7));
-    case "rly8":
-        return(_LCRly($dt,8));
-    case "fval":
-        return(_LCFloat($dt,0x1b));
-        break;
-    case "cond":
-        if (($dt[0x30]==0xff)||($dt[0x00]!=1)) return("");
-        $z = ",";
-        $z .= sprintf("ope%02d",$dt[0x30]&0xff);
-        for($i=0;$i<4;$i++) {
-            switch($dt[0x31+$i]&0xff) {
-            case 6: // R_AND
-                $z .= "&&";
-                break;
-            case 7: // R_OR
-                $z .= "||";
-                break;
-            default:
-                return($z);
+function prt_LC_RTX($dt,$k,$verc) {
+    switch($verc) {
+    case 2:
+        switch($k) {
+        case "valid":
+            if (($dt[0]&0xff)==1) {
+                return("E");
+            } else {
+                return("N");
             }
-            $y = $dt[0x32+$i]&0xff;
-            if ($y==0xff) return($z);
-            $z .= sprintf("ope%02d",$y);
+            break;
+        case "room":
+            return($dt[1]&0xff);
+            break;
+        case "region":
+            return($dt[2]&0xff);
+            break;
+        case "order":
+            $z = ($dt[4]&0xff)*0x100+($dt[3]&0xff);
+            return($z);
+        case "lifecnt":
+        case "priority":
+            return($dt[5]&0xff);
+        case "lv":
+            return(_LCLv($dt,6));
+        case "cast":
+            return($dt[7]&0xff);
+        case "sr":
+            return($dt[8]&0xff);
+        case "ccmtype":
+            return(_LCText($dt,9,20));
+        case "unit":
+            return(_LCText($dt,0x1d,10));
+        case "opeccmtype":
+            return(_LCText($dt,6,20));
+        case "ope":
+            switch($dt[0x1a]&0x7f) {
+            case 0x00:
+            case 0x7f:
+                return(" ");
+            case 0x01:
+                return("==");
+            case 0x02:
+                return(">");
+            case 0x03:
+                return("<");
+            case 0x04:
+                return(">=");
+            case 0x05:
+                return("<=");
+            case 0x06:
+                return("&&");
+            case 0x07:
+                return("||");
+            case 0x08:
+                return("!=");
+            default:
+                return("??");
+            }
+            break;
+        case "sthr":
+            return($dt[0x27]&0xff);
+        case "stmn":
+            return($dt[0x28]&0xff);
+        case "edhr":
+            return($dt[0x29]&0xff);
+        case "edmn":
+            return($dt[0x2a]&0xff);
+        case "inmn":
+            return($dt[0x2b]&0xff);
+        case "dumn":
+            return($dt[0x2c]&0xff);
+        case "rly1":
+            return(_LCRly($dt,1));
+        case "rly2":
+            return(_LCRly($dt,2));
+        case "rly3":
+            return(_LCRly($dt,3));
+        case "rly4":
+            return(_LCRly($dt,4));
+        case "rly5":
+            return(_LCRly($dt,5));
+        case "rly6":
+            return(_LCRly($dt,6));
+        case "rly7":
+            return(_LCRly($dt,7));
+        case "rly8":
+            return(_LCRly($dt,8));
+        case "fval":
+            return(_LCFloat($dt,0x1b));
+            break;
+        case "cond":
+            if (($dt[0x30]==0xff)||($dt[0x00]!=1)) return("");
+            $z = ",";
+            $z .= sprintf("ope%02d",$dt[0x30]&0xff);
+            for($i=0;$i<4;$i++) {
+                switch($dt[0x31+$i]&0xff) {
+                case 6: // R_AND
+                    $z .= "&&";
+                    break;
+                case 7: // R_OR
+                    $z .= "||";
+                    break;
+                default:
+                    return($z);
+                }
+                $y = $dt[0x32+$i]&0xff;
+                if ($y==0xff) return($z);
+                $z .= sprintf("ope%02d",$y);
+            }
+            return($z);
         }
-        return($z);
+        break;
+    case 3:
+        case "valid":
+            if (($dt[0]&0xff)==1) {
+                return("E");
+            } else {
+                return("N");
+            }
+            break;
+        case "sthr":
+            return($dt[0x01]&0xff);
+        case "stmn":
+            return($dt[0x02]&0xff);
+        case "edhr":
+            return($dt[0x03]&0xff);
+        case "edmn":
+            return($dt[0x04]&0xff);
+        case "inmn":
+            return($dt[0x06]&0xff);
+        case "dumn":
+            return($dt[0x07]&0xff);
+        case "rly1":
+            return(_LCRly($dt,1));
+        case "rly2":
+            return(_LCRly($dt,2));
+        case "rly3":
+            return(_LCRly($dt,3));
+        case "rly4":
+            return(_LCRly($dt,4));
+        case "rly5":
+            return(_LCRly($dt,5));
+        case "rly6":
+            return(_LCRly($dt,6));
+        case "rly7":
+            return(_LCRly($dt,7));
+        case "rly8":
+            return(_LCRly($dt,8));
+        break;
     }
 }
 
