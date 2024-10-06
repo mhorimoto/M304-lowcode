@@ -49,16 +49,16 @@ if (!empty($argv[1])) {
             if ($uasm==1) {
                 switch($optd) {
                 case 'info':
-                    display_info($f,$ver);
+                    display_info($f,$verc);
                     break;
                 case 'rx':
-                    display_rx($f,$ver);
+                    display_rx($f,$verc);
                     break;
                 case 'tx':
-                    display_tx($f,$ver);
+                    display_tx($f,$verc);
                     break;
                 case 'ope':
-                    display_ope($f,$ver);
+                    display_ope($f,$verc);
                     break;
                 }
             } else {
@@ -97,6 +97,7 @@ function display_info($fp,$ver) {
 
 function display_rx($fp,$verc) {
     global $n;
+    printf("%d\n",$verc);
     for($y=0;$y<4;$y++) {
         for($w=0;$w<4;$w++) {  // 4records per an entry
             $buffer = fgets($fp,80);
@@ -126,7 +127,9 @@ function display_rx($fp,$verc) {
                     prt_LC_RTX($hexdata,"cond",$verc));
                 break;
             case 3:
-                printf("%02d:%s,%3d,%3d,%3d,%2d,%s,%d,%c,%s,%s,%d,%d,%d,%d,%d,%d,%s,%s,%s,%s,%s,%s,%s,%s%s\n",
+                echo "HEHE";
+                printf("%02d:%s,%02d:%02d,%02d:%02d,%s,%02d,%02d,%s,%s,%s,%s,%s,%s,%s,%s,".
+                    "%d,%s,%f, %s,%d,%s, %f, %s,%d,%s, %f, %s,%d,%s, %f, %s,%d,%s, %f\n",
                     $n,
                     prt_LC_RTX($hexdata,"valid",$verc),
                     prt_LC_RTX($hexdata,"sthr",$verc),prt_LC_RTX($hexdata,"stmn",$verc),
@@ -326,29 +329,30 @@ function prt_LC_RTX($dt,$k,$verc) {
         case "opeccmtype":
             return(_LCText($dt,6,20));
         case "ope":
-            switch($dt[0x1a]&0x7f) {
-            case 0x00:
-            case 0x7f:
-                return(" ");
-            case 0x01:
-                return("==");
-            case 0x02:
-                return(">");
-            case 0x03:
-                return("<");
-            case 0x04:
-                return(">=");
-            case 0x05:
-                return("<=");
-            case 0x06:
-                return("&&");
-            case 0x07:
-                return("||");
-            case 0x08:
-                return("!=");
-            default:
-                return("??");
-            }
+            return(responseOPE($dt[0x1a]));
+//           switch($dt[0x1a]&0x7f) {
+//            case 0x00:
+//            case 0x7f:
+//                return(" ");
+//           case 0x01:
+//                return("==");
+//            case 0x02:
+//                return(">");
+//            case 0x03:
+//                return("<");
+//            case 0x04:
+//                return(">=");
+//            case 0x05:
+//                return("<=");
+//            case 0x06:
+//                return("&&");
+//            case 0x07:
+//                return("||");
+//            case 0x08:
+//                return("!=");
+//            default:
+//                return("??");
+//            }
             break;
         case "sthr":
             return($dt[0x27]&0xff);
@@ -404,6 +408,7 @@ function prt_LC_RTX($dt,$k,$verc) {
         }
         break;
     case 3:
+        switch($k) {
         case "valid":
             if (($dt[0]&0xff)==1) {
                 return("E");
@@ -419,6 +424,16 @@ function prt_LC_RTX($dt,$k,$verc) {
             return($dt[0x03]&0xff);
         case "edmn":
             return($dt[0x04]&0xff);
+        case "mnflag":
+            switch($dt[0x05]&0xff) {
+                case 0:
+                    return("SEC");
+                case 0xff:
+                    return("MIN");
+                default:
+                    return("???");
+            }
+            break;
         case "inmn":
             return($dt[0x06]&0xff);
         case "dumn":
@@ -439,6 +454,45 @@ function prt_LC_RTX($dt,$k,$verc) {
             return(_LCRly($dt,7));
         case "rly8":
             return(_LCRly($dt,8));
+        case "cmpccmid0":
+            return($dt[0x10]&0xff);
+        case "cmpope0":
+            return(responseOPE($dt[0x11]));
+        case "cmpval0":
+            return(_LCFloat($dt,0x12));
+        case "cmbcmp1":
+            return(responseOPE($dt[0x16]));
+        case "cmpccmid1":
+            return($dt[0x17]&0xff);
+        case "cmpope1":
+            return(responseOPE($dt[0x18]));
+        case "cmpval1":
+            return(_LCFloat($dt,0x19));
+        case "cmbcmp2":
+            return(responseOPE($dt[0x1d]));
+        case "cmpccmid2":
+            return($dt[0x1e]&0xff);
+        case "cmpope2":
+            return(responseOPE($dt[0x1f]));
+        case "cmpval2":
+            return(_LCFloat($dt,0x20));
+        case "cmbcmp3":
+            return(responseOPE($dt[0x24]));
+        case "cmpccmid3":
+            return($dt[0x25]&0xff);
+        case "cmpope3":
+            return(responseOPE($dt[0x26]));
+        case "cmpval3":
+            return(_LCFloat($dt,0x27));
+        case "cmbcmp4":
+            return(responseOPE($dt[0x2b]));
+        case "cmpccmid4":
+            return($dt[0x2c]&0xff);
+        case "cmpope4":
+            return(responseOPE($dt[0x2d]));
+        case "cmpval4":
+            return(_LCFloat($dt,0x2e));
+        }
         break;
     }
 }
@@ -481,6 +535,31 @@ function _LCRly($dt,$rnum) {
     return($z);
 }
 
+function responseOPE($ope) {
+    switch($ope&0x7f) {
+        case 0x00:
+        case 0x7f:
+            return(" ");
+        case 0x01:
+            return("==");
+        case 0x02:
+            return(">");
+        case 0x03:
+            return("<");
+        case 0x04:
+            return(">=");
+        case 0x05:
+            return("<=");
+        case 0x06:
+            return("&&");
+        case 0x07:
+            return("||");
+        case 0x08:
+            return("!=");
+        default:
+            return("??");
+    }
+}
 function _LCFloat($dt,$ofs) {
     $d  = ($dt[$ofs+3]&0xff)*0x1000000;
     $d += ($dt[$ofs+2]&0xff)*0x10000;
