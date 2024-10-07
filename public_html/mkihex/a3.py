@@ -88,7 +88,8 @@ def rly_setting(r,x):
 ##########################################################
 if __name__ == '__main__':
     args = sys.argv
-    argc = len(args)
+    argc = len(args)-1
+    print(" argc={0}".format(argc))
     if argc == 9:
         flag = True
     elif argc == 12:  # COND0
@@ -128,7 +129,7 @@ if __name__ == '__main__':
     stmn = int(args[3])
     edhr = int(args[4])
     edmn = int(args[5])
-    mnflag = int(args[6])
+    mnflag = 0xff
     inmn = int(args[7])
     dumn = int(args[8])
     rly  = args[9]
@@ -139,12 +140,54 @@ if __name__ == '__main__':
     for x in range(4,8):
         rly_h |= rly_setting(rly,x)
 
+    ccmid0 = 0xff
+    cmpope0 = 0xff
+    fval0 = float(0.0)
+    cmp1 = 0xff
+    ccmid1 = 0xff
+    cmpope1 = 0xff
+    fval1 = float(0.0)
+    cmp2 = 0xff
+    ccmid2 = 0xff
+    cmpope2 = 0xff
+    fval2 = float(0.0)
+    cmp3 = 0xff
+    ccmid3 = 0xff
+    cmpope3 = 0xff
+    fval3 = float(0.0)
+    cmp4 = 0xff
+    ccmid4 = 0xff
+    cmpope4 = 0xff
+    fval4 = float(0.0)
+    
     if argc >= 12:
         ccmid0 = int(args[10])
         cmpope0 = relope2num(args[11])
-
+        fval0 = float(args[12])
+    if argc >= 16:
+        cmp1 = relope2num(args[16])
+        ccmid1 = int(args[17])
+        cmpope1 = relope2num(args[18])
+        fval1 = float(args[19])
+    if argc >= 20:
+        cmp2 = relope2num(args[20])
+        ccmid2 = int(args[21])
+        cmpope2 = relope2num(args[22])
+        fval2 = float(args[23])
+    if argc >= 24:
+        cmp3 = relope2num(args[24])
+        ccmid3 = int(args[25])
+        cmpope3 = relope2num(args[26])
+        fval3 = float(args[27])
+    if argc >= 28:
+        cmp4 = relope2num(args[28])
+        ccmid4 = int(args[29])
+        cmpope4 = relope2num(args[30])
+        fval4 = float(args[31])
 
         
+    baseaddr = 0x1000 # LC_SCH_START
+    recstep  = 0x40   # LC_SCH_REC_SIZE
 
     ih_valid    = byte_arrange(1)
     ih_sthr     = byte_arrange(sthr)
@@ -153,11 +196,11 @@ if __name__ == '__main__':
     ih_edmn     = byte_arrange(edmn)
     ih_inmn     = byte_arrange(inmn)
     ih_dumn     = byte_arrange(dumn)
+    ih_mnflag   = "FF"
     ih_rly_l    = byte_arrange(rly_l)
     ih_rly_h    = byte_arrange(rly_h)
     
-    ihtxt       = ih_valid+ih_sthr+ih_stmn+ih_edhr+ih_edmn+ih_inmn+ih_dumn+ \
-        ih_rly_l+ih_rly_h
+    ihtxt       = ih_valid+ih_sthr+ih_stmn+ih_edhr+ih_edmn+ih_mnflag+ih_inmn+ih_dumn+'FFFFFFFFFF'+ih_rly_l+ih_rly_h
     for i in range(3):
         tp = i*32
         iht = ihtxt[tp:(tp+32)]
