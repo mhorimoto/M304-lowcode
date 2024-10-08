@@ -218,16 +218,16 @@ void eeprom_update(unsigned int a,uint8_t v) {
 
 void copyFromLC_uecsM304Sched(uecsM304Sched *tg,int a) {
   int i;
-  tg->valid    = atmem.read(a+LC_SCH_VALID);    
-  tg->sthr     = atmem.read(a+LC_SCH_STHR);         // 0x27
-  tg->stmn     = atmem.read(a+LC_SCH_STMN);         // 0x28
-  tg->edhr     = atmem.read(a+LC_SCH_EDHR);         // 0x29
-  tg->edmn     = atmem.read(a+LC_SCH_EDMN);         // 0x2a
-  tg->mnflag   = atmem.read(a+LC_SCH_MNFLAG);
-  tg->inmn     = atmem.readInt(a+LC_SCH_INMN);      // 0x2b
-  tg->dumn     = atmem.readInt(a+LC_SCH_DUMN);      // 0x2c
-  tg->rly_l    = atmem.read(a+LC_SCH_RLY_L);        // 0x2d
-  tg->rly_h    = atmem.read(a+LC_SCH_RLY_H);        // 0x2e
+  tg->valid    = atmem.read(a+LC_SCH_VALID);    // 0x00
+  tg->sthr     = atmem.read(a+LC_SCH_STHR);     // 0x01
+  tg->stmn     = atmem.read(a+LC_SCH_STMN);     // 0x02
+  tg->edhr     = atmem.read(a+LC_SCH_EDHR);     // 0x03
+  tg->edmn     = atmem.read(a+LC_SCH_EDMN);     // 0x04
+  tg->mnflag   = atmem.read(a+LC_SCH_MNFLAG);   // 0x05
+  tg->inmn     = atmem.readInt(a+LC_SCH_INMN);  // 0x06
+  tg->dumn     = atmem.readInt(a+LC_SCH_DUMN);  // 0x08
+  tg->rly_l    = atmem.read(a+LC_SCH_RLY_L);    // 0x0e
+  tg->rly_h    = atmem.read(a+LC_SCH_RLY_H);    // 0x0f
   for(i=0;i<5;i++) {
     if (i==0) {
       tg->cmbcmp[i] = R_AND;

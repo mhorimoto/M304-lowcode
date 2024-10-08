@@ -167,7 +167,7 @@ typedef struct stM304 {
 #define   LC_SCH_CMPCCMID4    0x2c // compare value opeID 1 byte
 #define   LC_SCH_CMPOPE4      0x2d // relational operator 1 byte
 #define   LC_SCH_CMPVAL4      0x2e // Numerical values to compare 1 float (4bytes)
-//                            0x2f-0x3f Reserved
+//                            0x32-0x3f Reserved
 
 typedef struct uecsM304Sched {
   byte valid;        // 0x00

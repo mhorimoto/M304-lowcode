@@ -127,7 +127,6 @@ function display_rx($fp,$verc) {
                     prt_LC_RTX($hexdata,"cond",$verc));
                 break;
             case 3:
-                echo "HEHE";
                 printf("%02d:%s,%02d:%02d,%02d:%02d,%s,%02d,%02d,%s,%s,%s,%s,%s,%s,%s,%s,".
                     "%d,%s,%f, %s,%d,%s, %f, %s,%d,%s, %f, %s,%d,%s, %f, %s,%d,%s, %f\n",
                     $n,

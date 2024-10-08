@@ -1,28 +1,28 @@
 void UECSupdate16520port(void) {
-  extern char uecsbuf[];
-  extern bool xmldecode(char *);
-  extern st_UECSXML *ptr_uecsxmldata;
-  extern EthernetUDP UDP16520;
-  void match_rro(int);
-  int packetSize ,i;
+	extern char uecsbuf[];
+	extern bool xmldecode(char *);
+	extern st_UECSXML *ptr_uecsxmldata;
+	extern EthernetUDP UDP16520;
+	void match_rro(int);
+	int packetSize ,i;
   
-  packetSize = UDP16520.parsePacket();
-  if (packetSize>0) {
-    UDP16520.read(uecsbuf,LEN_UECSXML_BUFFER-1);
-    uecsbuf[packetSize] = NULL;
-    if (xmldecode(&uecsbuf[0])) {
-      if (ptr_uecsxmldata->element==ELE_IP) {
-        ptr_uecsxmldata->ip = UDP16520.remoteIP();
-      }
-    } else {
-      Serial.println("ERR YXML");
-    }
-    float rfval = float(ptr_uecsxmldata->fval);
-    for (i=0;i<CCM_TBL_CNT_CMP;i++) {
-      wdt_reset();
-      match_rro(i);
-    }
-  }
+	packetSize = UDP16520.parsePacket();
+	if (packetSize>0) {
+		UDP16520.read(uecsbuf,LEN_UECSXML_BUFFER-1);
+		uecsbuf[packetSize] = NULL;
+		if (xmldecode(&uecsbuf[0])) {
+		if (ptr_uecsxmldata->element==ELE_IP) {
+			ptr_uecsxmldata->ip = UDP16520.remoteIP();
+		}
+		} else {
+			Serial.println("ERR YXML");
+		}
+		float rfval = float(ptr_uecsxmldata->fval);
+		for (i=0;i<CCM_TBL_CNT_CMP;i++) {
+			wdt_reset();
+			match_rro(i);
+		}
+	}
 }
 
 //

@@ -40,6 +40,14 @@ def byte_arrange(b):
     y = hex(b).replace('0x','').rjust(2,'0')
     return y
 #
+# 2 byte長データの変換  リトルエンディアン
+#
+def wbyte_arrange(b):
+    u = (b & 0xff00) >> 8
+    l = (b & 0xff)
+    y = hex(l).replace('0x','').rjust(2,'0')+hex(u).replace('0x','').rjust(2,'0')
+    return y
+#
 # 浮動小数点データの変換
 #
 def float_arrange(b):
@@ -89,7 +97,6 @@ def rly_setting(r,x):
 if __name__ == '__main__':
     args = sys.argv
     argc = len(args)-1
-    print(" argc={0}".format(argc))
     if argc == 9:
         flag = True
     elif argc == 12:  # COND0
@@ -140,68 +147,97 @@ if __name__ == '__main__':
     for x in range(4,8):
         rly_h |= rly_setting(rly,x)
 
-    ccmid0 = 0xff
-    cmpope0 = 0xff
-    fval0 = float(0.0)
-    cmp1 = 0xff
-    ccmid1 = 0xff
-    cmpope1 = 0xff
-    fval1 = float(0.0)
-    cmp2 = 0xff
-    ccmid2 = 0xff
-    cmpope2 = 0xff
-    fval2 = float(0.0)
-    cmp3 = 0xff
-    ccmid3 = 0xff
-    cmpope3 = 0xff
-    fval3 = float(0.0)
-    cmp4 = 0xff
-    ccmid4 = 0xff
-    cmpope4 = 0xff
-    fval4 = float(0.0)
-    
-    if argc >= 12:
-        ccmid0 = int(args[10])
-        cmpope0 = relope2num(args[11])
-        fval0 = float(args[12])
-    if argc >= 16:
-        cmp1 = relope2num(args[16])
-        ccmid1 = int(args[17])
-        cmpope1 = relope2num(args[18])
-        fval1 = float(args[19])
-    if argc >= 20:
-        cmp2 = relope2num(args[20])
-        ccmid2 = int(args[21])
-        cmpope2 = relope2num(args[22])
-        fval2 = float(args[23])
-    if argc >= 24:
-        cmp3 = relope2num(args[24])
-        ccmid3 = int(args[25])
-        cmpope3 = relope2num(args[26])
-        fval3 = float(args[27])
-    if argc >= 28:
-        cmp4 = relope2num(args[28])
-        ccmid4 = int(args[29])
-        cmpope4 = relope2num(args[30])
-        fval4 = float(args[31])
-
-        
-    baseaddr = 0x1000 # LC_SCH_START
-    recstep  = 0x40   # LC_SCH_REC_SIZE
-
     ih_valid    = byte_arrange(1)
     ih_sthr     = byte_arrange(sthr)
     ih_stmn     = byte_arrange(stmn)
     ih_edhr     = byte_arrange(edhr)
     ih_edmn     = byte_arrange(edmn)
-    ih_inmn     = byte_arrange(inmn)
-    ih_dumn     = byte_arrange(dumn)
+    ih_inmn     = wbyte_arrange(inmn)
+    ih_dumn     = wbyte_arrange(dumn)
     ih_mnflag   = "FF"
     ih_rly_l    = byte_arrange(rly_l)
     ih_rly_h    = byte_arrange(rly_h)
+
+    ih_ccmid0 = "FF"
+    ih_cmpope0 = "FF"
+    ih_fval0 = "FFFFFFFF"
+    ih_cmp1 = "FF"
+    ih_ccmid1 = "FF"
+    ih_cmpope1 = "FF"
+    ih_fval1 = "FFFFFFFF"
+    ih_cmp2 = "FF"
+    ih_ccmid2 = "FF"
+    ih_cmpope2 = "FF"
+    ih_fval2 = "FFFFFFFF"
+    ih_cmp3 = "FF"
+    ih_ccmid3 = "FF"
+    ih_cmpope3 = "FF"
+    ih_fval3 = "FFFFFFFF"
+    ih_cmp4 = "FF"
+    ih_ccmid4 = "FF"
+    ih_cmpope4 = "FF"
+    ih_fval4 = "FFFFFFFF"
     
-    ihtxt       = ih_valid+ih_sthr+ih_stmn+ih_edhr+ih_edmn+ih_mnflag+ih_inmn+ih_dumn+'FFFFFFFFFF'+ih_rly_l+ih_rly_h
-    for i in range(3):
+    if argc >= 12:
+        ccmid0 = int(args[10])
+        cmpope0 = relope2num[args[11]]
+        fval0 = float(args[12])
+#        print("          CCMID0={0},CMPOPE0={1},FVAL0={2}".format(ccmid0,cmpope0,fval0))
+        ih_ccmid0 = byte_arrange(ccmid0)
+        ih_cmpope0 = byte_arrange(cmpope0)
+        ih_fval0 = float_arrange(fval0)
+        
+    if argc >= 16:
+        cmp1 = relope2num[args[13]]
+        ccmid1 = int(args[14])
+        cmpope1 = relope2num[args[15]]
+        fval1 = float(args[16])
+#        print("CMBCMP1={3},CCMID1={0},CMPOPE1={1},FVAL1={2}".format(ccmid1,cmpope1,fval1,cmp1))
+        ih_cmp1 = byte_arrange(cmp1)
+        ih_ccmid1 = byte_arrange(ccmid1)
+        ih_cmpope1 = byte_arrange(cmpope1)
+        ih_fval1 = float_arrange(fval1)
+    if argc >= 20:
+        cmp2 = relope2num[args[17]]
+        ccmid2 = int(args[18])
+        cmpope2 = relope2num[args[19]]
+        fval2 = float(args[20])
+#        print("CMBCMP2={3},CCMID2={0},CMPOPE2={1},FVAL2={2}".format(ccmid2,cmpope2,fval2,cmp2))
+        ih_cmp2 = byte_arrange(cmp2)
+        ih_ccmid2 = byte_arrange(ccmid2)
+        ih_cmpope2 = byte_arrange(cmpope2)
+        ih_fval2 = float_arrange(fval2)
+    if argc >= 24:
+        cmp3 = relope2num[args[21]]
+        ccmid3 = int(args[22])
+        cmpope3 = relope2num[args[23]]
+        fval3 = float(args[24])
+#        print("CMBCMP3={3},CCMID3={0},CMPOPE3={1},FVAL3={2}".format(ccmid3,cmpope3,fval3,cmp3))
+        ih_cmp3 = byte_arrange(cmp3)
+        ih_ccmid3 = byte_arrange(ccmid3)
+        ih_cmpope3 = byte_arrange(cmpope3)
+        ih_fval3 = float_arrange(fval3)
+    if argc >= 28:
+        cmp4 = relope2num[args[25]]
+        ccmid4 = int(args[26])
+        cmpope4 = relope2num[args[27]]
+        fval4 = float(args[28])
+        print("CMBCMP4={3},CCMID4={0},CMPOPE4={1},FVAL4={2}".format(ccmid4,cmpope4,fval4,cmp4))
+        ih_cmp4 = byte_arrange(cmp4)
+        ih_ccmid4 = byte_arrange(ccmid4)
+        ih_cmpope4 = byte_arrange(cmpope4)
+        ih_fval4 = float_arrange(fval4)
+
+        
+    baseaddr = 0x1000 # LC_SCH_START
+    recstep  = 0x40   # LC_SCH_REC_SIZE
+
+    
+    ihtxt       = ih_valid+ih_sthr+ih_stmn+ih_edhr+ih_edmn+ih_mnflag+ih_inmn+ih_dumn+'FFFFFFFF'+ih_rly_l+ih_rly_h\
+                    +ih_ccmid0+ih_cmpope0+ih_fval0+ih_cmp1+ih_ccmid1+ih_cmpope1+ih_fval1\
+                    +ih_cmp2+ih_ccmid2+ih_cmpope2+ih_fval2+ih_cmp3+ih_ccmid3+ih_cmpope3+ih_fval3\
+                    +ih_cmp4+ih_ccmid4+ih_cmpope4+ih_fval4
+    for i in range(4):
         tp = i*32
         iht = ihtxt[tp:(tp+32)]
         sz  = hex(int(len(iht)/2)).replace('0x','').rjust(2,'0')
