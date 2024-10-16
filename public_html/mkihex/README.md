@@ -4,6 +4,7 @@ M304 ver 3.x.x に合わせて変更を実施
 PHPを使っていた部分をなるべくPythonに変更中。
 
 * a3b.py BLK_Bの部分を変換するスクリプト
+* a3d.py BLK_Dの部分を変換するスクリプト
 * a3sender.py : a2senderをPythonで書き直した
 * dump304.py : Pythonへ移植中
 
