@@ -95,6 +95,7 @@ void opeRUN(int hr, int mn) {
 
 void set_rlyttl(int x, int i, int j, int r, int id) {
     extern int rlyttl[];
+    char t[81];
     if (r == 1) {
         r = 3;
     } else {
@@ -121,12 +122,16 @@ void set_rlyttl(int x, int i, int j, int r, int id) {
             break;
         }
     }
+    if (id==2) {
+      sprintf(t,"x=%d,i=%d,j=%d,r=%d,rly%d=%d",x,i,j,r,r-i,rlyttl[r-i]);
+      Serial.println(t);
+    }
 }
 
 void timeDecision(int id, int curhr, int curmn) {
     byte d, sthr, stmn, edhr, edmn, inmn, dumn, s[2], x, y, p;
     int i, j, k, sttime, edtime, inmntm, dumntm, startmin, curtim, pmin, did;
-    //  char t[81];
+    //      char t[81];
     extern int rlyttl[];
 
     sthr = (int)flb_rx_ccm[id].sthr;
@@ -141,6 +146,7 @@ void timeDecision(int id, int curhr, int curmn) {
     edtime = edhr * 60 + edmn;
     inmntm = (int)flb_rx_ccm[id].inmn;
     dumntm = (int)flb_rx_ccm[id].dumn;
+
     if ((inmntm + dumntm) == 0)
         return; // If either is 0, the process is aborted and returns.
     curtim = curhr * 60 + curmn;
