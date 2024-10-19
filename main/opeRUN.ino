@@ -3,11 +3,12 @@
 void opeRUN(int hr, int mn) {
     static int pmn = 61; // Nothing 61minute
     int id, i, j, k, x, y, p;
-    byte s[2];
+    byte s[2],cmbcmp ;
     int cmpresult, r;
     char t[81], buf[8];
     float cval, rval; // cval: 現在の値(flb_cmpope.fval)
-    // rval: 比較数値(flb_rx_ccm.cmpval)
+                      // rval: 比較数値(flb_rx_ccm.cmpval)
+    bool combinationCompare(byte,int);
     extern int rlyttl[];
     extern byte cmpope_result[];
     extern uecsM304Sched flb_rx_ccm[];
@@ -36,40 +37,41 @@ void opeRUN(int hr, int mn) {
                 y = flb_rx_ccm[id].cmpccmid[i]; // 比較するuecsM304cmpopeの位置を決定
                 if (y < 255) {                  // 比較するCCMTYPEがある場合
                     rval = flb_rx_ccm[id].cmpval[i]; // value index;
+		    cmbcmp = flb_rx_ccm[id].cmbcmp[i];
                     switch (flb_rx_ccm[id].cmpope[i]) {
                     case R_EQ: // ==
                         if (flb_cmpope[y].fval == rval) {
-                            x = 1;
+			  x = combinationCompare(cmbcmp,1);
                         } else {
-                            x = 0;
+			  x = combinationCompare(cmbcmp,0);
                         }
                         break;
                     case R_GT: // >
                         if (flb_cmpope[y].fval > rval) {
-                            x = 1;
+			  x = combinationCompare(cmbcmp,1);
                         } else {
-                            x = 0;
+			  x = combinationCompare(cmbcmp,0);
                         }
                         break;
                     case R_LT: // >
                         if (flb_cmpope[y].fval < rval) {
-                            x = 1;
+			  x = combinationCompare(cmbcmp,1);
                         } else {
-                            x = 0;
+			  x = combinationCompare(cmbcmp,0);
                         }
                         break;
                     case R_GE: // >=
                         if (flb_cmpope[y].fval >= rval) {
-                            x = 1;
+			  x = combinationCompare(cmbcmp,1);
                         } else {
-                            x = 0;
+			  x = combinationCompare(cmbcmp,0);
                         }
                         break;
                     case R_LE: // <=
                         if (flb_cmpope[y].fval <= rval) {
-                            x = 1;
+			  x = combinationCompare(cmbcmp,1);
                         } else {
-                            x = 0;
+			  x = combinationCompare(cmbcmp,0);
                         }
                         break;
                     default:
@@ -168,4 +170,18 @@ void timeDecision(int id, int curhr, int curmn) {
             }
         }
     }
+}
+
+bool combinationCompare(byte c,int x) {
+  switch(c) {
+  case R_OR:
+    x |= 1;
+    break;
+  case R_AND:
+    x &= 1;
+    break;
+  default:
+    x = 0;
+  }
+  return(x);
 }
