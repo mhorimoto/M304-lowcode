@@ -8,9 +8,9 @@
 # Comments:
 # The conditions for relay operation were changed to a four-value setting.
 #    0,N : 0b00: Don't care (Compatibility with older versions)
-#    T   : 0b01: Both (same as toggle)
-#    B   : 0b10: Break
-#    1,M : 0b11: Make (Compatibility with older versions)
+#    1,T : 0b01: Both (same as toggle)
+#    2,B : 0b10: Break
+#    3,M : 0b11: Make (Compatibility with older versions)
 #
 # arguments are as following
 #  id sthr stmn edhr edmn inmn dumn rly(8characters)
@@ -82,11 +82,11 @@ def rly_setting(r,x):
         quit()
     if ((r[x]=="0") or (r[x]=="N")):
         return 0<<s
-    elif (r[x]=="T"):
+    elif ((r[x]=="T") or (r[x]=="1")):
         return (0b01<<s)
-    elif (r[x]=="B"):
+    elif ((r[x]=="B") or (r[x]=="2")):
         return (0b10<<s)
-    elif ((r[x]=="1") or (r[x]=="M")):
+    elif ((r[x]=="M") or (r[x]=="3")):
         return (0b11<<s)
     else:
         print("ERROR in rly_setting()")
