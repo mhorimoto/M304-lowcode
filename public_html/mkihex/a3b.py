@@ -97,17 +97,17 @@ def rly_setting(r,x):
 if __name__ == '__main__':
     args = sys.argv
     argc = len(args)-1
-    if argc == 9:
+    if argc == 10:
         flag = True
-    elif argc == 12:  # COND0
+    elif argc == 13:  # COND0
         flag = True
-    elif argc == 16:  # COND1
+    elif argc == 17:  # COND1
         flag = True
-    elif argc == 20:  # COND2
+    elif argc == 21:  # COND2
         flag = True
-    elif argc == 24:  # COND3
+    elif argc == 25:  # COND3
         flag = True
-    elif argc == 28:  # COND4
+    elif argc == 29:  # COND4
         flag = True
     else:
         flag = False
@@ -115,9 +115,10 @@ if __name__ == '__main__':
     if flag == False:
         print("Usage:")
         print("arguments are as following")
-        print(" id sthr stmn edhr edmn mnflag inmn dumn rly(8characters) [COND0 [CMP1 COND1 [CMP2 COND2 [CMP3 COND3 [CMP4 COND4]]]]]")
+        print(" id valid sthr stmn edhr edmn mnflag inmn dumn rly(8characters) [COND0 [CMP1 COND1 [CMP2 COND2 [CMP3 COND3 [CMP4 COND4]]]]]")
         print("----------------")
         print(" id:")
+        print(" valid: [e(nable)/d(isable)]")
         print(" sthr stmn: hour,minute of start")
         print(" edhr edmn: hour,minute of end")
         print(" mnflag: current M fix")
@@ -132,14 +133,15 @@ if __name__ == '__main__':
         quit()  # 引数が合わなければここで終了
 
     id = int(args[1])
-    sthr = int(args[2])
-    stmn = int(args[3])
-    edhr = int(args[4])
-    edmn = int(args[5])
+    valid = args[2]
+    sthr = int(args[3])
+    stmn = int(args[4])
+    edhr = int(args[5])
+    edmn = int(args[6])
     mnflag = 0xff
-    inmn = int(args[7])
-    dumn = int(args[8])
-    rly  = args[9]
+    inmn = int(args[8])
+    dumn = int(args[9])
+    rly  = args[10]
     rly_l = 0
     rly_h = 0
     for x in range(4):
@@ -147,7 +149,10 @@ if __name__ == '__main__':
     for x in range(4,8):
         rly_h |= rly_setting(rly,x)
 
-    ih_valid    = byte_arrange(1)
+    if valid=='e':
+        ih_valid = byte_arrange(1)
+    else: 
+        ih_valid = byte_arrange(255)
     ih_sthr     = byte_arrange(sthr)
     ih_stmn     = byte_arrange(stmn)
     ih_edhr     = byte_arrange(edhr)
@@ -178,50 +183,50 @@ if __name__ == '__main__':
     ih_cmpope4 = "FF"
     ih_fval4 = "FFFFFFFF"
     
-    if argc >= 12:
-        ccmid0 = int(args[10])
-        cmpope0 = relope2num[args[11]]
-        fval0 = float(args[12])
+    if argc >= 13:
+        ccmid0 = int(args[11])
+        cmpope0 = relope2num[args[12]]
+        fval0 = float(args[13])
 #        print("          CCMID0={0},CMPOPE0={1},FVAL0={2}".format(ccmid0,cmpope0,fval0))
         ih_ccmid0 = byte_arrange(ccmid0)
         ih_cmpope0 = byte_arrange(cmpope0)
         ih_fval0 = float_arrange(fval0)
         
-    if argc >= 16:
-        cmp1 = relope2num[args[13]]
-        ccmid1 = int(args[14])
-        cmpope1 = relope2num[args[15]]
-        fval1 = float(args[16])
+    if argc >= 17:
+        cmp1 = relope2num[args[14]]
+        ccmid1 = int(args[15])
+        cmpope1 = relope2num[args[16]]
+        fval1 = float(args[17])
 #        print("CMBCMP1={3},CCMID1={0},CMPOPE1={1},FVAL1={2}".format(ccmid1,cmpope1,fval1,cmp1))
         ih_cmp1 = byte_arrange(cmp1)
         ih_ccmid1 = byte_arrange(ccmid1)
         ih_cmpope1 = byte_arrange(cmpope1)
         ih_fval1 = float_arrange(fval1)
-    if argc >= 20:
-        cmp2 = relope2num[args[17]]
-        ccmid2 = int(args[18])
-        cmpope2 = relope2num[args[19]]
-        fval2 = float(args[20])
+    if argc >= 21:
+        cmp2 = relope2num[args[18]]
+        ccmid2 = int(args[19])
+        cmpope2 = relope2num[args[20]]
+        fval2 = float(args[21])
 #        print("CMBCMP2={3},CCMID2={0},CMPOPE2={1},FVAL2={2}".format(ccmid2,cmpope2,fval2,cmp2))
         ih_cmp2 = byte_arrange(cmp2)
         ih_ccmid2 = byte_arrange(ccmid2)
         ih_cmpope2 = byte_arrange(cmpope2)
         ih_fval2 = float_arrange(fval2)
-    if argc >= 24:
-        cmp3 = relope2num[args[21]]
-        ccmid3 = int(args[22])
-        cmpope3 = relope2num[args[23]]
-        fval3 = float(args[24])
+    if argc >= 25:
+        cmp3 = relope2num[args[22]]
+        ccmid3 = int(args[23])
+        cmpope3 = relope2num[args[24]]
+        fval3 = float(args[25])
 #        print("CMBCMP3={3},CCMID3={0},CMPOPE3={1},FVAL3={2}".format(ccmid3,cmpope3,fval3,cmp3))
         ih_cmp3 = byte_arrange(cmp3)
         ih_ccmid3 = byte_arrange(ccmid3)
         ih_cmpope3 = byte_arrange(cmpope3)
         ih_fval3 = float_arrange(fval3)
-    if argc >= 28:
-        cmp4 = relope2num[args[25]]
-        ccmid4 = int(args[26])
-        cmpope4 = relope2num[args[27]]
-        fval4 = float(args[28])
+    if argc >= 29:
+        cmp4 = relope2num[args[26]]
+        ccmid4 = int(args[27])
+        cmpope4 = relope2num[args[28]]
+        fval4 = float(args[29])
         print("CMBCMP4={3},CCMID4={0},CMPOPE4={1},FVAL4={2}".format(ccmid4,cmpope4,fval4,cmp4))
         ih_cmp4 = byte_arrange(cmp4)
         ih_ccmid4 = byte_arrange(ccmid4)
