@@ -42,7 +42,6 @@ int isOn(int H1, int M1, int H2, int M2, int M0, int D0, int TH, int TM) {
 void opeRUN(int hr, int mn) {
     static int pmn = 61; // Nothing 61minute
     int id, i, j, k, x, y, p,rt;
-    byte s[2],cmbcmp ;
     int cmpresult, r;
     char t[81], buf[8];
     float cval, rval; // cval: 現在の値(flb_cmpope.fval)
@@ -66,80 +65,93 @@ void opeRUN(int hr, int mn) {
                         hr,mn,flb_rx_ccm[id].inmn,flb_rx_ccm[id].dumn,rt);
                 Serial.println(t);
                 //timeDecision(id, hr, mn);
+                comparison_exp(id,rt);
             }
         }
         for (r = 1; r < CCM_TBL_CNT_TX; r++) {
             sendUECSpacket(r, itoa(rlyttl[r - 1], buf, DEC), 60);
         }
     }
+}
 
-    for (id = 0; id < CCM_TBL_CNT_RX; id++) {
-        cmpresult = 0;
-        wdt_reset();
-        if (flb_rx_ccm[id].valid != 0xff) {
-            for (i = 0; i < 5; i++) {
-                x = 0;                          // cmpresultを生成するために必要な中間結果
-                y = flb_rx_ccm[id].cmpccmid[i]; // 比較するuecsM304cmpopeの位置を決定
-                if ((i==0)&&(y==0xff)) {
-                    i = 100;
-                }
-                if (y < 0xff) {                  // 比較するCCMTYPEがある場合
-                    rval = flb_rx_ccm[id].cmpval[i]; // value index;
-                    cmbcmp = flb_rx_ccm[id].cmbcmp[i];
-                    switch (flb_rx_ccm[id].cmpope[i]) {
-                    case R_EQ: // ==
-                        if (flb_cmpope[y].fval == rval) {
-                            x = combinationCompare(cmbcmp,1);
-                        } else {
-                            x = combinationCompare(cmbcmp,0);
-                        }
-                        break;
-                    case R_GT: // >
-                        if (flb_cmpope[y].fval > rval) {
-                            x = combinationCompare(cmbcmp,1);
-                        } else {
-                            x = combinationCompare(cmbcmp,0);
-                        }
-                        break;
-                    case R_LT: // >
-                        if (flb_cmpope[y].fval < rval) {
-                            x = combinationCompare(cmbcmp,1);
-                        } else {
-                            x = combinationCompare(cmbcmp,0);
-                        }
-                        break;
-                    case R_GE: // >=
-                        if (flb_cmpope[y].fval >= rval) {
-                            x = combinationCompare(cmbcmp,1);
-                        } else {
-                            x = combinationCompare(cmbcmp,0);
-                        }
-                        break;
-                    case R_LE: // <=
-                        if (flb_cmpope[y].fval <= rval) {
-                            x = combinationCompare(cmbcmp,1);
-                        } else {
-                            x = combinationCompare(cmbcmp,0);
-                        }
-                        break;
-                    default:
-                        i = 5; // 比較演算子が無効の場合、離脱 force exit
-                        break;
+void comparison_exp(int id,int rt) {
+    int i,x,y,r,j,k,cmpresult;
+    byte s[2],cmbcmp;
+    float cval, rval; // cval: 現在の値(flb_cmpope.fval)
+                      // rval: 比較数値(flb_rx_ccm.cmpval)
+    bool combinationCompare(byte,int);
+
+    extern int rlyttl[];
+    extern byte cmpope_result[];
+    extern uecsM304Sched flb_rx_ccm[];
+    extern uecsM304Send flb_tx_ccm[];
+    extern uecsM304cmpope flb_cmpope[];
+
+    cmpresult = 0;
+    wdt_reset();
+    if (flb_rx_ccm[id].valid != 0xff) {
+        for (i = 0; i < 5; i++) {
+            x = 0;                          // cmpresultを生成するために必要な中間結果
+            y = flb_rx_ccm[id].cmpccmid[i]; // 比較するuecsM304cmpopeの位置を決定
+            if ((i==0)&&(y==0xff)) {
+                i = 100;
+            }
+            if (y < 0xff) {                  // 比較するCCMTYPEがある場合
+                rval = flb_rx_ccm[id].cmpval[i]; // value index;
+                cmbcmp = flb_rx_ccm[id].cmbcmp[i];
+                switch (flb_rx_ccm[id].cmpope[i]) {
+                case R_EQ: // ==
+                    if (flb_cmpope[y].fval == rval) {
+                        x = combinationCompare(cmbcmp,1);
+                    } else {
+                        x = combinationCompare(cmbcmp,0);
                     }
-                    x &= rt;
-                } else {
-                    x = rt; // y==0xff
+                    break;
+                case R_GT: // >
+                    if (flb_cmpope[y].fval > rval) {
+                        x = combinationCompare(cmbcmp,1);
+                    } else {
+                        x = combinationCompare(cmbcmp,0);
+                    }
+                    break;
+                case R_LT: // >
+                    if (flb_cmpope[y].fval < rval) {
+                        x = combinationCompare(cmbcmp,1);
+                    } else {
+                        x = combinationCompare(cmbcmp,0);
+                    }
+                    break;
+                case R_GE: // >=
+                    if (flb_cmpope[y].fval >= rval) {
+                        x = combinationCompare(cmbcmp,1);
+                    } else {
+                        x = combinationCompare(cmbcmp,0);
+                    }
+                    break;
+                case R_LE: // <=
+                    if (flb_cmpope[y].fval <= rval) {
+                        x = combinationCompare(cmbcmp,1);
+                    } else {
+                        x = combinationCompare(cmbcmp,0);
+                    }
+                    break;
+                default:
+                    i = 5; // 比較演算子が無効の場合、離脱 force exit
+                    break;
                 }
-                s[0] = flb_rx_ccm[id].rly_l;
-                s[1] = flb_rx_ccm[id].rly_h;
-                //Serial.print("set_rlyttl is ");
-                //Serial.println(rt);
-                for (r = 0; r < 4; r++) {
-                    j = (s[0] >> (r * 2)) & 0x3;
-                    k = (s[1] >> (r * 2)) & 0x3;
-                    set_rlyttl(x, r, j, 1, id);
-                    set_rlyttl(x, r, k, 5, id);
-                }
+                x &= rt;
+            } else {
+                x = rt; // y==0xff 比較するCCMTYPEがない場合
+            }
+            s[0] = flb_rx_ccm[id].rly_l;
+            s[1] = flb_rx_ccm[id].rly_h;
+            //Serial.print("set_rlyttl is ");
+            //Serial.println(rt);
+            for (r = 0; r < 4; r++) {
+                j = (s[0] >> (r * 2)) & 0x3;
+                k = (s[1] >> (r * 2)) & 0x3;
+                set_rlyttl(x, r, j, 1, id);
+                set_rlyttl(x, r, k, 5, id);
             }
         }
     }
@@ -174,7 +186,7 @@ void set_rlyttl(int x, int i, int j, int r, int id) {
             break;
         }
     }
-    if (id==2) {
+    if (id==1) {
       sprintf(t,"x=%d,i=%d,j=%d,r=%d,rly%d=%d",x,i,j,r,r-i,rlyttl[r-i]);
       Serial.println(t);
     }
