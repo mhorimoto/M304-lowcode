@@ -187,7 +187,7 @@ typedef struct uecsM304Sched {
 };  // 64bytes/1unit
 
 //
-//  CCM SEND FORMAT (Previous TX Table)
+//  CCM SEND FORMAT (Previous TX Table) ver:3.x.x
 //
 #define LC_SEND_START       0x3000   // CCM for data sending (for example cnd.aMC)
 #define LC_SEND_REC_SIZE    0x30 // reserve to 0x2f step by 0x30
@@ -213,7 +213,7 @@ typedef struct uecsM304Send {
   char unit[10];     // 0x1c
 };
 
-//  受信CCMに応じた比較演算テーブル
+//  受信CCMに応じた比較演算テーブル  v3.x.x
 //  Comparison operation table according to received CCM
 //
 #define LC_CMPOPE_START     0x5000 // Compare Operators
