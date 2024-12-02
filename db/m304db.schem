@@ -1,0 +1,285 @@
+/*!999999\- enable the sandbox mode */ 
+-- MariaDB dump 10.19  Distrib 10.6.18-MariaDB, for debian-linux-gnu (x86_64)
+--
+-- Host: localhost    Database: m304
+-- ------------------------------------------------------
+-- Server version	10.6.18-MariaDB-0ubuntu0.22.04.1
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `blk_a`
+--
+
+DROP TABLE IF EXISTS `blk_a`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `blk_a` (
+  `SEQ` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `M304ID` int(10) unsigned NOT NULL,
+  `UECSID` binary(6) DEFAULT NULL,
+  `MACADDR` binary(6) DEFAULT NULL,
+  `DHCPFLAG` tinyint(3) unsigned DEFAULT 255,
+  `FIXED_IPADDRESS` binary(4) DEFAULT NULL,
+  `FIXED_NETMASK` binary(4) DEFAULT NULL,
+  `FIXED_DEFGW` binary(4) DEFAULT NULL,
+  `FIXED_DNS` binary(4) DEFAULT NULL,
+  `VENDER_NAME` char(16) DEFAULT NULL,
+  `NODE_NAME` char(16) DEFAULT NULL,
+  `PKG_ID` int(10) unsigned DEFAULT NULL,
+  `COMMENT` text DEFAULT NULL,
+  `COM_ID` int(10) unsigned DEFAULT NULL,
+  `FARM_ID` int(10) unsigned DEFAULT NULL,
+  UNIQUE KEY `SEQ` (`SEQ`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `blk_a`
+--
+
+LOCK TABLES `blk_a` WRITE;
+/*!40000 ALTER TABLE `blk_a` DISABLE KEYS */;
+/*!40000 ALTER TABLE `blk_a` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `blk_b`
+--
+
+DROP TABLE IF EXISTS `blk_b`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `blk_b` (
+  `SEQ` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `PKG_ID` int(10) unsigned DEFAULT NULL,
+  `ID` tinyint(3) unsigned NOT NULL,
+  `VALID` tinyint(3) unsigned DEFAULT 255,
+  `STHR` tinyint(3) unsigned DEFAULT NULL,
+  `STMN` tinyint(3) unsigned DEFAULT NULL,
+  `EDHR` tinyint(3) unsigned DEFAULT NULL,
+  `EDMN` tinyint(3) unsigned DEFAULT NULL,
+  `MNFLAG` tinyint(3) unsigned DEFAULT NULL,
+  `INMN` smallint(5) unsigned DEFAULT NULL,
+  `DUMN` smallint(5) unsigned DEFAULT NULL,
+  `OPE_ID` int(10) unsigned DEFAULT NULL,
+  `CMPCCMID0` tinyint(3) unsigned DEFAULT 255,
+  `CMPOPE0` tinyint(3) unsigned DEFAULT 255,
+  `CMPVAL0` float DEFAULT NULL,
+  `CMBCMP1` tinyint(3) unsigned DEFAULT 255,
+  `CMPCCMID1` tinyint(3) unsigned DEFAULT 255,
+  `CMPOPE1` tinyint(3) unsigned DEFAULT 255,
+  `CMPVAL1` float DEFAULT NULL,
+  `CMBCMP2` tinyint(3) unsigned DEFAULT 255,
+  `CMPCCMID2` tinyint(3) unsigned DEFAULT 255,
+  `CMPOPE2` tinyint(3) unsigned DEFAULT 255,
+  `CMPVAL2` float DEFAULT NULL,
+  `CMBCMP3` tinyint(3) unsigned DEFAULT 255,
+  `CMPCCMID3` tinyint(3) unsigned DEFAULT 255,
+  `CMPOPE3` tinyint(3) unsigned DEFAULT 255,
+  `CMPVAL3` float DEFAULT NULL,
+  `CMBCMP4` tinyint(3) unsigned DEFAULT 255,
+  `CMPCCMID4` tinyint(3) unsigned DEFAULT 255,
+  `CMPOPE4` tinyint(3) unsigned DEFAULT 255,
+  `CMPVAL4` float DEFAULT NULL,
+  UNIQUE KEY `SEQ` (`SEQ`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `blk_b`
+--
+
+LOCK TABLES `blk_b` WRITE;
+/*!40000 ALTER TABLE `blk_b` DISABLE KEYS */;
+/*!40000 ALTER TABLE `blk_b` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `blk_c`
+--
+
+DROP TABLE IF EXISTS `blk_c`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `blk_c` (
+  `SEQ` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `PKG_ID` int(10) unsigned DEFAULT NULL,
+  `ID` tinyint(3) unsigned DEFAULT NULL,
+  `VALID` tinyint(3) unsigned DEFAULT NULL,
+  `ROOM` tinyint(3) unsigned DEFAULT NULL,
+  `REGION` tinyint(3) unsigned DEFAULT NULL,
+  `ORD` smallint(5) unsigned DEFAULT NULL,
+  `LIFECOUNT` tinyint(3) unsigned DEFAULT NULL,
+  `CCMTYPE` char(20) DEFAULT NULL,
+  `NAME` text DEFAULT NULL,
+  UNIQUE KEY `SEQ` (`SEQ`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `blk_c`
+--
+
+LOCK TABLES `blk_c` WRITE;
+/*!40000 ALTER TABLE `blk_c` DISABLE KEYS */;
+/*!40000 ALTER TABLE `blk_c` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `blk_d`
+--
+
+DROP TABLE IF EXISTS `blk_d`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `blk_d` (
+  `SEQ` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `PKG_ID` int(10) unsigned NOT NULL,
+  `ID` tinyint(3) unsigned NOT NULL,
+  `VALID` tinyint(3) unsigned DEFAULT 255,
+  `ROOM` tinyint(3) unsigned DEFAULT NULL,
+  `REGION` tinyint(3) unsigned DEFAULT NULL,
+  `ORD` smallint(5) unsigned DEFAULT NULL,
+  `PRIORITY` tinyint(3) unsigned DEFAULT NULL,
+  `LV` tinyint(3) unsigned DEFAULT NULL,
+  `CAST` tinyint(3) unsigned DEFAULT NULL,
+  `UNIT` char(10) DEFAULT NULL,
+  `CCMTYPE` char(20) DEFAULT NULL,
+  `NAME` text DEFAULT NULL,
+  UNIQUE KEY `SEQ` (`SEQ`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `blk_d`
+--
+
+LOCK TABLES `blk_d` WRITE;
+/*!40000 ALTER TABLE `blk_d` DISABLE KEYS */;
+/*!40000 ALTER TABLE `blk_d` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `blk_ope`
+--
+
+DROP TABLE IF EXISTS `blk_ope`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `blk_ope` (
+  `SEQ` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `OPE_ID` int(10) unsigned NOT NULL,
+  `M304ID` int(10) unsigned DEFAULT NULL,
+  `RLY` int(10) unsigned NOT NULL,
+  `RLYSTATUS` tinyint(3) unsigned DEFAULT 0,
+  UNIQUE KEY `SEQ` (`SEQ`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `blk_ope`
+--
+
+LOCK TABLES `blk_ope` WRITE;
+/*!40000 ALTER TABLE `blk_ope` DISABLE KEYS */;
+/*!40000 ALTER TABLE `blk_ope` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ope_c`
+--
+
+DROP TABLE IF EXISTS `ope_c`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ope_c` (
+  `SEQ` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `OPE_ID` int(10) unsigned NOT NULL,
+  `NAME` text DEFAULT NULL,
+  `COMMENT` text DEFAULT NULL,
+  UNIQUE KEY `SEQ` (`SEQ`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ope_c`
+--
+
+LOCK TABLES `ope_c` WRITE;
+/*!40000 ALTER TABLE `ope_c` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ope_c` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `pkg_c`
+--
+
+DROP TABLE IF EXISTS `pkg_c`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pkg_c` (
+  `SEQ` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `PKG_ID` int(10) unsigned DEFAULT NULL,
+  `NAME` text DEFAULT NULL,
+  `COMMENT` text DEFAULT NULL,
+  `REG_DATE` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `AUTHOR` text DEFAULT NULL,
+  UNIQUE KEY `SEQ` (`SEQ`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pkg_c`
+--
+
+LOCK TABLES `pkg_c` WRITE;
+/*!40000 ALTER TABLE `pkg_c` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pkg_c` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tbl_custom`
+--
+
+DROP TABLE IF EXISTS `tbl_custom`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tbl_custom` (
+  `SEQ` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `COM_ID` int(10) unsigned NOT NULL,
+  `FARM_ID` int(10) unsigned NOT NULL,
+  `NAME` text DEFAULT NULL,
+  `ADDRESS` text DEFAULT NULL,
+  UNIQUE KEY `SEQ` (`SEQ`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbl_custom`
+--
+
+LOCK TABLES `tbl_custom` WRITE;
+/*!40000 ALTER TABLE `tbl_custom` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tbl_custom` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2024-07-11 20:37:51

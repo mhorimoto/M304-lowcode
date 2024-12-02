@@ -1,4 +1,5 @@
 *~
+*.code-workspace
 
 # Prerequisites
 *.d
@@ -35,3 +36,4 @@
 
 # Tempolary 
 tmp/*
+.vscode/

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>UECS for M304</title>
-    <meta version="0.70" driver_version="0.70">
+    <meta version="3.0.0" driver_version="3.0.0">
     <link href="css/main.css" rel="stylesheet" type="text/css">
   </head>
   <body id="tools">

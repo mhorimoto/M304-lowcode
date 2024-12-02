@@ -27,12 +27,13 @@ void cmnd_fill(String p,int at) {
         }
       }
       if (ofs3>0) { // fillするデータがある
-	q = p.substring(ofs3);
-	q.toCharArray(&buf[0],4);
-	d = (unsigned int)strtol(buf,NULL,16);
-	sprintf(lbf,"[%04XH,%04XH]<=%02XH",saddr,eaddr,d);
-	Serial.println(lbf);
-	for(addr=saddr;addr<=eaddr;addr++) {
+        q = p.substring(ofs3);
+        q.toCharArray(&buf[0],4);
+        d = (unsigned int)strtol(buf,NULL,16);
+        sprintf(lbf,"[%04XH,%04XH]<=%02XH",saddr,eaddr,d);
+        Serial.println(lbf);
+        for(addr=saddr;addr<=eaddr;addr++) {
+          wdt_reset();
           if (at==-1) {
             EEPROM.update(addr,d);
           } else {
@@ -41,10 +42,10 @@ void cmnd_fill(String p,int at) {
               atmem.write(addr,d);
             }
           }
-	}
-	Serial.println(F("DONE"));
+        }
+        Serial.println(F("DONE"));
       } else {
-	Serial.println(F("NO WRITE,NO FILL DATA"));
+        Serial.println(F("NO WRITE,NO FILL DATA"));
       }
     } else {
       Serial.println(F("ERROR NO END ADDRESS"));

@@ -167,7 +167,7 @@ typedef struct stM304 {
 #define   LC_SCH_CMPCCMID4    0x2c // compare value opeID 1 byte
 #define   LC_SCH_CMPOPE4      0x2d // relational operator 1 byte
 #define   LC_SCH_CMPVAL4      0x2e // Numerical values to compare 1 float (4bytes)
-//                            0x2f-0x3f Reserved
+//                            0x32-0x3f Reserved
 
 typedef struct uecsM304Sched {
   byte valid;        // 0x00
@@ -180,14 +180,14 @@ typedef struct uecsM304Sched {
   unsigned int dumn; // 0x08
   byte rly_l;        // 0x0e
   byte rly_h;        // 0x0f
-  byte cmbcmp[5];    // 0:R_AND,1:0x16,2:0x1d,3:0x24,4:0x2b
+  byte cmbcmp[5];    // 0:R_OR,1:0x16,2:0x1d,3:0x24,4:0x2b
   byte cmpccmid[5];  // 0:0x10, 1:0x17,2:0x1e,3:0x25,4:0x2c
   byte cmpope[5];    // 0:0x11, 1:0x18,2:0x1f,3:0x26,4:0x2d
   float cmpval[5];   // 0:0x12, 1:0x19,2:0x20,3:0x27,4:0x2e
 };  // 64bytes/1unit
 
 //
-//  CCM SEND FORMAT (Previous TX Table)
+//  CCM SEND FORMAT (Previous TX Table) ver:3.x.x
 //
 #define LC_SEND_START       0x3000   // CCM for data sending (for example cnd.aMC)
 #define LC_SEND_REC_SIZE    0x30 // reserve to 0x2f step by 0x30
@@ -213,7 +213,7 @@ typedef struct uecsM304Send {
   char unit[10];     // 0x1c
 };
 
-//  受信CCMに応じた比較演算テーブル
+//  受信CCMに応じた比較演算テーブル  v3.x.x
 //  Comparison operation table according to received CCM
 //
 #define LC_CMPOPE_START     0x5000 // Compare Operators

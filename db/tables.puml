@@ -1,0 +1,131 @@
+@startuml tables
+entity tbl_custom as "**custom**\n顧客 table" <<(E,#FFAAAA)>> #PaleTurquoise {
+    SEQ bigint auto_increment [PK]
+    + COM_ID int unsigned  : 会社のID
+    + FARM_ID bigint auto_increment [UK] : 農場のID
+    --
+    NAME text : 会社の名前
+    ADDRESS text : 住所
+    **その他未定** : .....
+}
+
+entity blk_a as "**blk_a**\nノード情報 table" {
+  SEQ bigint auto_increment [PK]
+--
+  + M304ID int unsigned [UK] : 機台番号
+  UECSID binary(6)
+  MACADDR binary(6) : MACアドレス
+  DHCPFLAG tinyint unsigned DHCPの有無(0:FIXED)
+  FIXED_IPADDRESS int unsigned
+  FIXED_NETMASK int unsigned
+  FIXED_DEFGW int unsigned
+  FIXED_DNS int unsigned
+  VENDER_NAME char(16)
+  NODE_NAME char(16)
+  PKG_ID int unsigned [FK] : 制御パッケージにつけるID
+  COMMENT text
+  ..
+  # COM_ID int unsigned [FK]
+  # FARM_ID bigint [FK]
+}
+  
+
+entity blk_b as "**blk_b**\n制御定義 table" {
+    SEQ bigint auto_increment [PK]
+    + PKG_ID int unsigned [FK]
+    --
+    ID tinyint unsigned : (ID number 0..29)
+    VALID tinyint unsigned : (0:有効)
+    STHR tinyint unsigned : 開始時
+    STMN tinyint unsigned : 開始分
+    EDHR tinyint unsigned : 終了時
+    EDMN tinyint unsigned : 終了分
+    MNFLAG tinyint unsigned : 動作時間の秒・分切替 (0:秒)
+    INMN smallint unsigned : 動作間隔
+    DUMN smallint unsigned : 動作時間
+    # OPE_ID int unsigned [FK] : リレー動作定義ID
+    ..
+    + CMPCCMID0 tinyint unsigned [FK]
+    CMPOPE0 tinyint unsigned
+    CMPVAL0 float (Values to compare)
+    ..
+    CMBCMP1 tinyint unsigned
+    + CMPCCMID1 tinyint unsigned [FK]
+    CMPOPE1 tinyint unsigned
+    CMPVAL1 float (Values to compare)
+    ..
+    CMBCMP2 tinyint unsigned
+    + CMPCCMID2 tinyint unsigned [FK]
+    CMPOPE2 tinyint unsigned
+    CMPVAL2 float (Values to compare)
+    ..
+    CMBCMP3 tinyint unsigned
+    + CMPCCMID3 tinyint unsigned [FK]
+    CMPOPE3 tinyint unsigned
+    CMPVAL3 float (Values to compare)
+    ..
+    CMBCMP4 tinyint unsigned
+    + CMPCCMID4 tinyint unsigned [FK]
+    CMPOPE4 tinyint unsigned
+    CMPVAL4 float (Values to compare)
+    ..
+}
+
+entity blk_c as "**blk_c**\n比較したいCCMTYPE table" {
+    SEQ bigint auto_increment [PK]
+    + PKG_ID int unsigned [FK]
+    --
+    # ID tinyint unsigned (ID number 0..9)
+    VALID tinyint unsigned : (0:有効)
+    ROOM tinyint unsigned
+    REGION tinyint unsigned
+    ORD smallint unsigned (ORDER)
+    LIFECOUNT tinyint unsigned (data validity time)
+    CCMTYPE char(20)
+    NAME text : 日本語名など
+}
+
+entity blk_d as "**blk_d**\n送信したいCCMTYPE table" {
+    SEQ bigint auto_increment [PK]
+    + PKG_ID int unsigned [FK]
+    --
+    ID tinyint unsigned (ID number 0..9)
+    VALID tinyint unsigned : (0:有効)
+    ROOM tinyint unsigned
+    REGION tinyint unsigned
+    ORD smallint unsigned (ORDER)
+    PRIORITY tinyint unsigned
+    LV tinyint unsigned
+    CAST tinyint unsigned
+    UNIT char(10)
+    CCMTYPE char(20)
+    NAME text : 日本語名など
+}
+
+entity pkg_c as "**pkg_c**\nパッケージ内容 table" {
+    SEQ bigint auto_increment [PK]
+    + PKG_ID int unsigned [UK] : 制御パッケージにつけるID
+    --
+    NAME text : パッケージ名
+    COMMENT text : パッケージ内容の紹介文
+    REG_DATE timestamp : 登録変更日時
+    AUTHOR text : 作者
+}
+
+entity blk_ope as "**blk_ope**\nリレー出力組合せ table" {
+    SEQ bigint auto_increment [PK]
+    # OPE_ID int unsigned [FK] : リレー出力組み合わせID
+    --
+    # M304ID int unsigned [FK] : 機台番号
+    RLY int unsigned : リレー番号
+    RLYSTATUS tinyint unsigned : リレー出力状態
+}
+
+entity ope_c as "**ope_c**\nリレー出力組合せ代表 table" {
+    SEQ bigint auto_increment [PK]
+    + OPE_ID int unsigned [UK] : リレー出力組み合わせID
+    --
+    NAME text : 組合せ名称
+    COMMENT text
+}
+@enduml

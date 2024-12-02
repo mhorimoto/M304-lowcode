@@ -37,7 +37,7 @@
 	      <td>
 		<select name="TX_LEV[{$idx}]">
 		  {foreach $LV as $txlev}
-		  {html_options values=$txlev.v output=$txlev.name selected=$TXMETHOD[$idx].sellvl}
+		  {html_options values=$txlev.v output=$txlev.name selected=$TXMETHOD[$idx].lv}
 		  {/foreach}
 		</select>
 	      </td>

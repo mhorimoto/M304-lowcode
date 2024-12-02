@@ -1,0 +1,16 @@
+@startuml M304DB
+package M304DB <<Database>> {
+    !include tables.puml
+    tbl_custom |o--r--o{ blk_a : can NOT Decide. yet
+    pkg_c }o----|{ blk_a
+    pkg_c |o----|{ blk_b
+    pkg_c |o----|{ blk_c
+    pkg_c |o----|{ blk_d
+    blk_a ||--r--|{ "30" blk_b
+    blk_a ||--d--|{ "10" blk_c
+    blk_a ||--d--|{ "10" blk_d
+    blk_c "10" |o--r--o{ "5" blk_b : ccmtype and id relaition
+    blk_b |o----|{ blk_ope
+    blk_b |o----o| ope_c
+}
+@enduml
