@@ -1,5 +1,10 @@
 # TO DO LIST
 
+## 3rd Dec 2024
+  ver 3.0.0化に伴い、大幅に複合比較制御部分の変更がある。
+  opeRUN.ino内の再構築を行う。
+  それに伴い、githubのブランチを devel3 と main にする。
+  
 ## 8th May 2024
   opeSCH.inoまでは修正済み。
   

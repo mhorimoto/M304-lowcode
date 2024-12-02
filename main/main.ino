@@ -21,7 +21,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver3.0.0D6";
+char *pgname = "M304 Ver3.0.0D9";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -212,14 +212,15 @@ void setup(void) {
   }
   pepoch = 0;
   cepoch = RTC.get();
-  pinMode(7,OUTPUT);
+  pinMode(7,OUTPUT);  // a live indicator
   //
   // debug signal for match_rro
   //
-  pinMode(10,OUTPUT);
-  pinMode(11,OUTPUT);
-  pinMode(12,OUTPUT); // Humid
-  pinMode(13,OUTPUT); // Temp
+  pinMode( 9,OUTPUT);  // CMPOPE0 Matching indicator
+  pinMode(10,OUTPUT);  // CMPOPE1 Matching indicator
+  pinMode(11,OUTPUT);  // CMPOPE2 Matching indicator
+  pinMode(12,OUTPUT);  // CMPOPE3 Matching indicator
+  pinMode(13,OUTPUT);  // CMPOPE4 Matching indicator
   //
   // Setup Timer1 Interrupt
   //

@@ -115,11 +115,13 @@ void _dump_flb(int k, int f) {
       }
       conv_relay(ptr_flb_rx->rly_l,&rly1[0]);
       conv_relay(ptr_flb_rx->rly_h,&rly5[0]);
-      sprintf(lbftxt,"%2d,%02x,%02d:%02d-%02d:%02d,%s(%02x),%d/%d,%s%s(%02x%02x),\n",
+      sprintf(lbftxt,"%2d,%02x,%02d:%02d-%02d:%02d,%s(%02x),%d/%d,(%02x%02x),%02x,%02x,%02x,%f",
               i,ptr_flb_rx->valid,ptr_flb_rx->sthr,ptr_flb_rx->stmn,ptr_flb_rx->edhr,
               ptr_flb_rx->edmn,mnflag,ptr_flb_rx->mnflag,ptr_flb_rx->inmn,ptr_flb_rx->dumn,
-              rly1,rly5,ptr_flb_rx->rly_l,ptr_flb_rx->rly_h);
+              ptr_flb_rx->rly_l,ptr_flb_rx->rly_h,ptr_flb_rx->cmbcmp[0],ptr_flb_rx->cmpccmid[0],
+              ptr_flb_rx->cmpope[0],ptr_flb_rx->cmpval[0]);
       ptr_flb_rx++;
+      Serial.println(lbftxt);
     }
     break;
       
@@ -166,20 +168,21 @@ void _dump_flb(int k, int f) {
               i,ptr_flb_tx->valid,ptr_flb_tx->room,ptr_flb_tx->region,ptr_flb_tx->order,
               ptr_flb_tx->priority,lv,ptr_flb_tx->lv,ptr_flb_tx->cast,
               ptr_flb_tx->ccmtype,ptr_flb_tx->unit);
+      Serial.println(lbftxt);
       ptr_flb_tx++;
     }
     break;
   case 4:
     for(i=0;i<CCM_TBL_CNT_CMP;i++) {
       if ((f==2)&&(flb_cmpope[i].valid!=1)) continue;
-      Serial.println(flb_cmpope[i].valid);
-      Serial.println(flb_cmpope[i].room);
-      Serial.println(flb_cmpope[i].region);
-      Serial.println(flb_cmpope[i].order);
-      Serial.println(flb_cmpope[i].lifecnt);
+      Serial.print(flb_cmpope[i].valid);Serial.print(",");
+      Serial.print(flb_cmpope[i].room);Serial.print(",");
+      Serial.print(flb_cmpope[i].region);Serial.print(",");
+      Serial.print(flb_cmpope[i].order);Serial.print(",");
+      Serial.print(flb_cmpope[i].lifecnt);Serial.print(",");
       Serial.println(flb_cmpope[i].ccm_type);
-      Serial.println(flb_cmpope[i].cmpope);
-      Serial.println(flb_cmpope[i].fval);
+      //Serial.println(flb_cmpope[i].cmpope);  // 3.0.0D7から不要 blk_cで設定するので
+      //Serial.println(flb_cmpope[i].fval);    // 3.0.0D7から不要 blk_cで設定するので
     }
   }
 }
