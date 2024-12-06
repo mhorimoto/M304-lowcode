@@ -41,6 +41,9 @@ void match_rro(int id) {
   char ft[6];
   float rfval;
   // 2.3.7DBG
+  sprintf(lbf,"%d,%d,%d,%s,%d",ptr_uecsxmldata->room,ptr_uecsxmldata->region,ptr_uecsxmldata->order,
+  			ptr_uecsxmldata->type,ptr_uecsxmldata->fval);
+  Serial.println(lbf);
   if (flb_cmpope[id].valid!=0xff) {
     if (flb_cmpope[id].valid==1) {
       // ROOM
