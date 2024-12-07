@@ -1,6 +1,6 @@
 #ifndef _M304_H_
 #define _M304_H_
-#define _M304_H_V  1318
+#define _M304_H_V  1319
 
 #include <avr/pgmspace.h>
 #include <LiquidCrystal.h>
@@ -184,6 +184,7 @@ typedef struct uecsM304Sched {
   byte cmpccmid[5];  // 0:0x10, 1:0x17,2:0x1e,3:0x25,4:0x2c
   byte cmpope[5];    // 0:0x11, 1:0x18,2:0x1f,3:0x26,4:0x2d
   float cmpval[5];   // 0:0x12, 1:0x19,2:0x20,3:0x27,4:0x2e
+  byte match_result[5]; // load uecsM304cmpope->lifecnt when matched (variable no EEPROM)
 };  // 64bytes/1unit
 
 //
@@ -236,8 +237,8 @@ typedef struct uecsM304cmpope {
   uint16_t order;    // 0x03
   byte lifecnt;      // 0x05 sec
   char ccm_type[20]; // 0x06 ASCIZ
-  byte cmpope;       // 0x1a
-  float fval;        // 0x1b current recieving data
+  //byte cmpope;       // 0x1a
+  //float fval;        // 0x1b current recieving data
   // LAST            // 0x1f
 };  // 32bytes/1unit
 

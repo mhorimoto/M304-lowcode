@@ -65,7 +65,7 @@ void opeRUN(int hr, int mn) {
                         hr,mn,flb_rx_ccm[id].inmn,flb_rx_ccm[id].dumn,rt);
                 Serial.println(t);
                 //timeDecision(id, hr, mn);
-                comparison_exp(id,rt);
+                //comparison_exp(id,rt);
             }
         }
         for (r = 1; r < CCM_TBL_CNT_TX; r++) {
@@ -74,7 +74,7 @@ void opeRUN(int hr, int mn) {
     }
 }
 
-void comparison_exp(int id,int rt) {
+/* void comparison_exp(int id,int rt) {
     int i,x,y,r,j,k,cmpresult;
     byte s[2],cmbcmp;
     float cval, rval; // cval: 現在の値(flb_cmpope.fval)
@@ -156,7 +156,7 @@ void comparison_exp(int id,int rt) {
         }
     }
 }
-
+ */
 void set_rlyttl(int x, int i, int j, int r, int id) {
     extern int rlyttl[];
     char t[81];
@@ -234,7 +234,7 @@ void timeDecision(int id, int curhr, int curmn) {
     }
 }
 
-bool combinationCompare(byte c,int x) {
+/* bool combinationCompare(byte c,int x) {
   switch(c) {
   case R_OR:
     x |= 1;
@@ -247,3 +247,4 @@ bool combinationCompare(byte c,int x) {
   }
   return(x);
 }
+*/

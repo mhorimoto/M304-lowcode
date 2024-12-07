@@ -6,7 +6,7 @@
 #include <yxml.h>
 #include <string.h>
 
-#if _M304_H_V < 1317
+#if _M304_H_V < 1319
 #pragma message("Library M304 is old. Version 1.3.15 or higher is required.")
 
 #else
@@ -21,7 +21,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver3.0.0D14";
+char *pgname = "M304 Ver3.0.0D15";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
