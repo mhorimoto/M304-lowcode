@@ -21,7 +21,7 @@ void get_mcusr(void) {
   wdt_disable();
 }
 
-char *pgname = "M304 Ver3.0.0D15";
+char *pgname = "M304 Ver3.0.0D19";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -134,332 +134,326 @@ volatile int period1hour = 0;
 volatile time_t cepoch,pepoch;
 
 void setup(void) {
-  extern int mask2cidr(IPAddress);
-  extern boolean is_dhcp(void);
-  extern void clear_uecsbuf(void);
-  extern void copyVersionCode(unsigned int,char *);
-  extern void init_uecsTBL(void);
-  
-  int j;
-  char ccm_type[21],line1[21];
-  IPAddress hostip,subnet,gateway,dns;
-  float tesfval;
-  tmElements_t tm;
+    extern int mask2cidr(IPAddress);
+    extern boolean is_dhcp(void);
+    extern void clear_uecsbuf(void);
+    extern void copyVersionCode(unsigned int,char *);
+    extern void init_uecsTBL(void);
 
-  copyVersionCode(0x7ff0,pgname);
-  m304Init();
-  Serial.begin(115200);
-  clear_uecsbuf();
-  //  floating test routine 2.4.6Db
-  //  floatingtest(387.0);
-  
-  ptr_uecsxmldata = &uecsxmldata;
-  lcdd.begin(20,4);
-  if (is_dhcp()) {
-    debugMsgOutput(1,0); // st_m display
-    if (Ethernet.begin(st_m.mac)==0) {
-      // "NO NET MODE"
-      strcpy_P(line1,(char *)pgm_read_word(&(str_main[0])));
-      lcdd.setLine(0,2,line1);
-      lcdd.LineWrite(0,2);
-      st_m.dhcpflag = true;
-    }
-  } else {
-    st_m.ip     = getIPAddressFromEEPROM(FIXED_IPADDRESS);
-    st_m.subnet = getIPAddressFromEEPROM(FIXED_NETMASK);
-    st_m.gw     = getIPAddressFromEEPROM(FIXED_DEFGW);
-    st_m.dns    = getIPAddressFromEEPROM(FIXED_DNS);
-    st_m.cidr   = mask2cidr(st_m.subnet);
-    st_m.dhcpflag = false;
-    strcpy_P(line1,(char *)pgm_read_word(&(str_main[1])));
-    lcdd.setLine(0,2,line1);
-    lcdd.LineWrite(0,2);
-    Ethernet.begin(st_m.mac,st_m.ip,st_m.dns,st_m.gw,st_m.subnet);
-    st_m.dhcpflag = false;
-  }
-  configure_wdt();
-  msgRun1st();
-  wdt_reset();
-  for(j=0;j<8;j++) {
-    rlyttl[j] = 0;
-  }
-  for (j=0;j<20;j++) {
-    ccm_type[j] = 0;
-  }
+    int j;
+    char ccm_type[21],line1[21];
+    IPAddress hostip,subnet,gateway,dns;
+    float tesfval;
+    tmElements_t tm;
 
-  //  Initialize the CCM table when the initialization switch is in the up position.
-  //  Very very dangerous
-  j = digitalRead(SW_SAFE);
-  if (j==LOW) {
-    if ((atmem.read(LC_SEND_START)==0xff)&&(atmem.read(LC_SCH_START)==0xff)) {  // CCMTABLE
-      //        initEEPROM_UECS();
-      //	lcdd.setLine(0,3,"init EEPROM         ");
-      //	lcdd.LineWrite(0,3);
+    copyVersionCode(0x7ff0,pgname);
+    m304Init();
+    Serial.begin(115200);
+    clear_uecsbuf();
+    //  floating test routine 2.4.6Db
+    //  floatingtest(387.0);
+
+    ptr_uecsxmldata = &uecsxmldata;
+    lcdd.begin(20,4);
+    if (is_dhcp()) {
+        debugMsgOutput(1,0); // st_m display
+        if (Ethernet.begin(st_m.mac)==0) {
+            // "NO NET MODE"
+            strcpy_P(line1,(char *)pgm_read_word(&(str_main[0])));
+            lcdd.setLine(0,2,line1);
+            lcdd.LineWrite(0,2);
+            st_m.dhcpflag = true;
+        }
+    } else {
+        st_m.ip     = getIPAddressFromEEPROM(FIXED_IPADDRESS);
+        st_m.subnet = getIPAddressFromEEPROM(FIXED_NETMASK);
+        st_m.gw     = getIPAddressFromEEPROM(FIXED_DEFGW);
+        st_m.dns    = getIPAddressFromEEPROM(FIXED_DNS);
+        st_m.cidr   = mask2cidr(st_m.subnet);
+        st_m.dhcpflag = false;
+        strcpy_P(line1,(char *)pgm_read_word(&(str_main[1])));
+        lcdd.setLine(0,2,line1);
+        lcdd.LineWrite(0,2);
+        Ethernet.begin(st_m.mac,st_m.ip,st_m.dns,st_m.gw,st_m.subnet);
+        st_m.dhcpflag = false;
     }
-  }
-  init_uecsTBL();
-  UDP16520.begin(16520);
-  UECS_UDP16529.begin(16529);
-  httpd.begin();
-  sendUECSpacket(0,"395264",0); // setup completed 0x60800
-  //  Serial.begin(115200);
-  Serial.println(pgname);
-  if (RTC.read(tm)==0) {
-    // "NO RTC PLS SETUP    "
-    strcpy_P(line1,(char *)pgm_read_word(&(str_main[3])));
-    lcdd.setLine(cposp,1,line1);
-    lcdd.LineWrite(cposp,1);
-  }
-  pepoch = 0;
-  cepoch = RTC.get();
-  pinMode(7,OUTPUT);  // a live indicator
-  //
-  // debug signal for match_rro
-  //
-  pinMode( 9,OUTPUT);  // CMPOPE0 Matching indicator
-  pinMode(10,OUTPUT);  // CMPOPE1 Matching indicator
-  pinMode(11,OUTPUT);  // CMPOPE2 Matching indicator
-  pinMode(12,OUTPUT);  // CMPOPE3 Matching indicator
-  pinMode(13,OUTPUT);  // CMPOPE4 Matching indicator
-  //
-  // Setup Timer1 Interrupt
-  //
-  TCCR1A  = 0;
-  TCCR1B  = 0;
-  TCNT1 = TCNT1_1SEC ;
-  TCCR1B |= (1 << CS12); // CS12 -> 1 prescaler = 256
-  TIMSK1 |= (1 << OCIE1A);
+    configure_wdt();
+    msgRun1st();
+    wdt_reset();
+    for(j=0;j<8;j++) {
+        rlyttl[j] = 0;
+    }
+    for (j=0;j<20;j++) {
+        ccm_type[j] = 0;
+    }
+
+    //  Initialize the CCM table when the initialization switch is in the up position.
+    //  Very very dangerous
+    j = digitalRead(SW_SAFE);
+    if (j==LOW) {
+        if ((atmem.read(LC_SEND_START)==0xff)&&(atmem.read(LC_SCH_START)==0xff)) {  // CCMTABLE
+        //        initEEPROM_UECS();
+        //	lcdd.setLine(0,3,"init EEPROM         ");
+        //	lcdd.LineWrite(0,3);
+        }
+    }
+    init_uecsTBL();
+    UDP16520.begin(16520);
+    UECS_UDP16529.begin(16529);
+    httpd.begin();
+    sendUECSpacket(0,"395264",0); // setup completed 0x60800
+    //  Serial.begin(115200);
+    Serial.println(pgname);
+    if (RTC.read(tm)==0) {
+        // "NO RTC PLS SETUP    "
+        strcpy_P(line1,(char *)pgm_read_word(&(str_main[3])));
+        lcdd.setLine(cposp,1,line1);
+        lcdd.LineWrite(cposp,1);
+    }
+    pepoch = 0;
+    cepoch = RTC.get();
+    pinMode(7,OUTPUT);  // a live indicator
+    //
+    // debug signal for match_rro
+    //
+    pinMode( 9,OUTPUT);  // CMPOPE0 Matching indicator
+    pinMode(10,OUTPUT);  // CMPOPE1 Matching indicator
+    pinMode(11,OUTPUT);  // CMPOPE2 Matching indicator
+    pinMode(12,OUTPUT);  // CMPOPE3 Matching indicator
+    pinMode(13,OUTPUT);  // CMPOPE4 Matching indicator
+    //
+    // Setup Timer1 Interrupt
+    //
+    TCCR1A  = 0;
+    TCCR1B  = 0;
+    TCNT1 = TCNT1_1SEC ;
+    TCCR1B |= (1 << CS12); // CS12 -> 1 prescaler = 256
+    TIMSK1 |= (1 << OCIE1A);
 }
 
 
 void loop(void) {
-  int x,y,z,id,hr,mi,mx,io,minsec,j,r;
-  char ca,line1[21],buf[8];
-  int b_tmp;
-  static char pca;
-  static int prvsec;
-  extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
-  extern void opeSCH(void),opeRTC(void),opeNET(void),opeRUN(int,int),opeHttpd(EthernetClient);
-  extern void UECSupdate16529port(void) ;
-  extern void debugSerialOut(int,int,char*);
-  uint8_t InputDataButtom(int,int,int,int,uint8_t,int mi='0',int mx='9');
-  tmElements_t tm;
+    int x,y,z,id,hr,mi,mx,io,minsec,j,r;
+    char ca,line1[21],buf[8];
+    int b_tmp;
+    static char pca;
+    static int prvsec;
+    extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
+    extern void opeSCH(void),opeRTC(void),opeNET(void),opeRUN(int,int),opeHttpd(EthernetClient);
+    extern void UECSupdate16529port(void) ;
+    extern void debugSerialOut(int,int,char*);
+    uint8_t InputDataButtom(int,int,int,int,uint8_t,int mi='0',int mx='9');
+    tmElements_t tm;
 
-  EthernetClient httpClient = httpd.available();
-  wdt_reset();
-  if ( httpClient ) {
-    opeHttpd(httpClient);
-  }
-  UECSupdate16520port() ;
-  UECSupdate16529port() ;
-  if (digitalRead(SW_SAFE)==0) {
-    // "  EEPROM Operation  "
-    strcpy_P(line1,(char *)pgm_read_word(&(str_main[2])));
-    lcdd.setLine(0,1,line1);
-    lcdd.LineWrite(0,1);
-    opeEEPROM();
-  }
-  switch(cmode) {
-  case RUN:
-    if (fsf) {
-      msgRun1st();
-      fsf = false;
-    }
-    //    if (RTC.read(tm)==0) {
-    //      // "NO RTC PLS SETUP    "
-    //      strcpy_P(line1,(char *)pgm_read_word(&(str_main[3])));
-    //      lcdd.setLine(cposp,1,line1);
-    //      lcdd.LineWrite(cposp,1);
-    //    } else {
-    if (period1sec==1) {
-      period1sec = 0;
-      breakTime(cepoch,tm);
-      prvsec = tm.Second;
-      snprintf(line1,21,"%d/%02d/%02d  %02d:%02d:%02d",	
-               tm.Year+1970,tm.Month,tm.Day,tm.Hour,tm.Minute,tm.Second);
-      lcdd.setLine(cposp,1,line1);
-      lcdd.LineWrite(cposp,1);
-      for (x=0;x<CCM_TBL_CNT_CMP;x++) {
-        if (cmpope_lifecnt[x]<=0) {
-          cmpope_result[x] = 0;
-          cmpope_lifecnt[x] = 0;
-        } else {
-          cmpope_lifecnt[x]--;
-        }
-      }
-      for (x=0;x<4;x++) { // Debug
-        digitalWrite(13-x,cmpope_result[x]);
-      }
-      opeRUN(tm.Hour,tm.Minute);
-      minsec = 0;
-      for (x=0;x<8;x++) {
-        if (rlyttl[x]>0) {
-          if (minsec==0) minsec = rlyttl[x];
-          if (minsec>rlyttl[x]) {
-            minsec = rlyttl[x];
-          }
-          digitalWrite(RLY1+x,LOW);   // Relay MAKE
-          rlyttl[x]--;
-        } else {
-          digitalWrite(RLY1+x,HIGH);  // Relay BREAK
-        }
-      }
-      if (minsec>0) {
-        snprintf(line1,21,"REMAINING=%3d",minsec);
-      } else {
-        strcpy_P(line1,(char *)pgm_read_word(&(str_main[12])));
-      }
-      lcdd.setLine(cposp,3,line1);
-      lcdd.LineWrite(cposp,3);
-      //
-      sendUECSpacket(0,"0",1);
-      //      UECSupdate16520port() ;
-    }
-    ptr_crosskey = getCrossKey();
-    if (ptr_crosskey->longf==true) {
-      ptr_crosskey->longf=false;
-      ptr_crosskey->kpos=0;
-      cmode=CMND;
-      fsf = true;
-    }
-    if (period10sec==1) {
-      period10sec=0;
-      for (r=1;r<CCM_TBL_CNT_TX;r++) {
-        sendUECSpacket(r,itoa(rlyttl[r-1],buf,DEC),10);
-      }
-    }
-    if (period1hour==1) {
-      period1hour = 0;
-      cepoch = RTC.get();
-      b_tmp = Ethernet.maintain();
-      b_tmp += 2064;  // 2064 = 0x810
-      if (itoa((int)b_tmp,buf,10)) {
-        sendUECSpacket(0,buf,0);
-      } else {
-        sendUECSpacket(0,"2079",0);
-      }
-    }
+    EthernetClient httpClient = httpd.available();
     wdt_reset();
-    break;
-    //################################################################
-  case CMND:
-    cf = false;
-    if (fsf) {
-      #ifdef DEBUG
-      // "BpCMNDw/fsf"
-      strcpy_P(line1,(char *)pgm_read_word(&(str_main[12])));
-      debugSerialOut(cmode,cmenu,line1);
-      #endif
-      msgCmnd1st();
+    if ( httpClient ) {
+        opeHttpd(httpClient);
     }
-    wdt_reset();
-    ptr_crosskey = getCrossKey();
-    if ((ptr_crosskey->longf==true)&&(ptr_crosskey->kpos & K_LEFT)) {
-      #ifdef DEBUG
-      debugSerialOut(cmode,cmenu,"BpCMNDw/K_LEFT");
-      #endif
-      cmode = RUN;
-      fsf = true;
-      ptr_crosskey->longf=false;
-      ptr_crosskey->kpos=0;
+    UECSupdate16520port() ;
+    UECSupdate16529port() ;
+    if (digitalRead(SW_SAFE)==0) {
+        // "  EEPROM Operation  "
+        strcpy_P(line1,(char *)pgm_read_word(&(str_main[2])));
+        lcdd.setLine(0,1,line1);
+        lcdd.LineWrite(0,1);
+        opeEEPROM();
     }
-    if (ptr_crosskey->kpos & K_UP) {
-      ptr_crosskey->kpos &= ~K_UP;
-      cmenu++;
-      if (cmenu>EEPROMOPE) cmenu=NETCONFIG;
-      cf = true;
-      #ifdef DEBUG
-      debugSerialOut(cmode,cmenu,"K_UP");
-      #endif
-    }
-    if (ptr_crosskey->kpos & K_DOWN) {
-      ptr_crosskey->kpos &= ~K_DOWN;
-      cmenu--;
-      if (cmenu<NETCONFIG) cmenu=EEPROMOPE;
-      cf = true;
-      #ifdef DEBUG
-      debugSerialOut(cmode,cmenu,"K_DOWN");
-      #endif
-    }
-    if (ptr_crosskey->kpos & K_ENT) {
-      ptr_crosskey->kpos &= ~K_ENT;
-      fsf   = true;
-      switch(cmenu) {
-      case NETCONFIG:
-        cmode = NETCMND;
-        //opeNET();
-	break;
-      case RTCCONFIG:
-        cmode = RTCCMND;
-        //opeRTC();
-	break;
-      case SCHCONFIG:
-        cmode = SCHCMND;
-        //opeSCH();
-	break;
-      case EEPROMOPE:
-        cmode = EEPROMCMND;
+    switch(cmode) {
+    case RUN:
+        if (fsf) {
+            msgRun1st();
+            fsf = false;
+        }
+        if (period1sec==1) {
+            period1sec = 0;
+            breakTime(cepoch,tm);
+            prvsec = tm.Second;
+            snprintf(line1,21,"%d/%02d/%02d  %02d:%02d:%02d",	
+                    tm.Year+1970,tm.Month,tm.Day,tm.Hour,tm.Minute,tm.Second);
+            lcdd.setLine(cposp,1,line1);
+            lcdd.LineWrite(cposp,1);
+            for (x=0;x<CCM_TBL_CNT_CMP;x++) {
+                if (cmpope_lifecnt[x]<=0) {
+                    cmpope_result[x] = 0;
+                    cmpope_lifecnt[x] = 0;
+                } else {
+                    cmpope_lifecnt[x]--;
+                }
+            }
+            for (x=0;x<4;x++) { // Debug
+                digitalWrite(13-x,cmpope_result[x]);
+            }
+            opeRUN(tm.Hour,tm.Minute);
+            minsec = 0;
+            for (x=0;x<8;x++) {
+                if (rlyttl[x]>0) {
+                    if (minsec==0) minsec = rlyttl[x];
+                    if (minsec>rlyttl[x]) {
+                        minsec = rlyttl[x];
+                    }
+                    digitalWrite(RLY1+x,LOW);   // Relay MAKE
+                    rlyttl[x]--;
+                } else {
+                    digitalWrite(RLY1+x,HIGH);  // Relay BREAK
+                }
+            }
+            if (minsec>0) {
+                snprintf(line1,21,"REMAINING=%3d",minsec);
+            } else {
+                strcpy_P(line1,(char *)pgm_read_word(&(str_main[12])));
+            }
+            lcdd.setLine(cposp,3,line1);
+            lcdd.LineWrite(cposp,3);
+            //
+            sendUECSpacket(0,"0",1);
+            //      UECSupdate16520port() ;
+        }
+        ptr_crosskey = getCrossKey();
+        if (ptr_crosskey->longf==true) {
+            ptr_crosskey->longf=false;
+            ptr_crosskey->kpos=0;
+            cmode=CMND;
+            fsf = true;
+        }
+        if (period10sec==1) {
+            period10sec=0;
+            for (r=1;r<CCM_TBL_CNT_TX;r++) {
+                sendUECSpacket(r,itoa(rlyttl[r-1],buf,DEC),10);
+            }
+        }
+        if (period1hour==1) {
+            period1hour = 0;
+            cepoch = RTC.get();
+            b_tmp = Ethernet.maintain();
+            b_tmp += 2064;  // 2064 = 0x810
+            if (itoa((int)b_tmp,buf,10)) {
+                sendUECSpacket(0,buf,0);
+            } else {
+                sendUECSpacket(0,"2079",0);
+            }
+        }
+        wdt_reset();
         break;
-      default:
-	lcdd.clear();
-	cmode = CMND;
-	break;
-      }
+        //################################################################
+    case CMND:
+        cf = false;
+        if (fsf) {
+#ifdef DEBUG
+            // "BpCMNDw/fsf"
+            strcpy_P(line1,(char *)pgm_read_word(&(str_main[12])));
+            debugSerialOut(cmode,cmenu,line1);
+#endif
+            msgCmnd1st();
+        }
+        wdt_reset();
+        ptr_crosskey = getCrossKey();
+        if ((ptr_crosskey->longf==true)&&(ptr_crosskey->kpos & K_LEFT)) {
+#ifdef DEBUG
+            debugSerialOut(cmode,cmenu,"BpCMNDw/K_LEFT");
+#endif
+            cmode = RUN;
+            fsf = true;
+            ptr_crosskey->longf=false;
+            ptr_crosskey->kpos=0;
+        }
+        if (ptr_crosskey->kpos & K_UP) {
+            ptr_crosskey->kpos &= ~K_UP;
+            cmenu++;
+            if (cmenu>EEPROMOPE) cmenu=NETCONFIG;
+            cf = true;
+#ifdef DEBUG
+            debugSerialOut(cmode,cmenu,"K_UP");
+#endif
+        }
+        if (ptr_crosskey->kpos & K_DOWN) {
+            ptr_crosskey->kpos &= ~K_DOWN;
+            cmenu--;
+            if (cmenu<NETCONFIG) cmenu=EEPROMOPE;
+            cf = true;
+#ifdef DEBUG
+            debugSerialOut(cmode,cmenu,"K_DOWN");
+#endif
+        }
+        if (ptr_crosskey->kpos & K_ENT) {
+            ptr_crosskey->kpos &= ~K_ENT;
+            fsf   = true;
+            switch(cmenu) {
+            case NETCONFIG:
+                cmode = NETCMND;
+                //opeNET();
+                break;
+            case RTCCONFIG:
+                cmode = RTCCMND;
+                //opeRTC();
+                break;
+            case SCHCONFIG:
+                cmode = SCHCMND;
+                //opeSCH();
+                break;
+            case EEPROMOPE:
+                cmode = EEPROMCMND;
+                break;
+            default:
+                lcdd.clear();
+                cmode = CMND;
+                break;
+            }
+        }
+        switch(cmenu) {
+        case NETCONFIG: // NET CONFIG
+            strcpy_P(line1,(char *)pgm_read_word(&(str_main[4])));
+            lcdd.setLine(0,1,line1);
+            break;
+        case RTCCONFIG: // RTC CONFIG
+            strcpy_P(line1,(char *)pgm_read_word(&(str_main[5])));
+            lcdd.setLine(0,1,line1);
+            break;
+        case SCHCONFIG: // Schedule CONFIG
+            strcpy_P(line1,(char *)pgm_read_word(&(str_main[6])));
+            lcdd.setLine(0,1,line1);
+            break;
+        case EEPROMOPE: // EEPROM Operation
+            strcpy_P(line1,(char *)pgm_read_word(&(str_main[2])));
+            lcdd.setLine(0,1,line1);
+            break;
+        }
+        if (cf) {
+            lcdd.LineWrite(0,1);
+            cf = false;
+        }
+        break;
+        //################################################################
+    case NETCMND:
+        wdt_reset();
+        opeNET();
+        break;
+    case RTCCMND:
+        wdt_reset();
+        opeRTC();
+        break;
+    case SCHCMND:
+        wdt_reset();
+        opeSCH();
+        break;
+    case EEPROMCMND:
+        wdt_reset();
+        opeEEPROM();
+        break;
     }
-    switch(cmenu) {
-    case NETCONFIG: // NET CONFIG
-      strcpy_P(line1,(char *)pgm_read_word(&(str_main[4])));
-      lcdd.setLine(0,1,line1);
-      break;
-    case RTCCONFIG: // RTC CONFIG
-      strcpy_P(line1,(char *)pgm_read_word(&(str_main[5])));
-      lcdd.setLine(0,1,line1);
-      break;
-    case SCHCONFIG: // Schedule CONFIG
-      strcpy_P(line1,(char *)pgm_read_word(&(str_main[6])));
-      lcdd.setLine(0,1,line1);
-      break;
-    case EEPROMOPE: // EEPROM Operation
-      strcpy_P(line1,(char *)pgm_read_word(&(str_main[2])));
-      lcdd.setLine(0,1,line1);
-      break;
-    }
-    if (cf) {
-      lcdd.LineWrite(0,1);
-      cf = false;
-    }
-    break;
-    //################################################################
-  case NETCMND:
-    wdt_reset();
-    opeNET();
-    break;
-  case RTCCMND:
-    wdt_reset();
-    opeRTC();
-    break;
-  case SCHCMND:
-    wdt_reset();
-    opeSCH();
-    break;
-  case EEPROMCMND:
-    wdt_reset();
-    opeEEPROM();
-    break;
-  }
 }
 
 
 void PushEnter(int p) {
-  int x,y;
-  extern struct KYBDMEM *ptr_crosskey;
-  ptr_crosskey->kpos &= ~K_ENT;  // Reset Flag
-  if (!debugMsgFlag(SO_MSG)) {
-    Serial.begin(115200);
-  }
-  Serial.println(F("+--------------------+"));
-  for (y=0;y<4;y++) {
-    for (x=0;x<20;x++) {
+    int x,y;
+    extern struct KYBDMEM *ptr_crosskey;
+    ptr_crosskey->kpos &= ~K_ENT;  // Reset Flag
+    if (!debugMsgFlag(SO_MSG)) {
+        Serial.begin(115200);
+    }
+    Serial.println(F("+--------------------+"));
+    for (y=0;y<4;y++) {
+        for (x=0;x<20;x++) {
       Serial.print(lcdd.CharRead(p,x,y));
     }
     Serial.println();

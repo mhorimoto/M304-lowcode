@@ -1,5 +1,6 @@
 void UECSupdate16520port(void) {
 	extern char uecsbuf[];
+    extern void copyRXdata2flb_cmpope(void);
 	extern bool xmldecode(char *);
 	extern st_UECSXML *ptr_uecsxmldata;
 	extern EthernetUDP UDP16520;
@@ -17,7 +18,8 @@ void UECSupdate16520port(void) {
 		} else {
 			Serial.println("ERR YXML");
 		}
-		float rfval = float(ptr_uecsxmldata->fval);
+        copyRXdata2flb_cmpope();
+//		float rfval = float(ptr_uecsxmldata->fval);
 //		sprintf(lbf,"%d,%d,%d,%s,",ptr_uecsxmldata->room,ptr_uecsxmldata->region,ptr_uecsxmldata->order,
 //					ptr_uecsxmldata->type);
 //		Serial.print(lbf);
@@ -29,12 +31,31 @@ void UECSupdate16520port(void) {
 	}
 }
 
-void copyRXdata2flb_cmpope(st_UECSXML *p) {
+#include <string.h>
+void copyRXdata2flb_cmpope(void) {
+	extern st_UECSXML *ptr_uecsxmldata;
     extern uecsM304cmpope flb_cmpope[];
 
     for(int i=0;i<CCM_TBL_CNT_CMP;i++) {
+        wdt_reset();
         if (flb_cmpope[i].valid != 0xff) {
-
+            if (!strncmp(flb_cmpope[i].ccm_type,ptr_uecsxmldata->type,20)) {
+                if ((ptr_uecsxmldata->room==0)||(ptr_uecsxmldata->room==flb_cmpope[i].room)) {
+                    if ((ptr_uecsxmldata->region==0)||(ptr_uecsxmldata->region==flb_cmpope[i].region)) {
+                        if ((ptr_uecsxmldata->order==0)||(ptr_uecsxmldata->order==flb_cmpope[i].order)) {
+                            if (ptr_uecsxmldata->priority<=flb_cmpope[i].priority) {
+                                flb_cmpope[i].fval = float(ptr_uecsxmldata->fval);
+                                flb_cmpope[i].priority = ptr_uecsxmldata->priority;
+                                flb_cmpope[i].remain = flb_cmpope[i].lifecnt;
+                                sprintf(lbf,"%d:%d,%d,%d,%d,%d,",i,flb_cmpope[i].room,flb_cmpope[i].region,flb_cmpope[i].order,
+                                            flb_cmpope[i].priority,flb_cmpope[i].remain);
+                                Serial.print(lbf);
+                                Serial.println(flb_cmpope[i].fval);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

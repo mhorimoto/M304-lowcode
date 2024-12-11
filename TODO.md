@@ -1,6 +1,9 @@
 # TO DO LIST
 
-## 11st Dec 2024
+## 11st Dec 2024 3.0.0D17
+  3.0.0D16のcopyRXdata2flb_cmpope()の比較ロジックは出来た。
+  
+## 11st Dec 2024 3.0.0D16
   構造変更の一環で現在recv16520.ino内部にcopyRXdata2flb_cmpope()を作っている。
   これは、受信した電文でcmpopeに合致したデータだけをコピーする関数で、
   この構造体のfvalとblk_bの比較対象の変数を比較する準備で。そのための準備関数。
