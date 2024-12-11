@@ -7,7 +7,7 @@
 #include <string.h>
 
 #if _M304_H_V < 1319
-#pragma message("Library M304 is old. Version 1.3.15 or higher is required.")
+#error "Library M304 is old. Version 1.3.19 or higher is required."
 
 #else
 

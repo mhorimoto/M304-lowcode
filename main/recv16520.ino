@@ -3,7 +3,7 @@ void UECSupdate16520port(void) {
 	extern bool xmldecode(char *);
 	extern st_UECSXML *ptr_uecsxmldata;
 	extern EthernetUDP UDP16520;
-	void match_rro(int);
+	//void match_rro(int);
 	int packetSize ,i;
   
 	packetSize = UDP16520.parsePacket();
@@ -29,6 +29,15 @@ void UECSupdate16520port(void) {
 	}
 }
 
+void copyRXdata2flb_cmpope(st_UECSXML *p) {
+    extern uecsM304cmpope flb_cmpope[];
+
+    for(int i=0;i<CCM_TBL_CNT_CMP;i++) {
+        if (flb_cmpope[i].valid != 0xff) {
+
+        }
+    }
+}
 void comparison_exp(int id,float rfval) {
     int i,x,y,r,j,k,cmpresult;
     byte  cmbcmp;
@@ -92,9 +101,9 @@ void comparison_exp(int id,float rfval) {
                     i = 5; // 比較演算子が無効の場合、離脱 force exit
                     break;
                 }
-                x &= rt;
+               // x &= rt;
             } else {
-                x = rt; // y==0xff 比較するCCMTYPEがない場合
+               // x = rt; // y==0xff 比較するCCMTYPEがない場合
             }
         }
     }

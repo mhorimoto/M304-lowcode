@@ -124,7 +124,7 @@ typedef struct stM304 {
   IPAddress subnet;
   int cidr;
 };
-
+#define M304V3 1
 #ifdef M304V3 // Ver 3.x.x以降のメモリマップ
 //
 //  SCHEDULE(previous RX) Table
@@ -238,7 +238,9 @@ typedef struct uecsM304cmpope {
   byte lifecnt;      // 0x05 sec
   char ccm_type[20]; // 0x06 ASCIZ
   //byte cmpope;       // 0x1a
-  //float fval;        // 0x1b current recieving data
+  float fval;        // 0x1b current recieving data
+  byte priority;
+  byte remain;
   // LAST            // 0x1f
 };  // 32bytes/1unit
 

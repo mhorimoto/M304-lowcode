@@ -244,59 +244,62 @@ void copyFromLC_uecsM304Sched(uecsM304Sched *tg,int a) {
 }
 
 void copyFromLC_uecsM304Send(uecsM304Send *tg,int a) {
-  tg->valid    = atmem.read(a+LC_SEND_VALID);    
-  tg->room     = atmem.read(a+LC_SEND_ROOM);         // 0x01
-  tg->region   = atmem.read(a+LC_SEND_REGION);       // 0x02
-  tg->order    = atmem.readInt(a+LC_SEND_ORDER);
-  tg->priority = atmem.read(a+LC_SEND_PRIORITY);     // 0x05
-  tg->lv       = atmem.read(a+LC_SEND_LV);    
-  tg->cast     = atmem.read(a+LC_SEND_CAST);         // 0x07
-  atmem.readChars(a+LC_SEND_CCMTYPE,&tg->ccmtype[0],20);
-  atmem.readChars(a+LC_SEND_UNIT,&tg->unit[0],10);
+    tg->valid    = atmem.read(a+LC_SEND_VALID);    
+    tg->room     = atmem.read(a+LC_SEND_ROOM);         // 0x01
+    tg->region   = atmem.read(a+LC_SEND_REGION);       // 0x02
+    tg->order    = atmem.readInt(a+LC_SEND_ORDER);
+    tg->priority = atmem.read(a+LC_SEND_PRIORITY);     // 0x05
+    tg->lv       = atmem.read(a+LC_SEND_LV);    
+    tg->cast     = atmem.read(a+LC_SEND_CAST);         // 0x07
+    atmem.readChars(a+LC_SEND_CCMTYPE,&tg->ccmtype[0],20);
+    atmem.readChars(a+LC_SEND_UNIT,&tg->unit[0],10);
 }
 
 void copyFromLC_uecsM304cmpope(uecsM304cmpope *tg,int a) {
-  int i;
-  uint8_t ordl,ordh;
-  union CHARFLOAT crf;
+    int i;
+    uint8_t ordl,ordh;
+    union CHARFLOAT crf;
 
-  tg->valid    = atmem.read(a+LC_COPE_VALID);    
-  tg->room     = atmem.read(a+LC_COPE_ROOM);         // 0x01
-  tg->region   = atmem.read(a+LC_COPE_REGION);       // 0x02
-  ordl = atmem.read(a+LC_COPE_ORDER);
-  ordh = atmem.read(a+LC_COPE_ORDER+1);
-  tg->order    = (ordh<<8)+ordl;
-  tg->lifecnt = atmem.read(a+LC_COPE_LIFECNT);     // 0x05
-  for (i=0;i<20;i++) {
-    tg->ccm_type[i] = atmem.read(a+LC_COPE_CCMTYPE+i); // 0x06 ASCIZ
-  }
-  tg->cmpope = atmem.read(a+LC_COPE_OPE);         // 0x1a
-  for(i=0;i<4;i++) {
-    crf.c[i] = atmem.read(a+LC_COPE_FVAL+i);
-  }
-  tg->fval = crf.f;
+    tg->valid    = atmem.read(a+LC_COPE_VALID);    
+    tg->room     = atmem.read(a+LC_COPE_ROOM);         // 0x01
+    tg->region   = atmem.read(a+LC_COPE_REGION);       // 0x02
+    ordl = atmem.read(a+LC_COPE_ORDER);
+    ordh = atmem.read(a+LC_COPE_ORDER+1);
+    tg->order    = (ordh<<8)+ordl;
+    tg->lifecnt = atmem.read(a+LC_COPE_LIFECNT);     // 0x05
+    for (i=0;i<20;i++) {
+        tg->ccm_type[i] = atmem.read(a+LC_COPE_CCMTYPE+i); // 0x06 ASCIZ
+    }
+    tg->priority = 99;   // Initial value
+    tg->remain   = 0;
+    
+    //tg->cmpope = atmem.read(a+LC_COPE_OPE);         // 0x1a
+    //for(i=0;i<4;i++) {
+    //  crf.c[i] = atmem.read(a+LC_COPE_FVAL+i);
+    //}
+    //tg->fval = crf.f;
 }
 
 void init_uecsTBL(void) {
-  int a,j,w;
-  w = atmem.read(LC_DBGMSG);
-  debugMsgOutput(1,w); // NET
-  // 2.3.5D Read fast lookup buffer for CCM table
-  for (j=0;j<CCM_TBL_CNT_RX;j++) {
-    a = LC_SCH_START+(j*LC_SCH_REC_SIZE);
-    copyFromLC_uecsM304Sched(&flb_rx_ccm[j],a);
-  }
-  debugMsgOutput(2,w); // rx_ccm display
-  for (j=0;j<CCM_TBL_CNT_TX;j++) {
-    a = LC_SEND_START+(j*LC_SEND_REC_SIZE);
-    copyFromLC_uecsM304Send(&flb_tx_ccm[j],a);
-  }
-  debugMsgOutput(3,w); // tx_ccm display
-  for (j=0;j<CCM_TBL_CNT_CMP;j++) {
-    a = LC_CMPOPE_START+(j*LC_CMPOPE_REC_SIZE);
-    copyFromLC_uecsM304cmpope(&flb_cmpope[j],a);
-  }
-  debugMsgOutput(4,w); // cmpope display
+    int a,j,w;
+    w = atmem.read(LC_DBGMSG);
+    debugMsgOutput(1,w); // NET
+    // 2.3.5D Read fast lookup buffer for CCM table
+    for (j=0;j<CCM_TBL_CNT_RX;j++) {
+        a = LC_SCH_START+(j*LC_SCH_REC_SIZE);
+        copyFromLC_uecsM304Sched(&flb_rx_ccm[j],a);
+    }
+    debugMsgOutput(2,w); // rx_ccm display
+    for (j=0;j<CCM_TBL_CNT_TX;j++) {
+        a = LC_SEND_START+(j*LC_SEND_REC_SIZE);
+        copyFromLC_uecsM304Send(&flb_tx_ccm[j],a);
+    }
+    debugMsgOutput(3,w); // tx_ccm display
+    for (j=0;j<CCM_TBL_CNT_CMP;j++) {
+        a = LC_CMPOPE_START+(j*LC_CMPOPE_REC_SIZE);
+        copyFromLC_uecsM304cmpope(&flb_cmpope[j],a);
+    }
+    debugMsgOutput(4,w); // cmpope display
 }
 
 
