@@ -1,4 +1,4 @@
-#define M304V3
+#define M304V3 1
 #include <M304.h>
 
 #include <avr/wdt.h>
@@ -13,12 +13,12 @@
 
 uint8_t mcusr_mirror __attribute__ ((section (".noinit")));
 void get_mcusr(void)     \
-  __attribute__((naked)) \
-  __attribute__((section(".init3")));
+    __attribute__((naked)) \
+    __attribute__((section(".init3")));
 void get_mcusr(void) {
-  mcusr_mirror = MCUSR;
-  MCUSR = 0;
-  wdt_disable();
+    mcusr_mirror = MCUSR;
+    MCUSR = 0;
+    wdt_disable();
 }
 
 char *pgname = "M304 Ver3.0.0D19";
@@ -61,14 +61,14 @@ const char res_xmlnode6[] PROGMEM = "</MAC></NODE></UECS>$";
 
 
 typedef struct st_UECSXML {
-  byte element;
-  char ver[LEN_UECSXML_VER+1];
-  char type[LEN_UECSXML_TYPE+1];
-  byte page,room,region,priority;
-  int  order;
-  char textval[LEN_UECSXML_TEXTVAL+1];
-  float fval;
-  IPAddress ip;
+    byte element;
+    char ver[LEN_UECSXML_VER+1];
+    char type[LEN_UECSXML_TYPE+1];
+    byte page,room,region,priority;
+    int  order;
+    char textval[LEN_UECSXML_TEXTVAL+1];
+    float fval;
+    IPAddress ip;
 };
 
 //
@@ -76,8 +76,8 @@ typedef struct st_UECSXML {
 //  byte alignment
 //
 union CHARFLOAT {
-  float f;
-  char  c[4];
+    float f;
+    char  c[4];
 };
   
 st_UECSXML uecsxmldata,*ptr_uecsxmldata;
@@ -123,8 +123,8 @@ const char str_main12[] PROGMEM = "ALL BREAK           ";
 const char str_main13[] PROGMEM = "BpCMNDw/fsf";
 
 const char *const str_main[] PROGMEM = {
-  str_main0, str_main1, str_main2, str_main3, str_main4, str_main5, str_main6, str_main7,
-  str_main8, str_main9, str_main10, str_main11, str_main12, str_main13
+    str_main0, str_main1, str_main2, str_main3, str_main4, str_main5, str_main6, str_main7,
+    str_main8, str_main9, str_main10, str_main11, str_main12, str_main13
 };
 
 volatile int period1sec = 0;
