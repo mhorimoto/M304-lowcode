@@ -21,7 +21,7 @@ void get_mcusr(void) {
     wdt_disable();
 }
 
-char *pgname = "M304 Ver3.0.0D19";
+char *pgname = "M304 Ver3.0.0D21";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -104,8 +104,8 @@ extern void debugMsgOutput(int,int);
 uecsM304Sched  flb_rx_ccm[CCM_TBL_CNT_RX];
 uecsM304Send   flb_tx_ccm[CCM_TBL_CNT_TX];
 uecsM304cmpope flb_cmpope[CCM_TBL_CNT_CMP];
-byte cmpope_result[CCM_TBL_CNT_CMP];
-byte cmpope_lifecnt[CCM_TBL_CNT_CMP];
+//byte cmpope_result[CCM_TBL_CNT_CMP];
+//byte cmpope_lifecnt[CCM_TBL_CNT_CMP];
 
 const char str_main0[] PROGMEM  = "NO NET MODE         ";
 const char str_main1[] PROGMEM  = "STATIC IP ADDRESS   ";
@@ -273,16 +273,18 @@ void loop(void) {
                     tm.Year+1970,tm.Month,tm.Day,tm.Hour,tm.Minute,tm.Second);
             lcdd.setLine(cposp,1,line1);
             lcdd.LineWrite(cposp,1);
+            // CCMTYPE受信データの寿命判定
             for (x=0;x<CCM_TBL_CNT_CMP;x++) {
-                if (cmpope_lifecnt[x]<=0) {
-                    cmpope_result[x] = 0;
-                    cmpope_lifecnt[x] = 0;
+                if (flb_cmpope[x].remain>0) {
+                    flb_cmpope[x].remain--;
+                    if (x<5) {
+                        digitalWrite(13-x,HIGH);
+                    }
                 } else {
-                    cmpope_lifecnt[x]--;
+                    if (x<5) {
+                        digitalWrite(13-x,LOW);
+                    }
                 }
-            }
-            for (x=0;x<4;x++) { // Debug
-                digitalWrite(13-x,cmpope_result[x]);
             }
             opeRUN(tm.Hour,tm.Minute);
             minsec = 0;
