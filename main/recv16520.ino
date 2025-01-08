@@ -18,6 +18,8 @@ void UECSupdate16520port(void) {
 		} else {
 			Serial.println("ERR YXML");
 		}
+        // 受信したデータをflb_cmpope構造体にコピーする。
+        // コピーするには条件がある。それは、copyRXdata2flb_cmpop()内にある。 2025/01/03
         copyRXdata2flb_cmpope();
 //		float rfval = float(ptr_uecsxmldata->fval);
 //		sprintf(lbf,"%d,%d,%d,%s,",ptr_uecsxmldata->room,ptr_uecsxmldata->region,ptr_uecsxmldata->order,
@@ -35,18 +37,20 @@ void UECSupdate16520port(void) {
 void copyRXdata2flb_cmpope(void) {
 	extern st_UECSXML *ptr_uecsxmldata;
     extern uecsM304cmpope flb_cmpope[];
-
+    // CCM_TBL_CNT_CMPの分だけ見る
     for(int i=0;i<CCM_TBL_CNT_CMP;i++) {
         wdt_reset();
         if (flb_cmpope[i].valid != 0xff) {
-            if (!strncmp(flb_cmpope[i].ccm_type,ptr_uecsxmldata->type,20)) {
-                if ((ptr_uecsxmldata->room==0)||(ptr_uecsxmldata->room==flb_cmpope[i].room)) {
-                    if ((ptr_uecsxmldata->region==0)||(ptr_uecsxmldata->region==flb_cmpope[i].region)) {
-                        if ((ptr_uecsxmldata->order==0)||(ptr_uecsxmldata->order==flb_cmpope[i].order)) {
-                            if (ptr_uecsxmldata->priority<=flb_cmpope[i].priority) {
-                                flb_cmpope[i].fval = float(ptr_uecsxmldata->fval);
-                                flb_cmpope[i].priority = ptr_uecsxmldata->priority;
-                                flb_cmpope[i].remain = flb_cmpope[i].lifecnt;
+            if (!strncmp(flb_cmpope[i].ccm_type,ptr_uecsxmldata->type,20)) {   // CCMTYPEが合致したら
+                if ((ptr_uecsxmldata->room==0)||(ptr_uecsxmldata->room==flb_cmpope[i].room)) {  // ROOMが合致したら
+                    if ((ptr_uecsxmldata->region==0)||(ptr_uecsxmldata->region==flb_cmpope[i].region)) {  // REGIONが合致したら
+                        if ((ptr_uecsxmldata->order==0)||(ptr_uecsxmldata->order==flb_cmpope[i].order)) {  // ORDERが合致したら
+                            if (ptr_uecsxmldata->priority<=flb_cmpope[i].priority) {  // 優先順位が同じか高かったら
+                                flb_cmpope[i].fval = float(ptr_uecsxmldata->fval);    // 受信したデータをflb_cmpope.fvalに記録する
+                                flb_cmpope[i].priority = ptr_uecsxmldata->priority;   // 受信した優先順位を記録する
+                                flb_cmpope[i].remain = flb_cmpope[i].lifecnt;         // flb_cmpopeにある生存時間をremainにコピーする
+                                // デバッグ中のメッセージ
+                                // ID,ROOM,REGION,ORDER,PRIORITY,REMAIN,FVAL
                                 sprintf(lbf,"%d:%d,%d,%d,%d,%d,",i,flb_cmpope[i].room,flb_cmpope[i].region,flb_cmpope[i].order,
                                             flb_cmpope[i].priority,flb_cmpope[i].remain);
                                 Serial.print(lbf);
@@ -59,6 +63,8 @@ void copyRXdata2flb_cmpope(void) {
         }
     }
 }
+
+// voidじゃないので要注意
 void comparison_exp(int id,float rfval) {
     int i,x,y,r,j,k,cmpresult;
     byte  cmbcmp;
@@ -82,7 +88,7 @@ void comparison_exp(int id,float rfval) {
             if (y < 0xff) {                  // 比較するCCMTYPEがある場合
                 rval = flb_rx_ccm[id].cmpval[i]; // value index;
                 cmbcmp = flb_rx_ccm[id].cmbcmp[i];
-                switch (flb_rx_ccm[id].cmpope[i]) {
+                switch (flb_rx_ccm[id].cmpope[i]) { // 上の行をちゃんと見よう
                 case R_EQ: // ==
                     if (flb_cmpope[y].fval == rval) {
                         x = combinationCompare(cmbcmp,1);
