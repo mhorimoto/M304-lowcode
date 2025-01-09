@@ -64,7 +64,7 @@ void copyRXdata2flb_cmpope(void) {
     }
 }
 
-// voidじゃないので要注意
+// 本当はvoidじゃないので要注意、変更しなければならない。
 void comparison_exp(int id,float rfval) {
     int i,x,y,r,j,k,cmpresult;
     byte  cmbcmp;
@@ -83,12 +83,12 @@ void comparison_exp(int id,float rfval) {
             x = 0;                          // cmpresultを生成するために必要な中間結果
             y = flb_rx_ccm[id].cmpccmid[i]; // 比較するuecsM304cmpopeの位置を決定
             if ((i==0)&&(y==0xff)) {
-                i = 100;
+                i = 100;                     // 最初のcmpccmidが無効ならばあとは評価しない。
             }
             if (y < 0xff) {                  // 比較するCCMTYPEがある場合
                 rval = flb_rx_ccm[id].cmpval[i]; // value index;
-                cmbcmp = flb_rx_ccm[id].cmbcmp[i];
-                switch (flb_rx_ccm[id].cmpope[i]) { // 上の行をちゃんと見よう
+                cmbcmp = flb_rx_ccm[id].cmbcmp[i];  // 直前の比較結果と比較する演算子。最初のi=0のときにはANDなはず。
+                switch (flb_rx_ccm[id].cmpope[i]) { // 期待値と比較する演算子を選別する。
                 case R_EQ: // ==
                     if (flb_cmpope[y].fval == rval) {
                         x = combinationCompare(cmbcmp,1);
