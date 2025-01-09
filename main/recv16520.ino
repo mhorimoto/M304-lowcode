@@ -64,8 +64,8 @@ void copyRXdata2flb_cmpope(void) {
     }
 }
 
-// 本当はvoidじゃないので要注意、変更しなければならない。
-void comparison_exp(int id,float rfval) {
+/* 本当はvoidじゃないので要注意、変更しなければならない。
+int comparison_exp(int id,float rfval) {
     int i,x,y,r,j,k,cmpresult;
     byte  cmbcmp;
     float rval; // rval: 比較数値(flb_rx_ccm.cmpval)
@@ -76,7 +76,7 @@ void comparison_exp(int id,float rfval) {
     extern uecsM304Send flb_tx_ccm[];
     extern uecsM304cmpope flb_cmpope[];
 
-    cmpresult = 0;
+    // cmpresult = 0;  delete D22
     wdt_reset();
     if (flb_rx_ccm[id].valid != 0xff) {
         for (i = 0; i < 5; i++) {
@@ -87,7 +87,7 @@ void comparison_exp(int id,float rfval) {
             }
             if (y < 0xff) {                  // 比較するCCMTYPEがある場合
                 rval = flb_rx_ccm[id].cmpval[i]; // value index;
-                cmbcmp = flb_rx_ccm[id].cmbcmp[i];  // 直前の比較結果と比較する演算子。最初のi=0のときにはANDなはず。
+                // cmbcmp = flb_rx_ccm[id].cmbcmp[i];  // delete D22 直前の比較結果と比較する演算子。最初のi=0のときにはANDなはず。
                 switch (flb_rx_ccm[id].cmpope[i]) { // 期待値と比較する演算子を選別する。
                 case R_EQ: // ==
                     if (flb_cmpope[y].fval == rval) {
@@ -149,3 +149,4 @@ bool combinationCompare(byte c,int x) {
   }
   return(x);
 }
+*/

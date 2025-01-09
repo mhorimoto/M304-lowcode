@@ -41,36 +41,36 @@ int isOn(int H1, int M1, int H2, int M2, int M0, int D0, int TH, int TM) {
 
 void opeRUN(int hr, int mn) {
     static int pmn = 61; // Nothing 61minute
-    int id, i, j, k, x, y, p,rt;
+    int id, i, j, k, x, y, p,rt[5];
     int cmpresult, r;
     char t[81], buf[8];
     float cval, rval; // cval: 現在の値(flb_cmpope.fval)
                       // rval: 比較数値(flb_rx_ccm.cmpval)
     bool combinationCompare(byte,int);
+    static int prt[5]={0,0,0,0,0};
     extern int rlyttl[];
     extern byte cmpope_result[];
     extern uecsM304Sched flb_rx_ccm[];
     extern uecsM304Send flb_tx_ccm[];
     extern uecsM304cmpope flb_cmpope[];
 
-    //  1min interval
-    if (mn != pmn) {
-        pmn = mn;
-        for (id = 0; id < CCM_TBL_CNT_RX; id++) {
-            if (flb_rx_ccm[id].valid != 0xff) {
-                rt = isOn(flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,
-                            flb_rx_ccm[id].dumn,flb_rx_ccm[id].inmn,hr,mn);
+    for (id = 0; id < CCM_TBL_CNT_RX; id++) {
+        if (flb_rx_ccm[id].valid != 0xff) {
+            rt[id] = isOn(flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,
+                        flb_rx_ccm[id].dumn,flb_rx_ccm[id].inmn,hr,mn);
+            if (rt[id]!=prt[id]) {
                 sprintf(t,"ID=%02d ST=%02d:%02d ED=%02d:%02d CUR=%02d:%02d IN=%02d DU=%02d RT=%d",
-                        id,flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,
-                        hr,mn,flb_rx_ccm[id].inmn,flb_rx_ccm[id].dumn,rt);
+                    id,flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,
+                    hr,mn,flb_rx_ccm[id].inmn,flb_rx_ccm[id].dumn,rt[id]);
                 Serial.println(t);
-                //timeDecision(id, hr, mn);
-                //comparison_exp(id,rt);
+                prt[id] = rt[id];
             }
+            //timeDecision(id, hr, mn);
+            //comparison_exp(id,rt);
         }
-        for (r = 1; r < CCM_TBL_CNT_TX; r++) {
-            sendUECSpacket(r, itoa(rlyttl[r - 1], buf, DEC), 60);
-        }
+    }
+    for (r = 1; r < CCM_TBL_CNT_TX; r++) {
+        sendUECSpacket(r, itoa(rlyttl[r - 1], buf, DEC), 60);
     }
 }
 
@@ -94,7 +94,7 @@ void opeRUN(int hr, int mn) {
             x = 0;                          // cmpresultを生成するために必要な中間結果
             y = flb_rx_ccm[id].cmpccmid[i]; // 比較するuecsM304cmpopeの位置を決定
             if ((i==0)&&(y==0xff)) {
-                i = 100;
+                i = 100;                     // 最初のcmpccmidが無効ならばあとは評価しない。
             }
             if (y < 0xff) {                  // 比較するCCMTYPEがある場合
                 rval = flb_rx_ccm[id].cmpval[i]; // value index;
@@ -157,33 +157,45 @@ void opeRUN(int hr, int mn) {
     }
 }
  */
-void set_rlyttl(int x, int i, int j, int r, int id) {
+void set_rlyttl(int x, int id) {
+    // x: 条件合致=1,不一致=0
+    // id: flb_rx_ccm[id]のid
+
+    extern uecsM304Sched flb_rx_ccm[];
     extern int rlyttl[];
+    int rl[2];
+    int y;
     char t[81];
-    if (r == 1) {
-        r = 3;
-    } else {
-        r = 7;
-    }
-    if (x == 0) {
-        switch (j) {
-        case RLY_BOTH:
-            rlyttl[r - i] = 0; /* r==1:RLY1..4  r!=1:RLY5..8 */
-            break;
-        }
-    } else { /* 条件に合う (MAKE,BREAK,BOTHの判定後処理を書く) */
-        switch (j) {
-        case RLY_BOTH:
-            if (rlyttl[r - i] == 0) {
-                rlyttl[r - i] = ((int)flb_rx_ccm[id].dumn) * 60; /* r==1:RLY1..4  r!=1:RLY5..8 */
+    r = (r == 1) ? 3 : 7 ;
+    for (i=0;i<4;i++) { // リレーの動作を取得する
+        rl[0] = (flb_rx_ccm[id].rly_l >> (i*2)) & 0x3;
+        rl[1] = (flb_rx_ccm[id].rly_h >> (i*2)) & 0x3;
+        if (x == 0) {   //  条件不一致
+            for (y=0;y<2;y++) {
+                r = (y==0) ? 3 ; 7;
+                switch (rl[y]) {
+                case RLY_BOTH:
+                case RLY_MAKE:
+                    rlyttl[r - i] = 0; /* r==1:RLY1..4  r!=1:RLY5..8 */
+                    break;
+                case RLY_BREAK:
+                    rlyttl[r - i] = 1;
+                    break;
+                }
             }
-            break;
-        case RLY_MAKE:
-            rlyttl[r - i] = ((int)flb_rx_ccm[id].dumn) * 60; /* r==1:RLY1..4  r!=1:RLY5..8 */
-            break;
-        case RLY_BREAK:
-            rlyttl[r - i] = 0;
-            break;
+        } else { /* 条件に合う (MAKE,BREAK,BOTHの判定後処理を書く) */
+            for (y=0;y<2;y++) {
+                r = (y==0) ? 3 ; 7;
+                switch (rl[y]) {
+                case RLY_BOTH:
+                case RLY_MAKE:
+                    rlyttl[r - i] = 1;
+                    break;
+                case RLY_BREAK:
+                    rlyttl[r - i] = 0;
+                    break;
+                }
+            }
         }
     }
     if (id==1) {
