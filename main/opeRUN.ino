@@ -163,8 +163,7 @@ void set_rlyttl(int x, int id) {
 
     extern uecsM304Sched flb_rx_ccm[];
     extern int rlyttl[];
-    int rl[2];
-    int y;
+    int rl[2],y,r,i;
     char t[81];
     r = (r == 1) ? 3 : 7 ;
     for (i=0;i<4;i++) { // リレーの動作を取得する
@@ -172,7 +171,7 @@ void set_rlyttl(int x, int id) {
         rl[1] = (flb_rx_ccm[id].rly_h >> (i*2)) & 0x3;
         if (x == 0) {   //  条件不一致
             for (y=0;y<2;y++) {
-                r = (y==0) ? 3 ; 7;
+                r = (y==0) ? 3 : 7;
                 switch (rl[y]) {
                 case RLY_BOTH:
                 case RLY_MAKE:
@@ -185,7 +184,7 @@ void set_rlyttl(int x, int id) {
             }
         } else { /* 条件に合う (MAKE,BREAK,BOTHの判定後処理を書く) */
             for (y=0;y<2;y++) {
-                r = (y==0) ? 3 ; 7;
+                r = (y==0) ? 3 : 7;
                 switch (rl[y]) {
                 case RLY_BOTH:
                 case RLY_MAKE:
@@ -199,7 +198,7 @@ void set_rlyttl(int x, int id) {
         }
     }
     if (id==1) {
-      sprintf(t,"x=%d,i=%d,j=%d,r=%d,rly%d=%d",x,i,j,r,r-i,rlyttl[r-i]);
+      sprintf(t,"x=%d,r=%d,rly%d=%d",x,r,r-i,rlyttl[r-i]);
       Serial.println(t);
     }
 }

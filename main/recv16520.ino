@@ -37,15 +37,39 @@ void UECSupdate16520port(void) {
 void copyRXdata2flb_cmpope(void) {
 	extern st_UECSXML *ptr_uecsxmldata;
     extern uecsM304cmpope flb_cmpope[];
+    // 受信デバッグ中のメッセージ
+    // ID,ROOM,REGION,ORDER,PRIORITY,REMAIN,FVAL
+    sprintf(lbf,"RECV:%d,%d,%d,%d,",ptr_uecsxmldata->room,ptr_uecsxmldata->region,ptr_uecsxmldata->order,
+                                    ptr_uecsxmldata->priority);
+    Serial.print(lbf);
+    Serial.println(ptr_uecsxmldata->fval);
     // CCM_TBL_CNT_CMPの分だけ見る
     for(int i=0;i<CCM_TBL_CNT_CMP;i++) {
         wdt_reset();
         if (flb_cmpope[i].valid != 0xff) {
             if (!strncmp(flb_cmpope[i].ccm_type,ptr_uecsxmldata->type,20)) {   // CCMTYPEが合致したら
+                Serial.print("M:CCMTYPE>");
+                Serial.println(ptr_uecsxmldata->type);
                 if ((ptr_uecsxmldata->room==0)||(ptr_uecsxmldata->room==flb_cmpope[i].room)) {  // ROOMが合致したら
+                    Serial.print("M:ROOM>");
+                    Serial.println(ptr_uecsxmldata->room);
                     if ((ptr_uecsxmldata->region==0)||(ptr_uecsxmldata->region==flb_cmpope[i].region)) {  // REGIONが合致したら
+                        Serial.print("M:REGION>");
+                        Serial.println(ptr_uecsxmldata->region);
+                        Serial.print("E:ORDER>");
+                        Serial.print(flb_cmpope[i].order);
+                        Serial.print(" / ");
+                        Serial.println(ptr_uecsxmldata->order);
                         if ((ptr_uecsxmldata->order==0)||(ptr_uecsxmldata->order==flb_cmpope[i].order)) {  // ORDERが合致したら
+                            Serial.print("M:ORDER>");
+                            Serial.print(flb_cmpope[i].order);
+                            Serial.print(" / ");
+                            Serial.println(ptr_uecsxmldata->order);
                             if (ptr_uecsxmldata->priority<=flb_cmpope[i].priority) {  // 優先順位が同じか高かったら
+                                Serial.print("M:PRIORITY>");
+                                Serial.print(flb_cmpope[i].priority);
+                                Serial.print(" / ");
+                                Serial.println(ptr_uecsxmldata->priority);
                                 flb_cmpope[i].fval = float(ptr_uecsxmldata->fval);    // 受信したデータをflb_cmpope.fvalに記録する
                                 flb_cmpope[i].priority = ptr_uecsxmldata->priority;   // 受信した優先順位を記録する
                                 flb_cmpope[i].remain = flb_cmpope[i].lifecnt;         // flb_cmpopeにある生存時間をremainにコピーする
