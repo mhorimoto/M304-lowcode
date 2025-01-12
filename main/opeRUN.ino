@@ -67,6 +67,7 @@ void opeRUN(int hr, int mn) {
             }
             //timeDecision(id, hr, mn);
             //comparison_exp(id,rt);
+            set_rlyttl(rt[id],id);
         }
     }
     for (r = 1; r < CCM_TBL_CNT_TX; r++) {
