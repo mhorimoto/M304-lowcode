@@ -21,7 +21,7 @@ void get_mcusr(void) {
     wdt_disable();
 }
 
-char *pgname = "M304 Ver3.0.0D32z";
+char *pgname = "M304 Ver3.0.0D33";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
