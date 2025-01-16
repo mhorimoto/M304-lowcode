@@ -43,7 +43,7 @@ int isOn(int H1, int M1, int H2, int M2, int M0, int D0, int TH, int TM) {
 
 void opeRUN(int hr, int mn) {
     //static int pmn = 61; // Nothing 61minute
-    int id, i, j, k, x, y[5], p,rt[CCM_TBL_CNT_RX];
+    int id, i, j, k, x, y[CCM_TBL_CNT_RX],rt[CCM_TBL_CNT_RX];
     //int cmpresult, r;
     int r;
     char t[81], buf[8];
@@ -52,7 +52,7 @@ void opeRUN(int hr, int mn) {
                       // rval: 比較数値(flb_rx_ccm.cmpval)
     int combinationCompare(byte,bool,int);
     void comparison_exp(int);
-    static int prt[5]={0,0,0,0,0};
+    static int prt[CCM_TBL_CNT_RX]={0,0,0,0,0};
     extern int rlyttl[];
     extern byte cmpope_result[];
     extern uecsM304Sched flb_rx_ccm[];
@@ -60,31 +60,32 @@ void opeRUN(int hr, int mn) {
     extern uecsM304cmpope flb_cmpope[];
 
     for (id = 0; id < CCM_TBL_CNT_RX; id++) {
+        rt[id] = 0;
         if (flb_rx_ccm[id].valid != 0xff) {
             // 開始・終了・間隔・動作時間のすべてが合致したときは1を返す。
             // 開始・終了時間が合致し、間隔・動作時間がともに0のときは3を返す。
             rt[id] = isOn(flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,
                         flb_rx_ccm[id].dumn,flb_rx_ccm[id].inmn,hr,mn);
+            j = 0; // debug
             if (rt[id]!=prt[id]) {
                 sprintf(t,"ID=%02d ST=%02d:%02d ED=%02d:%02d CUR=%02d:%02d IN=%02d DU=%02d RT=%d",
                     id,flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,
                     hr,mn,flb_rx_ccm[id].inmn,flb_rx_ccm[id].dumn,rt[id]);
                 Serial.println(t);
                 prt[id] = rt[id];
+                j = 1; // debug
             }
-            comparison_exp(id /*,rt[id] */);
-            y[id] = rt[id] & 0x01; // 3の場合もあるので
-            if (flb_rx_ccm[id].cmpccmid[i]!=0xff) { // 複合条件がある場合
+            comparison_exp(id);
+            if (flb_rx_ccm[id].cmpccmid[0]!=0xff) { // 複合条件がある場合
+                y[id] = rt[id] & 0x01; // 3の場合もあるので
                 for (i=0;i<5;i++) {
                     y[id] = combinationCompare(flb_rx_ccm[id].cmbcmp[i],flb_rx_ccm[id].match_result[i],y[id]);
                 }
+            } else {  // 複合条件がない場合
+                y[id] = rt[id];
             }
         }
-    }
-    for (id=0;id < CCM_TBL_CNT_RX; id++) {
-        if (flb_rx_ccm[id].valid != 0xff) {
-            set_rlyttl(y[id],id);
-        }
+        set_rlyttl(y[id],id);
     }
     for (r = 1; r < CCM_TBL_CNT_TX; r++) {
         sendUECSpacket(r, itoa(rlyttl[r - 1], buf, DEC), 60);
@@ -160,7 +161,7 @@ void set_rlyttl(int x, int id) {
     extern uecsM304Sched flb_rx_ccm[];
     extern int rlyttl[];
     int rl[2],y,r,i;
-
+    if (flb_rx_ccm[id].valid==0xff) return;
     r = (r == 1) ? 3 : 7 ;
     for (i=0;i<4;i++) { // リレーの動作を取得する
         rl[0] = (flb_rx_ccm[id].rly_l >> (i*2)) & 0x3;
@@ -178,6 +179,20 @@ void set_rlyttl(int x, int id) {
                     break;
                 }
             }
+                Serial.print("UNMATCH:");
+                Serial.print("x=");
+                Serial.print(x);
+                Serial.print("id=");
+                Serial.print(id);
+                Serial.print("rlyttl[]=");
+                Serial.print(rlyttl[7]);
+                Serial.print(rlyttl[6]);
+                Serial.print(rlyttl[5]);
+                Serial.print(rlyttl[4]);
+                Serial.print(rlyttl[3]);
+                Serial.print(rlyttl[2]);
+                Serial.print(rlyttl[1]);
+                Serial.println(rlyttl[0]);
         } else { /* 条件に合う (MAKE,BREAK,BOTHの判定後処理を書く) */
             for (y=0;y<2;y++) {
                 r = (y==0) ? 3 : 7;
@@ -191,6 +206,20 @@ void set_rlyttl(int x, int id) {
                     break;
                 }
             }
+                Serial.print("MATCH:");
+                Serial.print("x=");
+                Serial.print(x);
+                Serial.print("id=");
+                Serial.print(id);
+                Serial.print("rlyttl[]=");
+                Serial.print(rlyttl[7]);
+                Serial.print(rlyttl[6]);
+                Serial.print(rlyttl[5]);
+                Serial.print(rlyttl[4]);
+                Serial.print(rlyttl[3]);
+                Serial.print(rlyttl[2]);
+                Serial.print(rlyttl[1]);
+                Serial.println(rlyttl[0]);
         }
     }
 }
