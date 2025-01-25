@@ -1,6 +1,6 @@
 # 灌水制御用 M304 プログラム
 
-Version 3.x.x
+Version 3.1.1
 
 ## インストール方法
 
@@ -10,7 +10,7 @@ Arduinoライブラリ管理から以下のライブラリを準備します。
 
 |ライブラリ名  |Version  |ディレクトリ名           |
 |--------------|---------|-------------------------|
-|M304 Library  |1.3.0    | libraries/M304-lib      |
+|M304 Library  |1.3.19   | libraries/M304-lib      |
 |LiquidCrystal |1.0.7    | libraries/LiquidCrystal |
 |SPI           |1.0 標準 | libraries/SPI           |
 |Ethernet2     |1.0.4    | libraries/Ethernet2     |
@@ -19,6 +19,7 @@ Arduinoライブラリ管理から以下のライブラリを準備します。
 |Wire          |1.0 標準 | libraries/Wire          |
 |DS1307RTC     |1.4.1    | libraries/DS1307RTC     |
 |Time          |1.6.1    | libraries/Time          |
+|LibYxml       |1.0.2    | libraries/LibYxml       |
 
 
 ### Arduino IDEの設定
