@@ -21,7 +21,7 @@ void get_mcusr(void) {
     wdt_disable();
 }
 
-char *pgname = "M304 Ver3.0.0D34c";
+char *pgname = "M304 Ver3.1.1";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -288,6 +288,7 @@ void loop(void) {
             }
             opeRUN(tm.Hour,tm.Minute);
             minsec = 0;
+            b_tmp = 0;
             for (x=0;x<8;x++) {
                 if (rlyttl[x]>0) {
                     if (minsec==0) minsec = rlyttl[x];
@@ -295,6 +296,7 @@ void loop(void) {
                         minsec = rlyttl[x];
                     }
                     digitalWrite(RLY1+x,LOW);   // Relay MAKE
+                    b_tmp |= (1<<x);
                     //rlyttl[x]--;
                 } else {
                     digitalWrite(RLY1+x,HIGH);  // Relay BREAK
@@ -308,8 +310,11 @@ void loop(void) {
             lcdd.setLine(cposp,3,line1);
             lcdd.LineWrite(cposp,3);
             //
-            sendUECSpacket(0,"0",1);
-            //      UECSupdate16520port() ;
+            if (itoa((int)b_tmp,buf,10)) {
+                sendUECSpacket(0,buf,1);
+            } else {
+                sendUECSpacket(0,"0",1);
+            }
         }
         ptr_crosskey = getCrossKey();
         if (ptr_crosskey->longf==true) {

@@ -1,5 +1,9 @@
 # TO DO LIST
 
+## 26th Jan 2025 3.1.1
+  START HOUSEへ第三者利用に入る。  
+  ボタンによる操作は無効である。
+
 ## 11st Dec 2024 3.0.0D17
   3.0.0D16のcopyRXdata2flb_cmpope()の比較ロジックは出来た。
   
