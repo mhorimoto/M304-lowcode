@@ -1,0 +1,42 @@
+はい、MariaDBでは一つのテーブルに複数の `SERIAL` 型フィールドを定義することはできません。`SERIAL` 型は実際には以下の定義の短縮形です：
+
+```sql
+BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY
+```
+
+このため、`SERIAL` 型は `AUTO_INCREMENT` を含んでおり、一つのテーブルに複数の `AUTO_INCREMENT` フィールドを持つことはできないためです。
+
+しかし、テーブル内に複数の一意のIDフィールドを持ちたい場合は、以下のように手動で定義することができます：
+
+```sql
+CREATE TABLE my_table (
+    id1 BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    id2 BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY (id1),
+    UNIQUE KEY (id2)
+);
+
+-- トリガーを使用してid2を自動的に増加させる例
+DELIMITER //
+
+CREATE TRIGGER my_table_before_insert
+BEFORE INSERT ON my_table
+FOR EACH ROW
+BEGIN
+    SET NEW.id2 = (SELECT IFNULL(MAX(id2), 0) + 1 FROM my_table);
+END //
+
+DELIMITER ;
+```
+
+この方法では、`id2` フィールドは自動インクリメント機能を持つものとして扱われ、テーブルに挿入されるたびに新しい値が設定されます。ただし、この方法は同時挿入が多い環境では競合が発生する可能性があるため、注意が必要です。
+
+
+
+select TRIGGER_NAME, EVENT_MANIPULATION, EVENT_OBJECT_TABLE, ACTION_STATEMENT FROM information_schema.TRIGGERS;
++--------------------------+--------------------+--------------------+--------------------------------------------------------------------------------+
+| TRIGGER_NAME             | EVENT_MANIPULATION | EVENT_OBJECT_TABLE | ACTION_STATEMENT                                                               |
++--------------------------+--------------------+--------------------+--------------------------------------------------------------------------------+
+| tbl_custom_before_insert | INSERT             | tbl_custom         | begin set NEW.FARM_ID = (select ifnull(MAX(FARM_ID),0)+1 FROM tbl_custom);
+end |
++--------------------------+--------------------+--------------------+--------------------------------------------------------------------------------+

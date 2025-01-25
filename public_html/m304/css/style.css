@@ -1,0 +1,99 @@
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+.table-body {
+    width: 1100px;
+}
+
+.left-align {
+  text-align: left;
+}
+.right-align {
+  text-align: right;
+}
+.center-align {
+  text-align: center;
+}
+
+.com_id {
+    text-align: right;
+    width: 60px;
+}
+
+.pkg_id {
+    text-align: right;
+    width: 60px;
+}
+
+.num30 {
+    width: 30px;
+}
+
+.num3c {
+    width: 3em;
+}
+
+.num4c {
+    width: 4em;
+}
+
+.num5c {
+    width: 5em;
+}
+
+.w73 {
+    width: 73px;
+}
+
+.num60 {
+    width: 60px;
+}
+
+.num100 {
+    width: 100px;
+}
+
+.num200 {
+    width: 200px;
+}
+
+.num300 {
+    width: 300px;
+}
+
+table {
+    border-collapse: collapse;
+    border:solid 3px #000000;
+    border-spacing: 0px 0px;
+}
+
+th {
+    border:solid 1px #000000;
+    padding:3px;
+}
+
+td {
+    border:solid 1px #000000;
+    text-align:center;
+    padding:3px;
+}
+.borderless {
+#    border: none;
+#    outline: none;
+}
+
+.r_12 {
+    font-size: 12pt;
+    text-align: right;
+}
+
+.l_12 {
+    font-size: 12pt;
+    text-align: left;
+}
+
+.r_16 {
+    font-size: 16pt;
+    text-align: right;
+}

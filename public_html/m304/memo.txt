@@ -1,0 +1,83 @@
+array(3) {
+  [1]=>
+  array(12) {
+    ["OPE_ID"]=>
+    string(1) "1"
+    ["M304ID"]=>
+    string(2) "38"
+    ["NAME"]=>
+    string(26) "START HOUSEトマト灌水"
+    ["OPE_C_SEQ"]=>
+    string(1) "1"
+    ["RLY1"]=>
+    string(1) "0"
+    ["RLY2"]=>
+    string(1) "0"
+    ["RLY3"]=>
+    string(1) "0"
+    ["RLY4"]=>
+    string(1) "1"
+    ["RLY5"]=>
+    string(1) "0"
+    ["RLY6"]=>
+    string(1) "0"
+    ["RLY7"]=>
+    string(1) "0"
+    ["RLY8"]=>
+    string(1) "0"
+  }
+  [2]=>
+  array(12) {
+    ["OPE_ID"]=>
+    string(1) "2"
+    ["M304ID"]=>
+    string(2) "38"
+    ["NAME"]=>
+    NULL
+    ["OPE_C_SEQ"]=>
+    NULL
+    ["RLY1"]=>
+    string(1) "1"
+    ["RLY2"]=>
+    string(1) "0"
+    ["RLY3"]=>
+    string(1) "1"
+    ["RLY4"]=>
+    string(1) "0"
+    ["RLY5"]=>
+    string(1) "1"
+    ["RLY6"]=>
+    string(1) "0"
+    ["RLY7"]=>
+    string(1) "0"
+    ["RLY8"]=>
+    string(1) "0"
+  }
+  [3]=>
+  array(12) {
+    ["OPE_ID"]=>
+    string(1) "3"
+    ["M304ID"]=>
+    string(2) "38"
+    ["NAME"]=>
+    NULL
+    ["OPE_C_SEQ"]=>
+    NULL
+    ["RLY1"]=>
+    string(1) "1"
+    ["RLY2"]=>
+    string(1) "1"
+    ["RLY3"]=>
+    string(1) "0"
+    ["RLY4"]=>
+    string(1) "0"
+    ["RLY5"]=>
+    string(1) "1"
+    ["RLY6"]=>
+    string(1) "0"
+    ["RLY7"]=>
+    string(1) "0"
+    ["RLY8"]=>
+    string(1) "0"
+  }
+}

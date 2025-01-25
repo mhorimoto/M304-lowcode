@@ -1,0 +1,45 @@
+data_a (blk_a) {
+  ["SEQ"]=>
+  string(2) "13"
+  ["M304ID"]=>
+  string(2) "39"
+  ["UECSID"]=>
+  string(12) "10100C00000B"
+  ["MACADDR"]=>
+  string(12) "02A2730B0027"
+  ["DHCPFLAG"]=>
+  string(1) "0"
+  ["FIXED_IPADDRESS"]=>
+  string(15) "192.168.120.171"
+  ["FIXED_NETMASK"]=>
+  string(13) "255.255.254.0"
+  ["FIXED_DEFGW"]=>
+  string(13) "192.168.120.1"
+  ["FIXED_DNS"]=>
+  string(13) "192.168.120.1"
+  ["VENDER_NAME"]=>
+  string(6) "YS-Lab"
+  ["NODE_NAME"]=>
+  string(7) "irrig01"
+  ["PKG_ID"]=>
+  string(2) "39"
+  ["COMMENT"]=>
+  string(35) "M304葉面散布システム第1棟"
+  ["COM_ID"]=>
+  string(1) "5"
+  ["FARM_ID"]=>
+  string(1) "9"
+}
+
+data_custom (tbl_custom) {
+  ["SEQ"]=>
+  string(2) "18"
+  ["COM_ID"]=>
+  string(1) "5"
+  ["FARM_ID"]=>
+  string(1) "9"
+  ["NAME"]=>
+  string(23) "welzo共同研究農場"
+  ["ADDRESS"]=>
+  string(0) ""
+}
