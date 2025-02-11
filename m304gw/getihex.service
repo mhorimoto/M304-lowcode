@@ -1,0 +1,13 @@
+[Unit]
+Description=M304 Parameter Loading program
+After=network.target
+
+[Service]
+User=root
+#WorkingDirectory=/path/to/your/script
+ExecStart=/usr/local/bin/getihex.py
+Restart=always
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
