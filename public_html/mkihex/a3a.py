@@ -75,6 +75,8 @@ if __name__ == '__main__':
         flag = True
     else:
         flag = False
+    uecsid = "10100C00000B"
+    baseaddr = 0x00
 
     if flag == False:
         print("Version {0}".format(Version))
@@ -94,10 +96,89 @@ if __name__ == '__main__':
         quit()  # 引数が合わなければここで終了
     id = int(args[1])
     ih_id = byte_arrange(id)
-    print(ih_id)
-    mac = args[2]
+
+    mac = args[2].replace(":", "")
+    if len(mac) != 12:
+        print("MAC address is invalid")
+        quit()    
     macds = [mac[i:i+2] for i in range(0,len(mac),2)]
     for a in macds:
-        print(a)
+        try:
+            b = int(a, 16)
+        except:
+            print("MAC address is invalid")
+            quit()
+    if args[3] == "dhcp":
+        dhcpf = byte_arrange(255)
+    elif args[3] == "fixed":
+        dhcpf = byte_arrange(0)
+    else:
+        print("dhcp or fixed")
+        quit()
+    dhcpf = dhcpf + "FFFFFF"
+    ip_address = args[4].split(".")
+    if len(ip_address) != 4:
+        print("IP address is invalid")
+        quit()
+    ipa = ""
+    for a in ip_address:
+        try:
+            b = byte_arrange(int(a))
+        except:
+            print("IP address is invalid")
+            quit()
+        ipa = ipa + b
+    netmask = args[5].split(".")
+    if len(netmask) != 4:
+        print("Netmask is invalid")
+        quit()
+    ntm = ""
+    for a in netmask:
+        try:
+            b = byte_arrange(int(a))
+        except:
+            print("netmask is invalid")
+            quit()
+        ntm = ntm + b
+    default_gateway = args[6].split(".")
+    if len(default_gateway) != 4:
+        print("Default gateway is invalid")
+        quit()
+    dgw = ""
+    for a in default_gateway:
+        try:
+            b = byte_arrange(int(a))
+        except:
+            print("Default gateway is invalid")
+            quit()
+        dgw = dgw + b
+    dns = args[7].split(".")
+    if len(dns) != 4:
+        print("DNS is invalid")
+        quit()
+    dnsa = ""
+    for a in dns:
+        try:
+            b = byte_arrange(int(a))
+        except:
+            print("DNS is invalid")
+            quit()
+        dnsa = dnsa + b
+    vender_name = args[8]
+    vn = string_arrange(vender_name, 16)
+    node_name = args[9]
+    nn = string_arrange(node_name, 16)
+    lc20 = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+    lc60 = "00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+    lc90 = "FFFF00FFFFFFFFFFFFFFFFFFFFFFFFFF"
+    ihtxt = uecsid + mac + dhcpf + ipa + ntm + dgw + dnsa + lc20 + lc20 + vn + nn + lc60 + lc20 + lc20 + lc90
 
+    for i in range(10):
+        #print(ihex[i*32:(i+1)*32])
+        tp = i*32
+        iht = ihtxt[tp:(tp+32)]
+        sz  = hex(int(len(iht)/2)).replace('0x','').rjust(2,'0')
+        addr  = hex(baseaddr+int(tp/2)).replace('0x','').rjust(4,'0')
+        ih  =":"+sz+addr+"00"+iht+"FF"
+        print(ih)
     quit()
