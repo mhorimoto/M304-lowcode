@@ -21,7 +21,7 @@ void get_mcusr(void) {
     wdt_disable();
 }
 
-char *pgname = "M304 Ver3.1.1";
+char *pgname = "M304 Ver3.1.2";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -93,7 +93,7 @@ IPAddress broadcastIP;
 int cposx,cposy,cposp;
 int cmode=RUN;
 int cmenu=NETCONFIG;
-int rlyttl[8];
+int rlyttl[8],p_rlyttl[8];
 
 bool cf,fsf=true;
 
@@ -182,6 +182,7 @@ void setup(void) {
     wdt_reset();
     for(j=0;j<8;j++) {
         rlyttl[j] = 0;
+	p_rlyttl[j] = 0;
     }
     for (j=0;j<20;j++) {
         ccm_type[j] = 0;

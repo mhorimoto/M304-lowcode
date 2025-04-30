@@ -159,7 +159,7 @@ void set_rlyttl(int x, int id) {
     // id: flb_rx_ccm[id]のid
 
     extern uecsM304Sched flb_rx_ccm[];
-    extern int rlyttl[];
+    extern int rlyttl[],p_rlyttl[];
     int rl[2],y,r,i;
     if (flb_rx_ccm[id].valid==0xff) return;
     r = (r == 1) ? 3 : 7 ;
@@ -172,27 +172,14 @@ void set_rlyttl(int x, int id) {
                 switch (rl[y]) {
                 case RLY_BOTH:
                 case RLY_MAKE:
-                    rlyttl[r - i] = 0; /* r==1:RLY1..4  r!=1:RLY5..8 */
+                    rlyttl[r - i] |= 0; /* r==1:RLY1..4  r!=1:RLY5..8 */
                     break;
                 case RLY_BREAK:
-                    rlyttl[r - i] = 1;
+                    rlyttl[r - i] |= 1;
                     break;
                 }
             }
-                Serial.print("UNMATCH:");
-                Serial.print("x=");
-                Serial.print(x);
-                Serial.print("id=");
-                Serial.print(id);
-                Serial.print("rlyttl[]=");
-                Serial.print(rlyttl[7]);
-                Serial.print(rlyttl[6]);
-                Serial.print(rlyttl[5]);
-                Serial.print(rlyttl[4]);
-                Serial.print(rlyttl[3]);
-                Serial.print(rlyttl[2]);
-                Serial.print(rlyttl[1]);
-                Serial.println(rlyttl[0]);
+	    Serial.print(F("UNMATCH:"));
         } else { /* 条件に合う (MAKE,BREAK,BOTHの判定後処理を書く) */
             for (y=0;y<2;y++) {
                 r = (y==0) ? 3 : 7;
@@ -206,21 +193,21 @@ void set_rlyttl(int x, int id) {
                     break;
                 }
             }
-                Serial.print("MATCH:");
-                Serial.print("x=");
-                Serial.print(x);
-                Serial.print("id=");
-                Serial.print(id);
-                Serial.print("rlyttl[]=");
-                Serial.print(rlyttl[7]);
-                Serial.print(rlyttl[6]);
-                Serial.print(rlyttl[5]);
-                Serial.print(rlyttl[4]);
-                Serial.print(rlyttl[3]);
-                Serial.print(rlyttl[2]);
-                Serial.print(rlyttl[1]);
-                Serial.println(rlyttl[0]);
+	    Serial.print(F("MATCH:"));
         }
+	Serial.print(F("x="));
+	Serial.print(x);
+	Serial.print(F("id="));
+	Serial.print(id);
+	Serial.print(F("rlyttl[]="));
+	Serial.print(rlyttl[7]);
+	Serial.print(rlyttl[6]);
+	Serial.print(rlyttl[5]);
+	Serial.print(rlyttl[4]);
+	Serial.print(rlyttl[3]);
+	Serial.print(rlyttl[2]);
+	Serial.print(rlyttl[1]);
+	Serial.println(rlyttl[0]);
     }
 }
 
