@@ -58,7 +58,9 @@ void opeRUN(int hr, int mn) {
     extern uecsM304Sched flb_rx_ccm[];
     extern uecsM304Send flb_tx_ccm[];
     extern uecsM304cmpope flb_cmpope[];
-
+    for (i = 0; i < 8; i++) {
+      rlyttl[i] = 0;
+    }
     for (id = 0; id < CCM_TBL_CNT_RX; id++) {
         rt[id] = 0;
         if (flb_rx_ccm[id].valid != 0xff) {
