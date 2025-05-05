@@ -41,7 +41,49 @@ int isOn(int H1, int M1, int H2, int M2, int M0, int D0, int TH, int TM) {
     }
 }
 
-void opeRUN(int hr, int mn) {
+// 時刻を秒に変換するヘルパー関数
+long toSeconds(int h, int m, int s) {
+  return (long)h * 3600 + (long)m * 60 + s;
+}
+// 秒単位で時間範囲内かつ動作間隔と動作時間を判定する関数
+// 開始・終了・間隔・動作時間のすべてが合致したときは1を返す。
+// 開始・終了時間が合致し、間隔・動作時間がともに0のときは2を返す。
+int isOnSecond(int H1, int Mi1, int S1, int H2, int Mi2, int S2, long S0, long D0, int TH, int TMi, int TS) {
+
+  // 開始時刻と終了時刻を秒に変換
+  long startTime = toSeconds(H1, Mi1, S1);
+  long endTime = toSeconds(H2, Mi2, S2);
+  long currentTime = toSeconds(TH, TMi, TS);
+
+  // 開始時刻と終了時刻が逆転している場合の調整
+  if (endTime < startTime) {
+    endTime += 24 * 3600; // 翌日までの時間を考慮
+    if (currentTime < startTime) {
+      currentTime += 24 * 3600; // 現在時刻も調整
+    }
+  }
+
+  // 現在の時刻が範囲外ならOFF
+  if (currentTime < startTime || currentTime > endTime) {
+    return 0; // OFF
+  }
+
+  // 範囲内ならサイクルに基づくON/OFF判定を行う
+  long cycleTime = S0 + D0;   // サイクル全体の時間 (秒)
+  if (cycleTime == 0) {
+    return 2; // 開始・終了時間が合致し、間隔・動作時間がともに0
+  }
+  long elapsedTime = (currentTime - startTime) % cycleTime; // 開始時刻からの経過時間 (秒)
+
+  if (elapsedTime < S0) {
+    return 1; // ON
+  } else {
+    return 0; // OFF
+  }
+}
+
+
+void opeRUN(int hr, int mn, int sec) {
     //static int pmn = 61; // Nothing 61minute
     int id, i, j, k, x, y[CCM_TBL_CNT_RX],rt[CCM_TBL_CNT_RX];
     //int cmpresult, r;
@@ -64,10 +106,15 @@ void opeRUN(int hr, int mn) {
     for (id = 0; id < CCM_TBL_CNT_RX; id++) {
         rt[id] = 0;
         if (flb_rx_ccm[id].valid != 0xff) {
-            // 開始・終了・間隔・動作時間のすべてが合致したときは1を返す。
-            // 開始・終了時間が合致し、間隔・動作時間がともに0のときは3を返す。
-            rt[id] = isOn(flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,
-                        flb_rx_ccm[id].dumn,flb_rx_ccm[id].inmn,hr,mn);
+          //
+          // TOPIC!!
+          //
+          // 開始・終了・間隔・動作時間のすべてが合致したときは1を返す。
+          // 開始・終了時間が合致し、間隔・動作時間がともに0のときは3を返す。
+          //            rt[id] = isOn(flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,
+          //                        flb_rx_ccm[id].dumn,flb_rx_ccm[id].inmn,hr,mn);
+          rt[id] = isOnSecond(flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,0,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,0,
+                              flb_rx_ccm[id].dumn,flb_rx_ccm[id].inmn,hr,mn,sec);
             j = 0; // debug
             if (rt[id]!=prt[id]) {
                 sprintf(t,"ID=%02d ST=%02d:%02d ED=%02d:%02d CUR=%02d:%02d IN=%02d DU=%02d RT=%d",

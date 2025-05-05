@@ -21,7 +21,7 @@ void get_mcusr(void) {
     wdt_disable();
 }
 
-char *pgname = "M304 Ver3.1.2";
+char *pgname = "M304 Ver3.1.3";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -240,7 +240,7 @@ void loop(void) {
     static char pca;
     static int prvsec;
     extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
-    extern void opeSCH(void),opeRTC(void),opeNET(void),opeRUN(int,int),opeHttpd(EthernetClient);
+    extern void opeSCH(void),opeRTC(void),opeNET(void),opeRUN(int,int,int),opeHttpd(EthernetClient);
     extern void UECSupdate16529port(void) ;
     extern void debugSerialOut(int,int,char*);
     uint8_t InputDataButtom(int,int,int,int,uint8_t,int mi='0',int mx='9');
@@ -287,7 +287,7 @@ void loop(void) {
                     }
                 }
             }
-            opeRUN(tm.Hour,tm.Minute);
+            opeRUN(tm.Hour,tm.Minute,tm.Second);
             minsec = 0;
             b_tmp = 0;
             for (x=0;x<8;x++) {
