@@ -113,12 +113,12 @@ void opeRUN(int hr, int mn, int sec) {
           // 開始・終了時間が合致し、間隔・動作時間がともに0のときは3を返す。
           //            rt[id] = isOn(flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,
           //                        flb_rx_ccm[id].dumn,flb_rx_ccm[id].inmn,hr,mn);
-          rt[id] = isOnSecond(flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,0,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,0,
+          rt[id] = isOnSecond(flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].stsc,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,0,
                               flb_rx_ccm[id].dumn,flb_rx_ccm[id].inmn,hr,mn,sec);
             j = 0; // debug
             if (rt[id]!=prt[id]) {
-                sprintf(t,"ID=%02d ST=%02d:%02d ED=%02d:%02d CUR=%02d:%02d IN=%02d DU=%02d RT=%d",
-                    id,flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,
+                sprintf(t,"ID=%02d ST=%02d:%02d:%02d ED=%02d:%02d CUR=%02d:%02d IN=%02d DU=%02d RT=%d",
+			id,flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].stsc,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,
                     hr,mn,flb_rx_ccm[id].inmn,flb_rx_ccm[id].dumn,rt[id]);
                 Serial.println(t);
                 prt[id] = rt[id];
