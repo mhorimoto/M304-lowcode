@@ -33,6 +33,17 @@ char *itoaddr(IPAddress a) {
   return(iap);
 }
 
+void debugUdpOut(char *c) {
+  extern bool debugMsgFlag(int);
+  extern EthernetUDP UECS_UDP16528;
+
+  if (debugMsgFlag(UDP_MSG)) {
+    UECS_UDP16528.beginPacket(broadcastIP,16528);
+    UECS_UDP16528.write(c);
+    UECS_UDP16528.endPacket();
+  }
+}
+
 void debugSerialOut(int a,int b,char *c) {
   extern bool fsf;
   extern bool debugMsgFlag(int);
