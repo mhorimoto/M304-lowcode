@@ -135,7 +135,11 @@ void opeRUN(int hr, int mn, int sec) {
       if (flb_rx_ccm[id].cmpccmid[0]!=0xff) { // 複合条件がある場合
         y[id] = rt[id] & 0x03; // 3の場合もあるので
         for (i=0;i<5;i++) {
-          y[id] = combinationCompare(flb_rx_ccm[id].cmbcmp[i],flb_rx_ccm[id].match_result[i],y[id]);
+          k = y[id];
+          y[id] = combinationCompare(flb_rx_ccm[id].cmbcmp[i],flb_rx_ccm[id].match_result[i],k);
+          sprintf(t,"ID=%02d-%d:%d=combinationCompare(%d,%d,%d)",
+                  id,i,y[id],flb_rx_ccm[id].cmbcmp[i],flb_rx_ccm[id].match_result[i],k);
+          debugUdpOut(t);
         }
       } else {  // 複合条件がない場合
         y[id] = rt[id];
@@ -217,30 +221,33 @@ void set_rlyttl(int x, int id) {
   extern uecsM304Sched flb_rx_ccm[];
   extern int rlyttl[],p_rlyttl[];
   int rl[2],y,r,i;
-  char mcchr;
-  
+  char mcchr,t[81];
+  lbf[0] = 0;
   if (flb_rx_ccm[id].valid==0xff) return;
-  r = (r == 1) ? 3 : 7 ;
+  //  r = (r == 1) ? 3 : 7 ;
   for (i=0;i<4;i++) { // リレーの動作を取得する
     rl[0] = (flb_rx_ccm[id].rly_l >> (i*2)) & 0x3;
     rl[1] = (flb_rx_ccm[id].rly_h >> (i*2)) & 0x3;
     if (x == 0) {   //  条件不一致
       for (y=0;y<2;y++) {
         r = (y==0) ? 3 : 7;
+        sprintf(lbf,"X:rl[%d]=%d",y,rl[y]);
         switch (rl[y]) {
         case RLY_BOTH:
         case RLY_MAKE:
           rlyttl[r - i] |= 0; /* r==1:RLY1..4  r!=1:RLY5..8 */
           break;
         case RLY_BREAK:
-          rlyttl[r - i] |= 1;
+          //          rlyttl[r - i] |= 1;
           break;
         }
+        sprintf(lbf,"%s,rlyttl[%d]=%d,",lbf,(r-i),rlyttl[r-i]);
       }
       mcchr = 'X';
     } else { /* 条件に合う (MAKE,BREAK,BOTHの判定後処理を書く) */
       for (y=0;y<2;y++) {
         r = (y==0) ? 3 : 7;
+        sprintf(lbf,"O:rl[%d]=%d",y,rl[y]);
         switch (rl[y]) {
         case RLY_BOTH:
         case RLY_MAKE:
@@ -250,12 +257,14 @@ void set_rlyttl(int x, int id) {
           rlyttl[r - i] = 0;
           break;
         }
+        sprintf(lbf,"%s,rlyttl[%d]=%d,",lbf,(r-i),rlyttl[r-i]);
       }
       mcchr = 'O';
     }
-    sprintf(lbf,"%d:%c:x=%d:rly1-8=%1d%1d%1d%1d%1d%1d%1d%1d\n",id,mcchr,x,
-            rlyttl[0],rlyttl[1],rlyttl[2],rlyttl[3],rlyttl[4],rlyttl[5],rlyttl[6],rlyttl[7]);
     debugUdpOut(lbf);
+    //    sprintf(lbf,"%d:%c:x=%d:rly1-8=%1d%1d%1d%1d%1d%1d%1d%1d",id,mcchr,x,
+    //            rlyttl[0],rlyttl[1],rlyttl[2],rlyttl[3],rlyttl[4],rlyttl[5],rlyttl[6],rlyttl[7]);
+    //    debugUdpOut(lbf);
   }
 }
 
