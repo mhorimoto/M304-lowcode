@@ -36,4 +36,16 @@
 
 # Tempolary 
 tmp/*
+
+# VS Code settings
 .vscode/
+
+# Local History extension
+.history/
+
+# macOS system files
+.DS_Store
+
+# Environment
+.env
+
