@@ -1,6 +1,6 @@
 #ifndef _M304_H_
 #define _M304_H_
-#define _M304_H_V  1319
+#define _M304_H_V  1321
 
 #include <avr/pgmspace.h>
 #include <LiquidCrystal.h>
@@ -108,9 +108,10 @@
 #define FIXED_DNS         0x1c
 #define VENDER_NAME       0x40
 #define NODE_NAME         0x50
-#define LC_DBGMSG         0x60  /* bit pos 0x80: Serial out, 0x40: LCD out, 0x20: Info Serial out */
+#define LC_DBGMSG         0x60  /* bit pos 0x80: Serial out, 0x40: LCD out, 0x20: 16528/UDP out, 0x02: Info Serial out */
 #define   SO_MSG    0x80
 #define   LCD_MSG   0x40
+#define   UDP_MSG   0x20
 #define   SO_INFO   0x02
 #define LC_CMODE          0x62  /* Force CMODE Change */
 
@@ -139,7 +140,9 @@ typedef struct stM304 {
 #define   LC_SCH_MNFLAG       0x05 // MINUTES/SECONDS FLAG (FF:MINUTES,00:SECONDS)
 #define   LC_SCH_INMN         0x06 // Interval time (mins/sec) unsigned int (2bytes)
 #define   LC_SCH_DUMN         0x08 // During time (mins/sec) unsigned int (2bytes)
-//define  LC_SCH_DUMMY        0x09-0x0d (5bytes)
+#define   LC_SCH_STSC         0x0a // Start of time (Second)
+#define   LC_SCH_EDSC         0x0b // End of time (Second)
+//define  LC_SCH_DUMMY        0x0c-0x0d (2bytes)
 #define   LC_SCH_RLY_L        0x0e // RLY 1..4
 #define   LC_SCH_RLY_H        0x0f // RLY 5..8
 #define   LC_SCH_CPXCONDS     0x10 // Complex Conditions 16bytes but current 8bytes
@@ -178,6 +181,8 @@ typedef struct uecsM304Sched {
   byte mnflag;       // 0x05
   unsigned int inmn; // 0x06
   unsigned int dumn; // 0x08
+  byte stsc;         // 0x09
+  byte edsc;         // 0x0a
   byte rly_l;        // 0x0e
   byte rly_h;        // 0x0f
   byte cmbcmp[5];    // 0:R_OR,1:0x16,2:0x1d,3:0x24,4:0x2b
@@ -357,6 +362,8 @@ typedef struct uecsM304cmpope {
 #define R_OR     7     // |  Logical OR
 #define R_NE     8     // != Not Equal
 #define R_ADDFLG 0x80
+#define R_ADD_GT R_ADDFLG|R_GT
+#define R_ADD_LT R_ADDFLG|R_LT
 
 /*  Relay operation          */
 /*  Group semi 20230615 p.9  */

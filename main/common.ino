@@ -33,6 +33,17 @@ char *itoaddr(IPAddress a) {
   return(iap);
 }
 
+void debugUdpOut(char *c) {
+  extern bool debugMsgFlag(int);
+  extern EthernetUDP UECS_UDP16528;
+
+  if (debugMsgFlag(UDP_MSG)) {
+    UECS_UDP16528.beginPacket(broadcastIP,16528);
+    UECS_UDP16528.write(c);
+    UECS_UDP16528.endPacket();
+  }
+}
+
 void debugSerialOut(int a,int b,char *c) {
   extern bool fsf;
   extern bool debugMsgFlag(int);
@@ -76,7 +87,7 @@ void _dump_flb(int k, int f) {
   extern uecsM304cmpope flb_cmpope[];
   extern bool debugMsgFlag(int);
   int i,imax;
-  char lbftxt[80],rly1[5],rly5[5],*mnflag,*lv;
+  char lbftxt[80],rly1[5],rly5[5],*lv;
   uecsM304Sched  *ptr_flb_rx;
   uecsM304Send   *ptr_flb_tx;
   uecsM304cmpope *ptr_flb_cmpope;
@@ -103,21 +114,12 @@ void _dump_flb(int k, int f) {
         ptr_flb_rx++;
         continue;
       }
-      switch(ptr_flb_rx->mnflag) {
-      case 0:
-        mnflag = "SECS";
-        break;
-      case 0xff:
-        mnflag = "MINU";
-        break;
-      default:
-        mnflag = "????";
-      }
       conv_relay(ptr_flb_rx->rly_l,&rly1[0]);
       conv_relay(ptr_flb_rx->rly_h,&rly5[0]);
-      sprintf(lbftxt,"%2d,%02x,%02d:%02d-%02d:%02d,%s(%02x),%d/%d,(%02x%02x),%02x,%02x,%02x,%f",
-              i,ptr_flb_rx->valid,ptr_flb_rx->sthr,ptr_flb_rx->stmn,ptr_flb_rx->edhr,
-              ptr_flb_rx->edmn,mnflag,ptr_flb_rx->mnflag,ptr_flb_rx->inmn,ptr_flb_rx->dumn,
+      sprintf(lbftxt,"%2d,%02x,%02d:%02d:%02d-%02d:%02d,%d/%d,(%02x%02x),%02x,%02x,%02x,%f",
+              i,ptr_flb_rx->valid,ptr_flb_rx->sthr,ptr_flb_rx->stmn,ptr_flb_rx->stsc,
+	      ptr_flb_rx->edhr,ptr_flb_rx->edmn,ptr_flb_rx->edsc,
+	      ptr_flb_rx->inmn,ptr_flb_rx->dumn,
               ptr_flb_rx->rly_l,ptr_flb_rx->rly_h,ptr_flb_rx->cmbcmp[0],ptr_flb_rx->cmpccmid[0],
               ptr_flb_rx->cmpope[0],ptr_flb_rx->cmpval[0]);
       ptr_flb_rx++;
@@ -181,8 +183,6 @@ void _dump_flb(int k, int f) {
       Serial.print(flb_cmpope[i].order);Serial.print(",");
       Serial.print(flb_cmpope[i].lifecnt);Serial.print(",");
       Serial.println(flb_cmpope[i].ccm_type);
-      //Serial.println(flb_cmpope[i].cmpope);  // 3.0.0D7から不要 blk_cで設定するので
-      //Serial.println(flb_cmpope[i].fval);    // 3.0.0D7から不要 blk_cで設定するので
     }
   }
 }
@@ -229,6 +229,8 @@ void copyFromLC_uecsM304Sched(uecsM304Sched *tg,int a) {
   tg->mnflag   = atmem.read(a+LC_SCH_MNFLAG);   // 0x05
   tg->inmn     = atmem.readInt(a+LC_SCH_INMN);  // 0x06
   tg->dumn     = atmem.readInt(a+LC_SCH_DUMN);  // 0x08
+  tg->stsc     = atmem.read(a+LC_SCH_STSC);     // 0x09
+  tg->edsc     = atmem.read(a+LC_SCH_EDSC);     // 0x09
   tg->rly_l    = atmem.read(a+LC_SCH_RLY_L);    // 0x0e
   tg->rly_h    = atmem.read(a+LC_SCH_RLY_H);    // 0x0f
   for(i=0;i<5;i++) {
@@ -272,12 +274,6 @@ void copyFromLC_uecsM304cmpope(uecsM304cmpope *tg,int a) {
     }
     tg->priority = 99;   // Initial value
     tg->remain   = 0;
-    
-    //tg->cmpope = atmem.read(a+LC_COPE_OPE);         // 0x1a
-    //for(i=0;i<4;i++) {
-    //  crf.c[i] = atmem.read(a+LC_COPE_FVAL+i);
-    //}
-    //tg->fval = crf.f;
 }
 
 void init_uecsTBL(void) {
