@@ -10,7 +10,7 @@ Arduinoライブラリ管理から以下のライブラリを準備します。
 
 |ライブラリ名  |Version  |ディレクトリ名           |
 |--------------|---------|-------------------------|
-|M304 Library  |1.3.19   | libraries/M304-lib      |
+|M304 Library  |1.3.21   | libraries/M304-lib      |
 |LiquidCrystal |1.0.7    | libraries/LiquidCrystal |
 |SPI           |1.0 標準 | libraries/SPI           |
 |Ethernet2     |1.0.4    | libraries/Ethernet2     |
