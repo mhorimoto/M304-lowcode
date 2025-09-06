@@ -6,8 +6,8 @@
 #include <yxml.h>
 #include <string.h>
 
-#if _M304_H_V < 1319
-#error "Library M304 is old. Version 1.3.19 or higher is required."
+#if _M304_H_V < 1321
+#error "Library M304 is old. Version 1.3.21 or higher is required."
 
 #else
 
