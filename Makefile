@@ -3,7 +3,7 @@ all:
 
 main: main/main.touch
 
-main/main.touch: main/main.ino main/cmnd_dump.ino main/cmnd_setbyte.ino main/xmldecode.ino main/resNodeScan.ino main/opeRUN.ino main/opeEEPROM.ino main/opeNET.ino main/opeRTC.ino main/opeSCH.ino main/opeHttpd.ino main/recv16520.ino main/common.ino
+main/main.touch: main/main.ino main/cmnd_dump.ino main/cmnd_setbyte.ino main/xmldecode.ino main/resNodeScan.ino main/opeRUN.ino main/opeEEPROM.ino main/opeRTC.ino main/opeHttpd.ino main/recv16520.ino main/common.ino
 	arduino-cli compile -b arduino:avr:mega main
 	touch main/main.touch
 

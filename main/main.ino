@@ -21,7 +21,7 @@ void get_mcusr(void) {
     wdt_disable();
 }
 
-char *pgname = "M304 Ver3.2.@7";
+char *pgname = "M304 Ver3.2.@8";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -241,7 +241,7 @@ void loop(void) {
   static char pca;
   static int prvsec;
   extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
-  extern void opeSCH(void),opeRTC(void),opeNET(void),opeRUN(int,int,int),opeHttpd(EthernetClient);
+  extern void opeRUN(int,int,int),opeHttpd(EthernetClient);
   extern void UECSupdate16529port(void) ;
   extern void debugSerialOut(int,int,char*);
   uint8_t InputDataButtom(int,int,int,int,uint8_t,int mi='0',int mx='9');
@@ -388,18 +388,6 @@ void loop(void) {
       ptr_crosskey->kpos &= ~K_ENT;
       fsf   = true;
       switch(cmenu) {
-      case NETCONFIG:
-        cmode = NETCMND;
-        //opeNET();
-        break;
-      case RTCCONFIG:
-        cmode = RTCCMND;
-        //opeRTC();
-        break;
-        //      case SCHCONFIG:
-        //cmode = SCHCMND;
-        //opeSCH();
-        break;
       case EEPROMOPE:
         cmode = EEPROMCMND;
         break;
@@ -410,18 +398,6 @@ void loop(void) {
       }
     }
     switch(cmenu) {
-    case NETCONFIG: // NET CONFIG
-      strcpy_P(line1,(char *)pgm_read_word(&(str_main[4])));
-      lcdd.setLine(0,1,line1);
-      break;
-    case RTCCONFIG: // RTC CONFIG
-      strcpy_P(line1,(char *)pgm_read_word(&(str_main[5])));
-      lcdd.setLine(0,1,line1);
-      break;
-      //    case SCHCONFIG: // Schedule CONFIG
-      //      strcpy_P(line1,(char *)pgm_read_word(&(str_main[6])));
-      //      lcdd.setLine(0,1,line1);
-      //      break;
     case EEPROMOPE: // EEPROM Operation
       strcpy_P(line1,(char *)pgm_read_word(&(str_main[2])));
       lcdd.setLine(0,1,line1);
@@ -433,18 +409,6 @@ void loop(void) {
     }
     break;
     //################################################################
-  case NETCMND:
-    wdt_reset();
-    opeNET();
-    break;
-  case RTCCMND:
-    wdt_reset();
-    opeRTC();
-    break;
-  case SCHCMND:
-    wdt_reset();
-    //    opeSCH();
-    break;
   case EEPROMCMND:
     wdt_reset();
     opeEEPROM();
