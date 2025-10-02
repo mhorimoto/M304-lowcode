@@ -82,7 +82,7 @@ int isOnSecond(int H1, int Mi1, int S1, int H2, int Mi2, int S2, long S0, long D
   if (S0==0) {
     return 3;
   }
-  if (elapsedTime < S0) {
+  if (elapsedTime < D0) {
     return 1; // ON
   } else {
     return 0; // OFF
