@@ -394,7 +394,7 @@ void loop(void) {
         break;
       case RTCCONFIG:
         cmode = RTCCMND;
-        //opeRTC();
+        opeRTC();
         break;
         //      case SCHCONFIG:
         //cmode = SCHCMND;
