@@ -21,7 +21,7 @@ void get_mcusr(void) {
     wdt_disable();
 }
 
-char *pgname = "M304 DVL01_RTC";
+char *pgname = "M304 DVL01_RTC-3";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -241,7 +241,7 @@ void loop(void) {
   static char pca;
   static int prvsec;
   extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
-  extern void opeSCH(void),opeRTC(void),opeNET(void),opeRUN(int,int,int),opeHttpd(EthernetClient);
+  extern void opeSCH(void),opeRTC(void),opeNET(void),opeRUN(int,int,int); //CE,opeHttpd(EthernetClient);
   extern void UECSupdate16529port(void) ;
   extern void debugSerialOut(int,int,char*);
   uint8_t InputDataButtom(int,int,int,int,uint8_t,int mi='0',int mx='9');
@@ -250,16 +250,16 @@ void loop(void) {
   EthernetClient httpClient = httpd.available();
   wdt_reset();
   if ( httpClient ) {
-    opeHttpd(httpClient);
+    //CE opeHttpd(httpClient);
   }
-  UECSupdate16520port() ;
-  UECSupdate16529port() ;
+  //CE UECSupdate16520port() ;
+  //CE UECSupdate16529port() ;
   if (digitalRead(SW_SAFE)==0) {
     // "  EEPROM Operation  "
     strcpy_P(line1,(char *)pgm_read_word(&(str_main[2])));
     lcdd.setLine(0,1,line1);
     lcdd.LineWrite(0,1);
-    opeEEPROM();
+    //CE opeEEPROM();
   }
   switch(cmode) {
   case RUN:
@@ -389,7 +389,7 @@ void loop(void) {
     //################################################################
   case NETCMND:
     wdt_reset();
-    opeNET();
+ //CE   opeNET();
     break;
   case RTCCMND:
     wdt_reset();
@@ -401,7 +401,7 @@ void loop(void) {
     break;
   case EEPROMCMND:
     wdt_reset();
-    opeEEPROM();
+   //CE opeEEPROM();
     break;
   }
 }

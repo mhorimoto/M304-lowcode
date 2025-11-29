@@ -37,6 +37,7 @@ void opeRTC(void) {
     if (RTC.read(tm)==0) {
       strcpy_P(line1,(char *)pgm_read_word(&(str_opeRTC[2])));
       lcdd.setLine(0,2,line1);
+      Serial.println("RTC read error!");
     } else {
       strcpy_P(line2,(char *)pgm_read_word(&(str_opeRTC[3])));
       snprintf(line1,21,"%d/%02d/%02d  %02d:%02d:%02d",
@@ -44,6 +45,8 @@ void opeRTC(void) {
 	       tm.Year+1970,tm.Month,tm.Day,tm.Hour,tm.Minute,tm.Second);
       lcdd.setLine(0,2,line1);
       lcdd.LineWrite(0,2);
+      Serial.print("RTC time:");
+      Serial.println(line1);
     }
     //    lcdd.setLine(cposp,3,"Push ENT Key");
     strcpy_P(line1,(char *)pgm_read_word(&(str_opeRTC[4])));
@@ -63,6 +66,9 @@ void opeRTC(void) {
       lcdd.setLine(0,3,line1);
       //      lcdd.setLine(0,3,"OK DONE             ");
       lcdd.LineWrite(0,3);
+      Serial.println("RTC set done.");
+    } else {
+      Serial.println("RTC set error!");
     }
   }
   delay(100);
@@ -91,6 +97,10 @@ void ntpAccess(void) {
   if ( Udp.parsePacket() ) {
     // We've received a packet, read the data from it
     Udp.read(packetBuffer, NTP_PACKET_SIZE); // read the packet into the buffer
+    Serial.println("NTP packet received");
+  } else {
+    Serial.println("No NTP Response :-(");
+    return;
   }
   unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
   unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
