@@ -21,7 +21,7 @@ void get_mcusr(void) {
     wdt_disable();
 }
 
-char *pgname = "M304 Ver3.2.@8";
+char *pgname = "M304 ABCO2-001 ";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -87,7 +87,7 @@ EthernetUDP UDP16520;
 EthernetUDP UECS_UDP16529,UECS_UDP16528;
 EthernetUDP UECS_UDP16521;
 EthernetServer httpd(80);
-//EthernetClient UECSclient;
+EthernetClient UECSclient;
 IPAddress broadcastIP;
 
 int cposx,cposy,cposp;

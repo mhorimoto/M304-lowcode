@@ -3,7 +3,8 @@
 ## 15th Jan 2026 ABCO2-001
 1. 【ABCO2】二酸化炭素貯留放散システム向け改造品バージョン
 　　3.2.@8からBranchする．多分戻らない．
-
+    main.ino opeRUN()のRLy Make Breakの部分でHTML REQUEST電文を送信する．
+    
 ## 8th Oct 2025 3.2.@8
 1. 【BUG03】解決版
 ## 7th Oct 2025 3.2.D1
