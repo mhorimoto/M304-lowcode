@@ -11,5 +11,5 @@ inst: main/main.touch
 	arduino-cli upload -p /dev/ttyUSB0 -b arduino:avr:mega main
 
 clean: 
-	rm main/main.touch 
+	-rm main/main.touch 
 
