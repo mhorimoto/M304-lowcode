@@ -2,7 +2,7 @@
 
 //IPAddress abco2msg_host(133,5,78,102);
 //const int abco2msg_port = 52200;
-IPAddress abco2msg_host(192,168,38,99);
+IPAddress abco2msg_host(61,127,249,153);
 const int abco2msg_port = 80;
 const char abco2msg_var[] PROGMEM = "/1?L=0&L=2&L=";
 const char abco2msg_fix[] PROGMEM = "&L=0&L=\"CO2\"&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&S=send";
