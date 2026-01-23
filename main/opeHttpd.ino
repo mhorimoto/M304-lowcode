@@ -4,21 +4,30 @@
 //const int abco2msg_port = 52200;
 IPAddress abco2msg_host(61,127,249,153);
 const int abco2msg_port = 80;
-const char abco2msg_var[] PROGMEM = "/1?L=0&L=2&L=";
+const char abco2msg_on[]  PROGMEM = "/1?L=0&L=2&L=";
+const char abco2msg_off[] PROGMEM = "/1?L=1&L=2&L=";
 const char abco2msg_fix[] PROGMEM = "&L=0&L=\"CO2\"&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&S=send";
 
 void opeABCO2(int co2set) {
     extern void sendUECSpacket(int,char *,int);
     char urlbuf[HTTPBUFSIZ],varbuf[20],headbuf[80];
     EthernetClient ec;
-    if (co2set<1) return;
-    strcpy_P(varbuf,abco2msg_var);
+    if (co2set<0) return;
+    switch(co2set) {
+    case 0:
+      strcpy_P(varbuf,abco2msg_off);
+      break;
+    default:
+      strcpy_P(varbuf,abco2msg_on);
+      break;
+    }
     sprintf(urlbuf,"%s%d",varbuf,co2set);
 //    strcat(urlbuf,F("&L=0&L=CO2&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&S=send"));
     strcat_P(urlbuf,abco2msg_fix);
-    sendUECSpacket(0,"139264",0); // 0x22000
+    sendUECSpacket(0,"0x22000",0); // 0x22000
+    wdt_reset();
     if (ec.connect(abco2msg_host,abco2msg_port)) {
-        sendUECSpacket(0,"139265",0); // 0x22001
+        sendUECSpacket(0,"0x22001",0); // 0x22001
         ec.print(F("GET "));
         ec.print(urlbuf);
         ec.println(F(" HTTP/1.1"));
@@ -37,9 +46,9 @@ void opeABCO2(int co2set) {
         }
         delay(10);
         ec.stop();
-        sendUECSpacket(0,"139266",0); // 0x22002
+        sendUECSpacket(0,"0x22002",0); // 0x22002
     } else {
-        sendUECSpacket(0,"139267",0); // 0x22003
+        sendUECSpacket(0,"0x22003",0); // 0x22003
     }
 }
 
@@ -81,12 +90,12 @@ void opeHttpd(EthernetClient ec) {
                 htbuf[bufcnt] = c;
                 bufcnt++;
                 if ( bufcnt > HTTPBUFSIZ ) {
-                    sendUECSpacket(0,"131073",0); // Buffer overflow 0x20001
+                    sendUECSpacket(0,"0x20001",0); // Buffer overflow 0x20001
                     ec.stop();
                     Serial.println(F("Bov1")); // 2.3.5D
                     return;
                 }
-                sendUECSpacket(0,"131074",0); // Success Store via httpd 0x20002
+                sendUECSpacket(0,"0x20002",0); // Success Store via httpd 0x20002
                 htbuf[bufcnt] = (char)NULL;
                 
                 if ( c=='\n' && currentLineIsBlank ) {
@@ -224,19 +233,19 @@ void remocon_exec(unsigned int cnum,EthernetClient ec) {
     extern void sendUECSpacket(int,char *,int);
     
     switch(cnum) {
-        case 0x7700:
-        sendUECSpacket(0,"135167",0); // 0x20FFF
-        delay(10);
-        resetFunc();
-        break;
-        case 0x7001:
-        sendUECSpacket(0,"132865",0); // 0x20701
-        ntpAccess();
-        break;
-        case 0x7500:
-        sendUECSpacket(0,"132944",0); // 0x20750
-        init_uecsTBL();
-        break;
+    case 0x7700:
+      sendUECSpacket(0,"0x20FFF",0); // 0x20FFF
+      delay(10);
+      resetFunc();
+      break;
+    case 0x7001:
+      sendUECSpacket(0,"0x20701",0); // 0x20701
+      ntpAccess();
+      break;
+    case 0x7500:
+      sendUECSpacket(0,"0x20750",0); // 0x20750
+      init_uecsTBL();
+      break;
     }
 }
 

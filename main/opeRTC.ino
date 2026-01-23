@@ -85,6 +85,7 @@ void ntpAccess(void) {
   char timeServer[] = "ntp.nict.jp"; // time.nist.gov NTP server
   byte packetBuffer[ NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
 
+  wdt_reset();
   Udp.begin(localPort);
   sendNTPpacket(Udp,timeServer); // send an NTP packet to a time server
   delay(700);
