@@ -288,22 +288,24 @@ void loop(void) {
                     }
                 }
             }
-            z = InputArithA(cposp,17,0,2,0,9,0) ;
-            switch(z) {
-            case 1:
-                l=1;
-                break;
-            case 2:
-                l=2;
-                break;
-            case 6:
-                l=6;
-                break;
-            default:
-                l=0;
-                break;
+            if (0) {  // for debug とりあえず無効
+                z = InputArithA(cposp,17,0,2,0,9,0) ;
+                switch(z) {
+                    case 1:
+                    l=1;
+                    break;
+                    case 2:
+                    l=2;
+                    break;
+                    case 6:
+                    l=6;
+                    break;
+                    default:
+                    l=0;
+                    break;
+                }
+                opeABCO2(l);
             }
-            opeABCO2(l);
             opeRUN(tm.Hour,tm.Minute,tm.Second);
             minsec = 0;
             b_tmp = 0;
