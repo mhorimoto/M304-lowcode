@@ -21,7 +21,7 @@ void get_mcusr(void) {
     wdt_disable();
 }
 
-char *pgname = "M304 ABCO2-006 ";
+char *pgname = "M304 ABCO2-008 ";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -133,6 +133,8 @@ volatile int period60sec = 0;
 volatile int period1hour = 0;
 volatile time_t cepoch,pepoch;
 
+int abco2_pmode = -1;  // Previous value for ABCO2 mode condition 0,1,2,6
+
 void setup(void) {
     extern int mask2cidr(IPAddress);
     extern boolean is_dhcp(void);
@@ -237,7 +239,7 @@ void setup(void) {
 void loop(void) {
     int l,x,y,z,id,hr,mi,mx,io,minsec,j,r;
     char ca,line1[21],buf[8];
-    int b_tmp;
+    int b_tmp, abco2_cmode, abco2_error = 0;
     static char pca;
     static int prvsec;
     extern struct KYBDMEM *ptr_crosskey,*getCrossKey(void);
@@ -309,8 +311,30 @@ void loop(void) {
             opeRUN(tm.Hour,tm.Minute,tm.Second);
             minsec = 0;
             b_tmp = 0;
+            abco2_error = 0;
+            abco2_cmode = 0;
             for (x=0;x<8;x++) {
+                l = x+1;
                 if (rlyttl[x]>0) {
+                    switch(l) {
+                    case 1:
+                        abco2_cmode = 1;
+                        break;
+                    case 2:
+                        if (abco2_cmode==0) {
+                            abco2_cmode = 2;
+                        } else {
+                            abco2_error = 2;
+                        }
+                        break;
+                    case 6:
+                        if (abco2_cmode==0) {
+                            abco2_cmode = 6;
+                        } else {
+                            abco2_error = 6;
+                        }
+                        break;
+                    }
                     if (minsec==0) minsec = rlyttl[x];
                     if (minsec>rlyttl[x]) {
                         minsec = rlyttl[x];
@@ -322,10 +346,26 @@ void loop(void) {
                     digitalWrite(RLY1+x,HIGH);  // Relay BREAK
                 }
             }
-            if (minsec>0) {
-                snprintf(line1,21,"REMAINING=%3d",minsec);
-            } else {
-                strcpy_P(line1,(char *)pgm_read_word(&(str_main[12])));
+            if (abco2_error == 0) {
+                if (abco2_pmode != abco2_cmode) {
+                    abco2_pmode = abco2_cmode;
+                    opeABCO2(abco2_cmode);
+                }
+            }
+            switch(abco2_cmode) {
+            case 0:
+            case 1:
+            case 2:
+            case 6:
+                snprintf(line1,21,"MODE=%d ERR=%d",abco2_cmode,abco2_error);
+                break;
+            default:
+                if (minsec>0) {
+                    snprintf(line1,21,"REMAINING=%3d",minsec);
+                } else {
+                    strcpy_P(line1,(char *)pgm_read_word(&(str_main[12])));
+                }
+                break;
             }
             lcdd.setLine(cposp,3,line1);
             lcdd.LineWrite(cposp,3);
@@ -348,6 +388,10 @@ void loop(void) {
             for (r=1;r<CCM_TBL_CNT_TX;r++) {
                 sendUECSpacket(r,itoa(rlyttl[r-1],buf,DEC),10);
             }
+        }
+        if (period60sec==1) {
+            period60sec=0;
+            opeABCO2(abco2_pmode);  // re-send ABCO2 mode condition
         }
         if (period1hour==1) {
             period1hour = 0;
