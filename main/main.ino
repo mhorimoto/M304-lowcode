@@ -48,6 +48,8 @@ char *pgname = "M304 ABCO2-009 ";
 #define CCM_TBL_CNT_TX  10
 #define CCM_TBL_CNT_CMP 10
 
+#define ABCO2_IPADDRESS  0x70 
+
 #define TCNT1_1SEC      3473   // TNCT1 value for 0.993sec
 
 char uecsbuf[LEN_UECSXML_BUFFER+1];
@@ -89,6 +91,9 @@ EthernetUDP UECS_UDP16521;
 EthernetServer httpd(80);
 EthernetClient UECSclient;
 IPAddress broadcastIP;
+
+IPAddress abco2msg_host(61,127,249,153);
+const int abco2msg_port = 80;
 
 int cposx,cposy,cposp;
 int cmode=RUN;
@@ -225,6 +230,12 @@ void setup(void) {
     pinMode(11,OUTPUT);  // CMPOPE2 Matching indicator
     pinMode(12,OUTPUT);  // CMPOPE3 Matching indicator
     pinMode(13,OUTPUT);  // CMPOPE4 Matching indicator
+    //
+    // ABCO2 Target IP setup
+    //
+    if (atmem.read(ABCO2_IPADDRESS)!=0xff) {
+        abco2msg_host = getIPAddressFromEEPROM(ABCO2_IPADDRESS);
+    }
     //
     // Setup Timer1 Interrupt
     //

@@ -2,13 +2,13 @@
 
 //IPAddress abco2msg_host(133,5,78,102);
 //const int abco2msg_port = 52200;
-IPAddress abco2msg_host(61,127,249,153);
-const int abco2msg_port = 80;
 const char abco2msg_on[]  PROGMEM = "/1?L=0&L=2&L=";
 const char abco2msg_off[] PROGMEM = "/1?L=1&L=2&L=";
 const char abco2msg_fix[] PROGMEM = "&L=0&L=\"CO2\"&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&S=send";
 
 void opeABCO2(int co2set) {
+    extern IPAddress abco2msg_host;
+    extern const int abco2msg_port;
     extern void sendUECSpacket(int,char *,int);
     char urlbuf[HTTPBUFSIZ],varbuf[20],headbuf[80];
     EthernetClient ec;
