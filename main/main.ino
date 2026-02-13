@@ -5,6 +5,7 @@
 #include <avr/pgmspace.h>
 #include <yxml.h>
 #include <string.h>
+#include <utility/w5500.h>
 
 #if _M304_H_V < 1319
 #error "Library M304 is old. Version 1.3.19 or higher is required."
@@ -21,7 +22,7 @@ void get_mcusr(void) {
     wdt_disable();
 }
 
-char *pgname = "M304 ABCO2-009 ";
+char *pgname = "M304 ABCO2-013 ";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -152,7 +153,6 @@ void setup(void) {
     IPAddress hostip,subnet,gateway,dns;
     float tesfval;
     tmElements_t tm;
-    
     copyVersionCode(0x7ff0,pgname);
     m304Init();
     Serial.begin(115200);
@@ -184,6 +184,11 @@ void setup(void) {
         Ethernet.begin(st_m.mac,st_m.ip,st_m.dns,st_m.gw,st_m.subnet);
         st_m.dhcpflag = false;
     }
+// W5500のリトライ設定を短縮
+  // 1 = 100マイクロ秒単位。2000なら200ミリ秒。
+    w5500.setRetransmissionTime(2000); 
+  // リトライ回数を設定（デフォルトは8回）
+    w5500.setRetransmissionCount(3);    
     configure_wdt();
     msgRun1st();
     wdt_reset();

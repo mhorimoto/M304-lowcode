@@ -12,6 +12,7 @@ void opeABCO2(int co2set) {
     extern void sendUECSpacket(int,char *,int);
     char urlbuf[HTTPBUFSIZ],varbuf[20],headbuf[80];
     EthernetClient ec;
+    int result;
     if (co2set<0) return;
     switch(co2set) {
     case 0:
@@ -26,7 +27,15 @@ void opeABCO2(int co2set) {
     strcat_P(urlbuf,abco2msg_fix);
     sendUECSpacket(0,"0x22000",0); // 0x22000
     wdt_reset();
-    if (ec.connect(abco2msg_host,abco2msg_port)) {
+    ec.setTimeout(3000);
+    Serial.print(F("ABCO2 Connect to "));
+    Serial.print(abco2msg_host);
+    Serial.print(F(":"));
+    Serial.println(abco2msg_port);    
+    result = ec.connect(abco2msg_host,abco2msg_port);
+    Serial.print(F("ABCO2 Connect Result="));
+    Serial.println(result);
+    if (result==1) {
         sendUECSpacket(0,"0x22001",0); // 0x22001
         ec.print(F("GET "));
         ec.print(urlbuf);
@@ -49,6 +58,9 @@ void opeABCO2(int co2set) {
         sendUECSpacket(0,"0x22002",0); // 0x22002
     } else {
         sendUECSpacket(0,"0x22003",0); // 0x22003
+        Serial.print(F("ABCO2 Connect Fail") );
+        Serial.print(F("    ErrCode="));
+        Serial.println(result);
     }
 }
 
