@@ -1,10 +1,8 @@
 #define HTTPBUFSIZ  512 // 2.3.6D
 
-//IPAddress abco2msg_host(133,5,78,102);
-//const int abco2msg_port = 52200;
-const char abco2msg_on[]  PROGMEM = "/1?L=0&L=2&L=";
-const char abco2msg_off[] PROGMEM = "/1?L=1&L=2&L=";
-const char abco2msg_fix[] PROGMEM = "&L=0&L=\"CO2\"&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&S=send";
+const char abco2msg_on[]  PROGMEM = "/1?L=0&L=1&L=";
+const char abco2msg_off[] PROGMEM = "/1?L=1&L=1&L=";
+const char abco2msg_fix[] PROGMEM = "&L=0&L=500&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&L=0&S=send";
 
 void opeABCO2(int co2set) {
     extern IPAddress abco2msg_host;
