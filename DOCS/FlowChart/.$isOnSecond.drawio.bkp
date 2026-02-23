@@ -1,0 +1,173 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
+  <diagram name="ページ-1" id="EluXhm9Gv67_0C-0I4Ht">
+    <mxGraphModel dx="482" dy="437" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="583" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-1" parent="1" style="rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=2;" value="開始: isOnSecond" vertex="1">
+          <mxGeometry height="39" width="149" x="165" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-2" parent="1" style="shape=parallelogram;perimeter=parallelogramPerimeter;fixedSize=1;strokeWidth=2;whiteSpace=wrap;" value="引数: 開始, 終了, 現在時刻, 動作M0, 休憩D0&#xa;※すべて「秒」単位" vertex="1">
+          <mxGeometry height="51" width="302" x="88" y="109" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-3" parent="1" style="whiteSpace=wrap;strokeWidth=2;" value="時刻データを日の総秒数に変換&#xa;0 〜 86399" vertex="1">
+          <mxGeometry height="50" width="200" x="140" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-4" parent="1" style="rhombus;strokeWidth=2;whiteSpace=wrap;" value="終了 &lt; 開始 ?&#xa;日またぎ設定" vertex="1">
+          <mxGeometry height="70" width="174" x="153" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-5" parent="1" style="whiteSpace=wrap;strokeWidth=2;" value="終了時刻に 86400秒 加算" vertex="1">
+          <mxGeometry height="30" width="150" x="164" y="399" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-6" parent="1" style="rhombus;strokeWidth=2;whiteSpace=wrap;" value="現在 &lt; 開始 ?" vertex="1">
+          <mxGeometry height="50" width="132" x="174" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-7" parent="1" style="whiteSpace=wrap;strokeWidth=2;" value="現在時刻に 86400秒 加算" vertex="1">
+          <mxGeometry height="29" width="145" x="167.5" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-8" parent="1" style="rhombus;strokeWidth=2;whiteSpace=wrap;" value="範囲内か?&#xa;開始 &lt;= 現在 &lt; 終了" vertex="1">
+          <mxGeometry height="75" width="190" x="144" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-9" parent="1" style="rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=2;" value="戻り値 0: 範囲外OFF" vertex="1">
+          <mxGeometry height="39" width="130" x="23" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-10" parent="1" style="whiteSpace=wrap;strokeWidth=2;" value="サイクル = 動作M0 + 休憩D0" vertex="1">
+          <mxGeometry height="40" width="167" x="155.5" y="827" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-11" parent="1" style="rhombus;strokeWidth=2;whiteSpace=wrap;" value="サイクル == 0 ?" vertex="1">
+          <mxGeometry height="163" width="163" x="291" y="1495" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-12" parent="1" style="rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=2;" value="戻り値 3: 常時ON" vertex="1">
+          <mxGeometry height="39" width="150" x="170" y="1763" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-13" parent="1" style="whiteSpace=wrap;strokeWidth=2;" value="サイクル内の経過時間算出&#xa;pos = 現在 - 開始 % サイクル" vertex="1">
+          <mxGeometry height="102" width="260" x="370" y="1732" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-14" parent="1" style="rhombus;strokeWidth=2;whiteSpace=wrap;" value="pos &lt; 動作M0 ?" vertex="1">
+          <mxGeometry height="158" width="158" x="420" y="1884" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-15" parent="1" style="rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=2;" value="戻り値 1: 動作時間内ON" vertex="1">
+          <mxGeometry height="39" width="198" x="275" y="2116" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-16" parent="1" style="rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=2;" value="戻り値 0: 休憩時間中OFF" vertex="1">
+          <mxGeometry height="39" width="204" x="523" y="2116" as="geometry" />
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-17" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-1" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" target="oa9TcaaB7UWCSa0Ppbqq-2" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-18" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-2" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" target="oa9TcaaB7UWCSa0Ppbqq-3" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-19" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-3" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" target="oa9TcaaB7UWCSa0Ppbqq-4" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-20" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-4" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;exitDx=0;exitDy=0;" target="oa9TcaaB7UWCSa0Ppbqq-5" value="YES">
+          <mxGeometry relative="1" x="-0.6667" y="-20" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-21" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-5" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" target="oa9TcaaB7UWCSa0Ppbqq-6" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-22" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-6" style="curved=1;startArrow=none;endArrow=block;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=-0.069;entryDx=0;entryDy=0;entryPerimeter=0;" target="oa9TcaaB7UWCSa0Ppbqq-7" value="YES">
+          <mxGeometry relative="1" x="-0.5" y="-20" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points" />
+            <mxPoint x="260" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-23" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-6" style="curved=1;startArrow=none;endArrow=block;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" value="NO">
+          <mxGeometry relative="1" x="-0.8341" y="-5" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="120" y="495" />
+              <mxPoint x="120" y="610" />
+            </Array>
+            <mxPoint x="70" y="490" as="sourcePoint" />
+            <mxPoint x="240" y="610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-24" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-7" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="oa9TcaaB7UWCSa0Ppbqq-8" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+            <mxPoint x="230" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-25" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-4" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.5;rounded=0;exitDx=0;exitDy=0;" value="NO">
+          <mxGeometry relative="1" x="-0.9095" y="5" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="400" y="325" />
+              <mxPoint x="390" y="610" />
+            </Array>
+            <mxPoint x="240" y="610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-26" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-8" style="curved=1;startArrow=none;endArrow=block;exitX=0;exitY=0.5;rounded=0;exitDx=0;exitDy=0;" target="oa9TcaaB7UWCSa0Ppbqq-9" value="NO">
+          <mxGeometry relative="1" x="-0.6861" y="-9" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="88" y="670" />
+            </Array>
+            <mxPoint x="80" y="970" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-27" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-8" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;rounded=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="oa9TcaaB7UWCSa0Ppbqq-10" value="YES">
+          <mxGeometry relative="1" x="-0.7541" y="-19" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points" />
+            <mxPoint x="239" y="810" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-28" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-10" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;rounded=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+            <mxPoint x="240" y="910" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-29" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-11" style="curved=1;startArrow=none;endArrow=block;exitX=0;exitY=0.96;entryX=0.5;entryY=0.01;rounded=0;" target="oa9TcaaB7UWCSa0Ppbqq-12" value="YES">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="245" y="1695" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-30" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-11" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.96;entryX=0.5;entryY=0;rounded=0;" target="oa9TcaaB7UWCSa0Ppbqq-13" value="NO">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="500" y="1695" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-31" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-13" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" target="oa9TcaaB7UWCSa0Ppbqq-14" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-32" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-14" style="curved=1;startArrow=none;endArrow=block;exitX=0;exitY=0.97;entryX=0.5;entryY=0.01;rounded=0;" target="oa9TcaaB7UWCSa0Ppbqq-15" value="YES">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="374" y="2079" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oa9TcaaB7UWCSa0Ppbqq-33" edge="1" parent="1" source="oa9TcaaB7UWCSa0Ppbqq-14" style="curved=1;startArrow=none;endArrow=block;exitX=1.01;exitY=0.97;entryX=0.5;entryY=0.01;rounded=0;" target="oa9TcaaB7UWCSa0Ppbqq-16" value="NO">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="625" y="2079" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

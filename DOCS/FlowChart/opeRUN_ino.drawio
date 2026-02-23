@@ -1,0 +1,141 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
+  <diagram name="ページ-1" id="reT7wV-SWu9yJ8IQVS4s">
+    <mxGraphModel dx="482" dy="437" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="583" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-1" parent="1" style="rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=2;" value="開始: opeRUN / 1秒毎" vertex="1">
+          <mxGeometry height="39" width="182" x="272" y="28" as="geometry" />
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-2" parent="1" style="whiteSpace=wrap;strokeWidth=2;" value="変数初期化: rlyttlのリセット等" vertex="1">
+          <mxGeometry height="36" width="180" x="274" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-4" parent="1" style="strokeWidth=2;shape=process;whiteSpace=wrap;size=0.04;" value="isOnSecond&#xa;関数呼び出し" vertex="1">
+          <mxGeometry height="39" width="162" x="283.5" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-5" parent="1" style="rhombus;strokeWidth=2;whiteSpace=wrap;" value="isOnSecondの結果" vertex="1">
+          <mxGeometry height="50" width="150" x="290" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-7" parent="1" style="strokeWidth=2;shape=process;whiteSpace=wrap;size=0.04;" value="OFF系URL生成" vertex="1">
+          <mxGeometry height="23" width="119" x="425" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-8" parent="1" style="rhombus;strokeWidth=2;whiteSpace=wrap;" value="状態に変化あり?" vertex="1">
+          <mxGeometry height="50" width="172" x="279" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-9" parent="1" style="shape=parallelogram;perimeter=parallelogramPerimeter;fixedSize=1;strokeWidth=2;whiteSpace=wrap;" value="シリアル出力 &amp; UECSパケット送信" vertex="1">
+          <mxGeometry height="40" width="224" x="253" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-10" parent="1" style="whiteSpace=wrap;strokeWidth=2;" value="次の設定へ" vertex="1">
+          <mxGeometry height="30" width="90" x="320" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-12" parent="1" style="shape=parallelogram;perimeter=parallelogramPerimeter;fixedSize=1;strokeWidth=2;whiteSpace=wrap;" value="digitalWrite: 物理リレー駆動" vertex="1">
+          <mxGeometry height="30" width="200" x="265" y="880" as="geometry" />
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-13" parent="1" style="rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=2;" value="終了" vertex="1">
+          <mxGeometry height="39" width="57" x="336.5" y="958" as="geometry" />
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-14" parent="1" style="whiteSpace=wrap;strokeWidth=2;" value="Func_isOnSecond" vertex="1">
+          <mxGeometry height="54" width="133" x="504" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-15" edge="1" parent="1" source="1YAVeOGJkJb_JXXhmWGM-1" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=0.99;entryX=0.5;entryY=0;rounded=0;" target="1YAVeOGJkJb_JXXhmWGM-2" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-16" edge="1" parent="1" source="1YAVeOGJkJb_JXXhmWGM-2" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;entryDx=0;entryDy=0;exitDx=0;exitDy=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+            <mxPoint x="364.5" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-17" edge="1" parent="1" source="1njRT0IOCGLXtltb3Ttm-1" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;rounded=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" target="1YAVeOGJkJb_JXXhmWGM-4" value="各設定について実行">
+          <mxGeometry relative="1" x="0.018" y="-55" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points" />
+            <mxPoint x="364" y="230" as="sourcePoint" />
+            <mxPoint x="364" y="292" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-18" edge="1" parent="1" source="1YAVeOGJkJb_JXXhmWGM-4" style="curved=1;startArrow=none;endArrow=block;entryX=0.5;entryY=0;rounded=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="1YAVeOGJkJb_JXXhmWGM-5" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+            <mxPoint x="365" y="320" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-19" edge="1" parent="1" source="1YAVeOGJkJb_JXXhmWGM-5" style="startArrow=none;endArrow=block;exitX=0;exitY=0.5;entryX=0.5;entryY=0;rounded=0;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;" target="1YAVeOGJkJb_JXXhmWGM-6" value="1, 2, 3 (ON系統)">
+          <mxGeometry relative="1" x="-0.2271" y="-15" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-20" edge="1" parent="1" source="1YAVeOGJkJb_JXXhmWGM-5" style="startArrow=none;endArrow=block;entryX=0.5;entryY=0;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;" target="1YAVeOGJkJb_JXXhmWGM-7" value="0 (OFF)">
+          <mxGeometry relative="1" x="-0.196" y="15" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="450" y="600" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-21" edge="1" parent="1" source="1YAVeOGJkJb_JXXhmWGM-6" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;rounded=0;edgeStyle=orthogonalEdgeStyle;exitDx=0;exitDy=0;exitPerimeter=0;" target="1YAVeOGJkJb_JXXhmWGM-8" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="242" y="500" />
+              <mxPoint x="365" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-22" edge="1" parent="1" source="1YAVeOGJkJb_JXXhmWGM-7" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;rounded=0;edgeStyle=orthogonalEdgeStyle;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="485" y="500" />
+              <mxPoint x="365" y="500" />
+            </Array>
+            <mxPoint x="365" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-23" edge="1" parent="1" source="1YAVeOGJkJb_JXXhmWGM-8" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;exitDx=0;exitDy=0;" target="1YAVeOGJkJb_JXXhmWGM-9" value="YES">
+          <mxGeometry relative="1" x="-0.5" y="-15" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-24" edge="1" parent="1" source="1YAVeOGJkJb_JXXhmWGM-8" style="startArrow=none;endArrow=block;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;" value="NO">
+          <mxGeometry relative="1" x="-0.9492" y="-15" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="210" y="565" />
+              <mxPoint x="210" y="700" />
+            </Array>
+            <mxPoint x="190" y="570" as="sourcePoint" />
+            <mxPoint x="360" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-25" edge="1" parent="1" source="1YAVeOGJkJb_JXXhmWGM-9" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;entryDx=0;entryDy=0;" target="1YAVeOGJkJb_JXXhmWGM-10" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-26" edge="1" parent="1" source="1YAVeOGJkJb_JXXhmWGM-10" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" target="1njRT0IOCGLXtltb3Ttm-5" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="365" y="800" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-28" edge="1" parent="1" source="1njRT0IOCGLXtltb3Ttm-5" style="startArrow=none;endArrow=block;entryX=0.5;entryY=-0.01;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;" target="1YAVeOGJkJb_JXXhmWGM-12" value="YES">
+          <mxGeometry relative="1" x="-0.3008" y="-15" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="365" y="853" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-29" edge="1" parent="1" source="1YAVeOGJkJb_JXXhmWGM-12" style="curved=1;startArrow=none;endArrow=block;entryX=0.49;entryY=-0.01;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="1YAVeOGJkJb_JXXhmWGM-13" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+            <mxPoint x="364.5" y="910" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1njRT0IOCGLXtltb3Ttm-1" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.loop_limit;whiteSpace=wrap;" value="全CCM設定を走査" vertex="1">
+          <mxGeometry height="40" width="106" x="311.5" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="1YAVeOGJkJb_JXXhmWGM-6" parent="1" style="strokeWidth=2;shape=process;whiteSpace=wrap;size=0.04;" value="ON系URL生成" vertex="1">
+          <mxGeometry height="23" width="119" x="182" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="1njRT0IOCGLXtltb3Ttm-5" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.loop_limit;whiteSpace=wrap;direction=west;" value="全CCM終了?" vertex="1">
+          <mxGeometry height="40" width="100" x="315" y="800" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
