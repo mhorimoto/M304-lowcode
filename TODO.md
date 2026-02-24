@@ -1,5 +1,9 @@
 # TO DO LIST
 
+## 23rd Feb 2026 ABCO2-013
+1. START HOUSEに設置した．
+2. 送信先IPアドレスはEEPROM 0x0070から4バイトで指定する．
+
 ## 18th Jan 2026 ABCO2-005
 1. 【ABCO2】HTTPでABCO2本体へコマンドを投げる機能試験．完了．
     SELECT_VRで1,2,6を選択してその時にHTTPを投げている．
