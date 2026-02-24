@@ -10,8 +10,8 @@
 \usepackage[top=25mm, bottom=25mm, left=20mm, right=20mm]{geometry}
 
 % タイトル情報
-\title{CO$_2$貯留・放散装置向け制御基板(M304)用ファームウェア仕様書}
-\author{氏名}
+\title{CO$_2$貯留・放散装置向け制御基板(M304)用\\ファームウェア仕様書}
+\author{ラボサポート九州　－Lab Support Q-shu－}
 \date{\today}
 
 \begin{document}
@@ -32,7 +32,7 @@
 \noindent
 % 左側のブロック（幅を全体の55%に設定）
 \begin{minipage}[t]{0.55\textwidth}
-    \vspace{0pt} % 上端を揃えるためのおまじない
+    \vspace{0pt} 
     \centering
     % 高さをテキスト領域の85%に制限してページオーバーを防ぐ
     \includegraphics[width=\linewidth, height=0.85\textheight, keepaspectratio]{main_ino.drawio.pdf}
@@ -45,12 +45,14 @@
     \vspace{0pt}
     システムの起動から初期化，および定常状態におけるメインループの処理フローを左図に示す．．
     
-    ハードウェア初期化後，EEPROM から設定を読み込み，ネットワークの確立を経て自律制御ループへと移行する．．DHCP の有効・無効によって IP アドレスの取得方法が分岐し，最終的に UDP/HTTP サーバが立ち上がる．．
+    ハードウェア初期化後，EEPROM から設定を読み込み，ネットワークの確立を経て自律制御ループへと移行する．
+    DHCP の有効・無効によって IP アドレスの取得方法が分岐し，最終的に UDP/HTTP サーバが立ち上がる．
     
-    ループ開始後は \texttt{cmode} 変数の値に従い，各機能（\texttt{opeRUN}, \texttt{opeNET}, \texttt{opeRTC} 等）の処理へディスパッチされ，最後に \texttt{packetProc} による共通パケット処理とウォッチドッグタイマー（WDT）のリセットが行われる．．
+    ループ開始後は \texttt{cmode} 変数の値に従い，各機能(\texttt{opeRUN}, \texttt{opeNET}, \texttt{opeRTC} 等)の処理へディスパッチされ，
+    最後に \texttt{packetProc} による共通パケット処理とウォッチドッグタイマー(WDT)のリセットが行われる．
 \end{minipage}
 
-\clearpage % ページを強制的に分割
+\clearpage
 
 % ==========================================
 \section{自動制御・データ送信 (\texttt{opeRUN()})}
@@ -70,15 +72,17 @@
 
     処理は大きく分けて以下の2段階で構成される：．
     
-    \begin{enumerate}
-        \item \textbf{自律リレー制御}:．\\
-        内蔵 RTC (Real Time Clock) から取得した現在時刻に基づき，各リレーに対応するスケジュール設定を評価する．．ここで前述の \texttt{isOnSecond()} が呼び出され，1秒単位の精度で物理的なハードウェア操作が実行される．．
+    \begin{itemize}
+        \item \textbf{ABCO2制御}:\\
+        内蔵 RTC (Real Time Clock) から取得した現在時刻に基づき，対応するABCO2制御スケジュール設定を評価する．
+        ここで前述の \texttt{isOnSecond()} が呼び出され，1秒単位の精度で物理的なABCO2へのハードウェア操作が実行される．
         
-        \item \textbf{UECS データの送出}:．\\
-        EEPROM 内の TX CCM（送信設定）テーブルを走査し，規定のインターバル（通常1秒間隔）ごとに，自ノードの計測値や動作状態を UECS 規格の XML パケットとしてネットワークへ送出する．．
-    \end{enumerate}
+        \item \textbf{UECS データの送出}:\\
+        EEPROM 内の TX CCM（送信設定）テーブルを走査し，規定のインターバル（通常1秒間隔）ごとに，
+        自ノードの計測値や動作状態を UECS 規格の XML パケットとしてネットワークへ送出する．
+    \end{itemize}
 
-    このループを繰り返すことで，外部サーバに依存しない独立した自律制御と，UECS 規格による相互監視・記録の両立を実現している．．
+    このループを繰り返すことで，外部サーバに依存しない独立した自律制御と，UECS 規格による相互監視・記録の両立を実現している．
 \end{minipage}
 
 \clearpage
@@ -97,11 +101,15 @@
 \hfill
 \begin{minipage}[t]{0.4\textwidth}
     \vspace{0pt}
-    本システムにおけるアクチュエータの動作判定は，秒単位の高精度な計算によって行われる．．
+    本システムにおけるアクチュエータの動作判定は，秒単位の高精度な計算によって行われる．
     
-    従来バージョンの分単位判定から改良され，1日の総秒数（86400秒）を基準とすることで，日またぎの動作や微細な間欠動作を正確に処理する設計となっている．．
+    従来バージョンの分単位判定から改良され，1日の総秒数（86400秒）を基準とすることで，
+    日またぎの動作や微細な間欠動作を正確に処理する設計となっている．
     
-    引数として与えられた開始時刻と終了時刻を秒単位の整数値に正規化し，現在時刻がその範囲内に収まっているかを判定する．．範囲内の場合，さらに動作時間（\texttt{M0}）と休憩時間（\texttt{D0}）を加算したサイクル時間を算出し，現在の経過時間が動作時間内であるかによって最終的な ON/OFF（戻り値 1 または 0）を決定する．．
+    引数として与えられた開始時刻と終了時刻を秒単位の整数値に正規化し，
+    現在時刻がその範囲内に収まっているかを判定する．
+    範囲内の場合，さらに動作時間(\texttt{M0})と休憩時間(\texttt{D0})を加算したサイクル時間を算出し，
+    現在の経過時間が動作時間内であるかによって最終的な ON/OFF(戻り値 1 または 0)を決定する．
 \end{minipage}
 
 \clearpage
@@ -120,20 +128,22 @@
 \hfill
 \begin{minipage}[t]{0.4\textwidth}
     \vspace{0pt}
-    \texttt{opeNET()} 関数は，Ethernet W5500 コントローラを制御し，本システムが UECS ネットワーク内で通信を行うための物理層およびネットワーク層のセットアップを行うモジュールである．．
+    \texttt{opeNET()} 関数は，Ethernet W5500 コントローラを制御し，
+    本システムが UECS ネットワーク内で通信を行うための物理層およびネットワーク層のセットアップを行うモジュールである．
 
-    本モジュールの主な特徴は以下の通りである：．
+    本モジュールの主な特徴は以下の通りである：
     
     \begin{itemize}
-        \item \textbf{柔軟なアドレス割り当て}:．\\
-        EEPROM 内の設定フラグを参照し，DHCP による動的取得と，あらかじめ指定された固定 IP アドレスの適用を切り替える．．
-        \item \textbf{堅牢な接続性}:．\\
-        DHCP による取得に失敗した場合には，即座にデフォルトの固定 IP 設定を適用するフォールバック機能を備えており，ネットワークトラブル時でもノードの完全な孤立を防ぐ設計となっている．．
-        \item \textbf{サービス起動}:．\\
-        IP アドレス確定後，UECS 通信に必要な UDP ポートのリスニングおよび，Web 設定画面を提供するための HTTP サーバーを起動する．．
+        \item \textbf{柔軟なアドレス割り当て}:\\
+        EEPROM 内の設定フラグを参照し，DHCP による動的取得と，あらかじめ指定された固定 IP アドレスの適用を切り替える．
+        \item \textbf{堅牢な接続性}:\\
+        DHCP による取得に失敗した場合には，即座にデフォルトの固定 IP 設定を適用するフォールバック機能を備えており，
+        ネットワークトラブル時でもノードの完全な孤立を防ぐ設計となっている．
+        \item \textbf{サービス起動}:\\
+        IP アドレス確定後，UECS 通信に必要な UDP ポートのリスニングおよび，Web 設定画面を提供するための HTTP サーバーを起動する．
     \end{itemize}
 
-    本処理は主に起動時および，設定変更によるネットワーク再起動要求が発生した際に実行される．．
+    本処理は主に起動時および，設定変更によるネットワーク再起動要求が発生した際に実行される．
 \end{minipage}
 
 \clearpage
@@ -152,13 +162,66 @@
 \hfill
 \begin{minipage}[t]{0.35\textwidth}
     \vspace{0pt}
-    外部ノードからの制御要求やセンサ値のブロードキャストを受信する処理を左図に示す．．
+    外部ノードからの制御要求やセンサ値のブロードキャストを受信する処理を左図に示す．
     
-    本処理はノンブロッキングで設計されており，UDP パケットが到達していない場合は即座に処理を返す．．パケットを受信した場合は UECS 規格に基づいてデータを抽出し，EEPROM から展開された RX CCM テーブル（最大 \texttt{CCM\_TBL\_CNT\_RX} 件）と順次照合する．．
+    本処理はノンブロッキングで設計されており，UDP パケットが到達していない場合は即座に処理を返す．
+    パケットを受信した場合は UECS 規格に基づいてデータを抽出し，
+    EEPROM から展開された RX CCM テーブル(最大 \texttt{CCM\_TBL\_CNT\_RX} 件)と順次照合する．
     
-    \texttt{type} および \texttt{room} が合致した場合，設定された条件式による比較判定を行い，対応するリレー操作フラグを更新することで，他ノードと連動した協調動作を実現している．．
+    \texttt{type} および \texttt{room} が合致した場合，設定された条件式による比較判定を行い，
+    対応するリレー操作フラグを更新することで，他ノードと連動した協調動作を実現している．
+    本装置では，リレーの代わりに対応するURLを生成してABCO2制御関数に渡すことで，
+    外部からの制御要求をABCO2の動作に反映させる設計となっている．
 \end{minipage}
 
 \clearpage
+% ==========================================
+% --- opeABCO2 ---
+\section{外部機器連携 (\texttt{opeABCO2()})}
+\noindent
+\begin{minipage}[t]{0.55\textwidth}
+    \vspace{0pt}\centering
+    \includegraphics[width=\linewidth, height=0.85\textheight, keepaspectratio]{opeABCO2.drawio.pdf}
+    \captionof{figure}{\texttt{opeABCO2()} の通信フロー}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.4\textwidth}
+    \vspace{0pt}外部のCO2制御装置に対してHTTPクライアントとして接続を行う．
+    \texttt{co2set} の値に応じたGETリクエストを構築し，通信状態をUECSパケット(0x22000〜)で報告する．
+\end{minipage}
+\clearpage
+% ==========================================
+% --- opeRTC ---
+\section{時刻管理 (\texttt{opeRTC()})}
+\noindent
+\begin{minipage}[t]{0.55\textwidth}
+    \vspace{0pt}\centering
+    \includegraphics[width=\linewidth, height=0.85\textheight, keepaspectratio]{opeRTC_ino.drawio.pdf}
+    \captionof{figure}{時刻同期処理フロー}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.4\textwidth}
+    \vspace{0pt}NTPサーバとの通信を行い，内蔵RTCの時刻を校正する．
+    自律制御の精度を維持するため，定期的な同期とタイムアウト時のフォールバック処理を行う．
+\end{minipage}
+\clearpage
+% ==========================================
+% --- opeEEPROM / opeHttpd ---
+\section{設定管理とWeb GUI}
+\noindent
+\begin{minipage}[t]{0.55\textwidth}
+    \vspace{0pt}\centering
+    \includegraphics[width=\linewidth, height=0.42\textheight, keepaspectratio]{opeEEPROM_ino.drawio.pdf}\\
+    \vspace{10pt}
+    \includegraphics[width=\linewidth, height=0.42\textheight, keepaspectratio]{opeHttpd_ino.drawio.pdf}
+    \captionof{figure}{設定保存とWebサーバ処理}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.4\textwidth}
+    \vspace{0pt}\texttt{opeEEPROM} はシリアルコンソールやWebからの設定変更を物理メモリに永続化する．\\
+    \texttt{opeHttpd} はWebブラウザに対し，現在の動作状態の表示および設定変更用のUIを提供するのではなく，
+    本装置の設定変更を反映するためのHTTPサーバーとして動作する．特に，画面UIを持つことはなく，
+    メモリの読み書き要求を処理するためのエンドポイントを提供する設計となっている．
+\end{minipage}
 
 \end{document}

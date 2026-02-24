@@ -1,4 +1,4 @@
-This is e-pTeX, Version 3.141592653-p3.9.1-210218-2.6 (utf8.euc) (TeX Live 2022/dev/Debian) (preloaded format=platex 2026.1.30)  24 FEB 2026 21:01
+This is e-pTeX, Version 3.141592653-p3.9.1-210218-2.6 (utf8.euc) (TeX Live 2022/dev/Debian) (preloaded format=platex 2026.1.30)  24 FEB 2026 21:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -529,14 +529,20 @@ File: main_ino.drawio.pdf Graphic file (type pdf)
 ]
 File: opeRUN_ino.drawio.pdf Graphic file (type pdf)
 <opeRUN_ino.drawio.pdf>
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 7
+6.
+
+(/usr/share/texmf/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
 LaTeX Font Info:    Font shape `JT1/mc/bx/n' in size <11> not available
-(Font)              Font shape `JT1/gt/m/n' tried instead on input line 74.
+(Font)              Font shape `JT1/gt/m/n' tried instead on input line 76.
 LaTeX Font Info:    Font shape `JT1/gt/m/n' will be
-(Font)              scaled to size 11.0pt on input line 74.
+(Font)              scaled to size 11.0pt on input line 76.
 LaTeX Font Info:    Font shape `JY1/mc/bx/n' in size <11> not available
-(Font)              Font shape `JY1/gt/m/n' tried instead on input line 74.
+(Font)              Font shape `JY1/gt/m/n' tried instead on input line 76.
 LaTeX Font Info:    Font shape `JY1/gt/m/n' will be
-(Font)              scaled to size 11.0pt on input line 74.
+(Font)              scaled to size 11.0pt on input line 76.
  [3
 
 ]
@@ -547,30 +553,39 @@ File: isOnSecond.drawio.pdf Graphic file (type pdf)
 ]
 File: opeNET_ino.drawio.pdf Graphic file (type pdf)
 <opeNET_ino.drawio.pdf>
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
-28.
-
-(/usr/share/texmf/tex/latex/lm/ts1lmr.fd
-File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
-) [5
+ [5
 
 ]
 File: packetProc.drawio.pdf Graphic file (type pdf)
 <packetProc.drawio.pdf>
  [6
 
-] (./abco2-fw-flowchart.aux)
+]
+File: opeABCO2.drawio.pdf Graphic file (type pdf)
+<opeABCO2.drawio.pdf>
+ [7
 
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+]
+File: opeRTC_ino.drawio.pdf Graphic file (type pdf)
+<opeRTC_ino.drawio.pdf>
+ [8
 
- ) 
+]
+File: opeEEPROM_ino.drawio.pdf Graphic file (type pdf)
+<opeEEPROM_ino.drawio.pdf>
+File: opeHttpd_ino.drawio.pdf Graphic file (type pdf)
+<opeHttpd_ino.drawio.pdf>
+ [9
+
+]
+(./abco2-fw-flowchart.aux) ) 
 Here is how much of TeX's memory you used:
- 6803 strings out of 479850
- 136604 string characters out of 5887378
- 414923 words of memory out of 5000000
- 25031 multiletter control sequences out of 15000+600000
+ 6823 strings out of 479850
+ 137126 string characters out of 5887378
+ 417925 words of memory out of 5000000
+ 25043 multiletter control sequences out of 15000+600000
  551655 words of font info for 143 fonts, out of 8000000 for 9000
  264 hyphenation exceptions out of 8191
  73i,6n,77p,864b,367s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on abco2-fw-flowchart.dvi (6 pages, 12060 bytes).
+Output written on abco2-fw-flowchart.dvi (9 pages, 16776 bytes).

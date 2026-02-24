@@ -49,3 +49,11 @@ tmp/*
 # Environment
 .env
 
+# TeX
+*.dvi
+*.toc
+*.aux
+*.out
+*.bkp
+texput.log
+
