@@ -1,0 +1,111 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
+  <diagram name="ページ-1" id="cYZ1OqNBD22gWGEhTsJg">
+    <mxGraphModel dx="613" dy="364" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="583" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-46" parent="1" style="rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=2;" value="開始: a3X.py" vertex="1">
+          <mxGeometry height="39" width="116" x="179" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-47" parent="1" style="rhombus;strokeWidth=2;whiteSpace=wrap;" value="引数の数を確認" vertex="1">
+          <mxGeometry height="61" width="166" x="154" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-48" parent="1" style="whiteSpace=wrap;strokeWidth=2;" value="コマンドライン引数をパースし&#xa;変数に格納" vertex="1">
+          <mxGeometry height="41" width="171" x="151.5" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-49" parent="1" style="whiteSpace=wrap;strokeWidth=2;" value="各設定値をバイト列の16進数文字列に変換&#xa;byte_arrange, string_arrange等を使用" vertex="1">
+          <mxGeometry height="39" width="260" x="107" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-51" parent="1" style="rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=2;" value="終了" vertex="1">
+          <mxGeometry height="39" width="57" x="50" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-52" parent="1" style="whiteSpace=wrap;strokeWidth=2;" value="変換した文字列を結合して&#xa;1つのデータペイロードを作成" vertex="1">
+          <mxGeometry height="40" width="180" x="147" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-53" parent="1" style="rhombus;strokeWidth=2;whiteSpace=wrap;" value="レコードサイズごとに&#xa;データを分割" vertex="1">
+          <mxGeometry height="60" width="216" x="129" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-54" parent="1" style="whiteSpace=wrap;strokeWidth=2;" value="インテルヘキサ形式にフォーマット&#xa;例: :サイズ アドレス 00 データ FF" vertex="1">
+          <mxGeometry height="40" width="201" x="136.5" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-56" edge="1" parent="1" source="TA3FzH52-LIW93Am-Lnk-46" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" target="TA3FzH52-LIW93Am-Lnk-47" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-57" edge="1" parent="1" source="TA3FzH52-LIW93Am-Lnk-47" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;exitDx=0;exitDy=0;" target="TA3FzH52-LIW93Am-Lnk-48" value="正常">
+          <mxGeometry relative="1" x="-0.5385" y="-17" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-58" edge="1" parent="1" source="TA3FzH52-LIW93Am-Lnk-48" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" target="TA3FzH52-LIW93Am-Lnk-49" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-59" edge="1" parent="1" source="TA3FzH52-LIW93Am-Lnk-47" style="startArrow=none;endArrow=block;exitX=1;exitY=0.5;rounded=0;edgeStyle=orthogonalEdgeStyle;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="TA3FzH52-LIW93Am-Lnk-67" value="異常・不足">
+          <mxGeometry relative="1" x="-0.7949" y="11" as="geometry">
+            <mxPoint y="1" as="offset" />
+            <mxPoint x="480" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-61" edge="1" parent="1" source="TA3FzH52-LIW93Am-Lnk-49" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" target="TA3FzH52-LIW93Am-Lnk-52" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-62" edge="1" parent="1" source="TA3FzH52-LIW93Am-Lnk-52" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" target="TA3FzH52-LIW93Am-Lnk-53" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-63" edge="1" parent="1" source="TA3FzH52-LIW93Am-Lnk-53" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="TA3FzH52-LIW93Am-Lnk-54" value="分割データあり">
+          <mxGeometry relative="1" x="-0.75" y="-47" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points" />
+            <mxPoint x="237" y="580" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-64" edge="1" parent="1" source="TA3FzH52-LIW93Am-Lnk-54" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="TA3FzH52-LIW93Am-Lnk-70" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="237" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-65" edge="1" parent="1" source="TA3FzH52-LIW93Am-Lnk-70" style="startArrow=none;endArrow=block;rounded=0;edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="237" y="750" />
+              <mxPoint x="370" y="750" />
+              <mxPoint x="370" y="420" />
+            </Array>
+            <mxPoint x="270" y="760" as="sourcePoint" />
+            <mxPoint x="240" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-66" edge="1" parent="1" source="TA3FzH52-LIW93Am-Lnk-53" style="startArrow=none;endArrow=block;exitX=0;exitY=0.5;rounded=0;edgeStyle=orthogonalEdgeStyle;exitDx=0;exitDy=0;entryX=0.351;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="TA3FzH52-LIW93Am-Lnk-51" value="すべて処理完了">
+          <mxGeometry relative="1" x="-0.9782" y="-20" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="70" y="470" />
+            </Array>
+            <mxPoint x="80" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-67" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.display;whiteSpace=wrap;" value="Usageを表示" vertex="1">
+          <mxGeometry height="50" width="100" x="400" y="195.5" as="geometry" />
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-68" parent="1" style="rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=2;" value="終了" vertex="1">
+          <mxGeometry height="39" width="57" x="421.5" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-69" edge="1" parent="1" source="TA3FzH52-LIW93Am-Lnk-67" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;exitDx=0;exitDy=0;exitPerimeter=0;entryDx=0;entryDy=0;" target="TA3FzH52-LIW93Am-Lnk-68" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+            <mxPoint x="452" y="240" as="sourcePoint" />
+            <mxPoint x="452" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TA3FzH52-LIW93Am-Lnk-70" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.display;whiteSpace=wrap;" value="標準出力にプリント" vertex="1">
+          <mxGeometry height="70" width="120" x="177" y="640" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,134 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
+  <diagram name="ページ-1" id="PPpheXDTR6Es09F1QZIU">
+    <mxGraphModel dx="1287" dy="765" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="583" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-1" parent="1" style="rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=2;" value="開始:a3sender" vertex="1">
+          <mxGeometry height="39" width="127" x="224" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-2" parent="1" style="rhombus;strokeWidth=2;whiteSpace=wrap;" value="引数の数を確認" vertex="1">
+          <mxGeometry height="51" width="166" x="204" y="109" as="geometry" />
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-4" parent="1" style="whiteSpace=wrap;strokeWidth=2;" value="指定されたURLへ&#xa;HTTP GETリクエストを送信" vertex="1">
+          <mxGeometry height="38" width="170" x="200" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-5" parent="1" style="rhombus;strokeWidth=2;whiteSpace=wrap;" value="HTTPステータス確認" vertex="1">
+          <mxGeometry height="40" width="197" x="186.5" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-7" parent="1" style="rhombus;strokeWidth=2;whiteSpace=wrap;" value="レスポンステキストを&#xa;行ごとにループ処理" vertex="1">
+          <mxGeometry height="80" width="237" x="166.5" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-8" parent="1" style="rhombus;strokeWidth=2;whiteSpace=wrap;" value="Hexフォーマットか判定&#xa;長さ&gt;6 かつ 7文字目が &#39;:&#39;" vertex="1">
+          <mxGeometry height="80" width="257" x="10" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-11" parent="1" style="rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=2;" value="終了" vertex="1">
+          <mxGeometry height="39" width="57" x="256.5" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-12" edge="1" parent="1" source="VBCgnTpmhw8pfUj-Zqo8-1" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" target="VBCgnTpmhw8pfUj-Zqo8-2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-13" edge="1" parent="1" source="VBCgnTpmhw8pfUj-Zqo8-2" style="startArrow=none;endArrow=block;exitX=0;exitY=0.5;rounded=0;edgeStyle=orthogonalEdgeStyle;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="VBCgnTpmhw8pfUj-Zqo8-24" value="不足">
+          <mxGeometry relative="1" x="-0.9702" y="-14" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="150" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-14" edge="1" parent="1" source="VBCgnTpmhw8pfUj-Zqo8-2" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;exitDx=0;exitDy=0;" target="VBCgnTpmhw8pfUj-Zqo8-4" value="正常">
+          <mxGeometry relative="1" x="-0.4339" y="-26" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-15" edge="1" parent="1" source="VBCgnTpmhw8pfUj-Zqo8-4" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" target="VBCgnTpmhw8pfUj-Zqo8-5" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-16" edge="1" parent="1" source="VBCgnTpmhw8pfUj-Zqo8-5" style="startArrow=none;endArrow=block;exitX=0;exitY=0.5;entryX=0.5;entryY=0;rounded=0;edgeStyle=orthogonalEdgeStyle;exitDx=0;exitDy=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="VBCgnTpmhw8pfUj-Zqo8-29" value="エラー">
+          <mxGeometry relative="1" x="-0.1067" y="20" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="446" y="835" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-17" edge="1" parent="1" source="VBCgnTpmhw8pfUj-Zqo8-5" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;exitDx=0;exitDy=0;" target="VBCgnTpmhw8pfUj-Zqo8-7" value="正常">
+          <mxGeometry relative="1" x="-0.9091" y="25" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-18" edge="1" parent="1" source="VBCgnTpmhw8pfUj-Zqo8-7" style="startArrow=none;endArrow=block;exitX=0;exitY=0.5;entryX=0.5;entryY=0;rounded=0;edgeStyle=orthogonalEdgeStyle;exitDx=0;exitDy=0;" target="VBCgnTpmhw8pfUj-Zqo8-8" value="未処理の行あり">
+          <mxGeometry relative="1" x="-0.7163" y="-48" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-19" edge="1" parent="1" source="VBCgnTpmhw8pfUj-Zqo8-8" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="VBCgnTpmhw8pfUj-Zqo8-33" value="Yes">
+          <mxGeometry relative="1" x="-0.7257" y="-19" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="138.5" y="840" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-21" edge="1" parent="1" source="VBCgnTpmhw8pfUj-Zqo8-8" style="startArrow=none;endArrow=block;exitX=1;exitY=0.5;entryX=0.55;entryY=-0.008;rounded=0;edgeStyle=orthogonalEdgeStyle;exitDx=0;exitDy=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="VBCgnTpmhw8pfUj-Zqo8-34" value="No">
+          <mxGeometry relative="1" x="-0.7717" y="10" as="geometry">
+            <mxPoint x="-1" as="offset" />
+            <mxPoint x="312.79999999999995" y="840" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-22" edge="1" parent="1" source="VBCgnTpmhw8pfUj-Zqo8-33" style="startArrow=none;endArrow=block;rounded=0;edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="140" y="920" />
+              <mxPoint x="140" y="960" />
+              <mxPoint x="460" y="960" />
+              <mxPoint x="460" y="480" />
+            </Array>
+            <mxPoint x="140" y="1080" as="sourcePoint" />
+            <mxPoint x="290" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-23" edge="1" parent="1" source="VBCgnTpmhw8pfUj-Zqo8-7" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;rounded=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="VBCgnTpmhw8pfUj-Zqo8-11" value="全行処理完了">
+          <mxGeometry relative="1" x="-0.5" y="45" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="310" y="640" as="sourcePoint" />
+            <mxPoint x="285" y="660" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-24" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.display;whiteSpace=wrap;" value="エラーメッセージを&lt;div&gt;表示&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="140" x="40" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-25" parent="1" style="rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=2;" value="終了" vertex="1">
+          <mxGeometry height="39" width="57" x="81.5" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-26" edge="1" parent="1" source="VBCgnTpmhw8pfUj-Zqo8-24" style="startArrow=none;endArrow=block;entryX=0.5;entryY=0;rounded=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" target="VBCgnTpmhw8pfUj-Zqo8-25" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="120" y="270" as="sourcePoint" />
+            <mxPoint x="119.5" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-29" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.display;whiteSpace=wrap;" value="エラーメッセージを&lt;div&gt;表示&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="140" x="90" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-30" edge="1" parent="1" source="VBCgnTpmhw8pfUj-Zqo8-29" style="startArrow=none;endArrow=block;entryX=0.5;entryY=0;rounded=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" target="VBCgnTpmhw8pfUj-Zqo8-31" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="159.5" y="470" as="sourcePoint" />
+            <mxPoint x="159.5" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-31" parent="1" style="rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=2;" value="終了" vertex="1">
+          <mxGeometry height="39" width="57" x="131.5" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-33" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.display;whiteSpace=wrap;" value="16進数データをアスキー文字に&lt;br style=&quot;padding: 0px; margin: 0px;&quot;&gt;変換しながらダンプ表示" vertex="1">
+          <mxGeometry height="70" width="180" x="48.5" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-34" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.display;whiteSpace=wrap;" value="行の文字列をそのまま出力" vertex="1">
+          <mxGeometry height="70" width="180" x="260" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="VBCgnTpmhw8pfUj-Zqo8-35" edge="1" parent="1" style="startArrow=none;endArrow=none;rounded=0;endFill=0;" value="">
+          <mxGeometry relative="1" x="-0.7257" y="-19" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="360" y="920" as="sourcePoint" />
+            <mxPoint x="360" y="960" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

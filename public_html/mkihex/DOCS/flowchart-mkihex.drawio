@@ -1,0 +1,132 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
+  <diagram name="ページ-1" id="ahb-Ykn1BbVHnQ-1R36K">
+    <mxGraphModel dx="527" dy="364" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="583" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-22" parent="1" style="rhombus;strokeWidth=2;whiteSpace=wrap;" value="設定対象に応じた&#xa;変換プログラムの呼び出し" vertex="1">
+          <mxGeometry height="80" width="270" x="128" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-23" parent="1" style="rounded=1;arcSize=20;strokeWidth=2" value="a3a.py" vertex="1">
+          <mxGeometry height="54" width="78" x="60" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-24" parent="1" style="rounded=1;arcSize=20;strokeWidth=2" value="a3b.py" vertex="1">
+          <mxGeometry height="54" width="78" x="168" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-25" parent="1" style="rounded=1;arcSize=20;strokeWidth=2" value="a3c.py" vertex="1">
+          <mxGeometry height="54" width="77" x="280" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-26" parent="1" style="rounded=1;arcSize=20;strokeWidth=2" value="a3d.py" vertex="1">
+          <mxGeometry height="54" width="78" x="398" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-28" parent="1" style="rounded=1;arcSize=20;strokeWidth=2" value="送信プログラム&#xa;a3sender.py 等" vertex="1">
+          <mxGeometry height="78" width="142" x="192" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-30" edge="1" parent="1" source="jJvdKDXfS60dwjoDXHtn-41" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;exitDx=0;exitDy=0;exitPerimeter=0;" target="jJvdKDXfS60dwjoDXHtn-22" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+            <mxPoint x="263" y="98" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-31" edge="1" parent="1" source="jJvdKDXfS60dwjoDXHtn-22" style="startArrow=none;endArrow=block;exitX=0;exitY=0.92;entryX=0.5;entryY=-0.01;rounded=0;edgeStyle=orthogonalEdgeStyle;" target="jJvdKDXfS60dwjoDXHtn-23" value="ネットワーク設定">
+          <mxGeometry relative="1" x="0.1761" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="190" y="230" />
+              <mxPoint x="99" y="230" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-32" edge="1" parent="1" source="jJvdKDXfS60dwjoDXHtn-22" style="startArrow=none;endArrow=block;exitX=0.31;exitY=1;entryX=0.5;entryY=-0.01;rounded=0;edgeStyle=orthogonalEdgeStyle;" target="jJvdKDXfS60dwjoDXHtn-24" value="リレー制御条件">
+          <mxGeometry relative="1" x="0.7773" y="-47" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-33" edge="1" parent="1" source="jJvdKDXfS60dwjoDXHtn-22" style="startArrow=none;endArrow=block;exitX=0.69;exitY=1;entryX=0.51;entryY=-0.01;rounded=0;edgeStyle=orthogonalEdgeStyle;" target="jJvdKDXfS60dwjoDXHtn-25" value="比較演算設定">
+          <mxGeometry relative="1" x="0.6842" y="41" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="300" y="230" />
+              <mxPoint x="319" y="230" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-34" edge="1" parent="1" source="jJvdKDXfS60dwjoDXHtn-22" style="startArrow=none;endArrow=block;exitX=1;exitY=0.95;entryX=0.5;entryY=0;rounded=0;edgeStyle=orthogonalEdgeStyle;entryDx=0;entryDy=0;" target="jJvdKDXfS60dwjoDXHtn-26" value="送信条件設定">
+          <mxGeometry relative="1" x="0.035" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="334" y="230" />
+              <mxPoint x="437" y="230" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-35" edge="1" parent="1" source="jJvdKDXfS60dwjoDXHtn-23" style="startArrow=none;endArrow=block;exitX=0.5;exitY=0.99;entryX=0.343;entryY=0.013;rounded=0;edgeStyle=orthogonalEdgeStyle;entryDx=0;entryDy=0;entryPerimeter=0;" target="jJvdKDXfS60dwjoDXHtn-43" value="">
+          <mxGeometry relative="1" x="-0.1112" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="99" y="360" />
+              <mxPoint x="236" y="360" />
+            </Array>
+            <mxPoint x="177" y="626.24" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-36" edge="1" parent="1" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.463;entryY=0;rounded=0;edgeStyle=orthogonalEdgeStyle;entryDx=0;entryDy=0;exitDx=0;exitDy=0;entryPerimeter=0;" target="jJvdKDXfS60dwjoDXHtn-43" value="">
+          <mxGeometry relative="1" x="-0.0299" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="202" y="314" />
+              <mxPoint x="202" y="340" />
+              <mxPoint x="254" y="340" />
+            </Array>
+            <mxPoint x="203" y="314.0000000000001" as="sourcePoint" />
+            <mxPoint x="254" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-37" edge="1" parent="1" source="jJvdKDXfS60dwjoDXHtn-25" style="startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.644;entryY=0;rounded=0;edgeStyle=orthogonalEdgeStyle;entryDx=0;entryDy=0;entryPerimeter=0;exitDx=0;exitDy=0;" target="jJvdKDXfS60dwjoDXHtn-43" value="">
+          <mxGeometry relative="1" x="0.0644" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="319" y="340" />
+              <mxPoint x="281" y="340" />
+            </Array>
+            <mxPoint x="319.2857142857142" y="414" as="sourcePoint" />
+            <mxPoint x="281.05000000000007" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-38" edge="1" parent="1" source="jJvdKDXfS60dwjoDXHtn-26" style="startArrow=none;endArrow=block;exitX=0.5;exitY=0.99;rounded=0;edgeStyle=orthogonalEdgeStyle;entryX=0.805;entryY=0.004;entryDx=0;entryDy=0;entryPerimeter=0;" target="jJvdKDXfS60dwjoDXHtn-43" value="標準出力">
+          <mxGeometry relative="1" x="-0.1218" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="437" y="360" />
+              <mxPoint x="305" y="360" />
+            </Array>
+            <mxPoint x="349" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-39" edge="1" parent="1" source="jJvdKDXfS60dwjoDXHtn-43" style="curved=1;startArrow=none;endArrow=block;exitX=0.533;exitY=1.005;entryX=0.5;entryY=-0.01;rounded=0;exitDx=0;exitDy=0;exitPerimeter=0;" target="jJvdKDXfS60dwjoDXHtn-28" value="パイプ等で渡す">
+          <mxGeometry relative="1" x="-0.0158" y="-43" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points" />
+            <mxPoint x="263" y="698" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-40" edge="1" parent="1" source="jJvdKDXfS60dwjoDXHtn-28" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=0.99;entryX=0.5;entryY=0;rounded=0;entryDx=0;entryDy=0;" target="jJvdKDXfS60dwjoDXHtn-44" value="TCP通信">
+          <mxGeometry relative="1" x="-0.25" y="-23" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points" />
+            <mxPoint x="262.5" y="924" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-41" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;" value="シーケンス図の5,6の部分&lt;div style=&quot;padding: 0px; margin: 0px;&quot;&gt;パラメータをIntel Hexに変換&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="190" x="168" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-43" parent="1" style="shape=parallelogram;html=1;strokeWidth=2;perimeter=parallelogramPerimeter;whiteSpace=wrap;rounded=1;arcSize=12;size=0.23;" value="Intel Hex形式&lt;br style=&quot;padding: 0px; margin: 0px;&quot;&gt;テキストデータ" vertex="1">
+          <mxGeometry height="60" width="150" x="184" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="jJvdKDXfS60dwjoDXHtn-44" parent="1" style="shape=internalStorage;whiteSpace=wrap;html=1;dx=15;dy=15;rounded=1;arcSize=8;strokeWidth=2;" value="M304デバイス&lt;br style=&quot;padding: 0px; margin: 0px;&quot;&gt;EEPROM" vertex="1">
+          <mxGeometry height="70" width="116" x="205" y="630" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

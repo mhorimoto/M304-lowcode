@@ -1,0 +1,122 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
+  <diagram name="ページ-1" id="Ej6YpUBdVWAKdz6_yQff">
+    <mxGraphModel dx="1287" dy="765" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="583" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-1" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" value="ユーザー(Webブラウザ)" vertex="1">
+          <mxGeometry height="1093" width="191" x="20" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-2" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" value="サーバー(Webアプリ/DB)" vertex="1">
+          <mxGeometry height="1093" width="203" x="308" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-3" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" value="ゲートウェイ(getihex.py)" vertex="1">
+          <mxGeometry height="1093" width="204" x="694" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-4" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" value="変換・送信プログラム" vertex="1">
+          <mxGeometry height="1093" width="180" x="971" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-5" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" value="M304デバイス" vertex="1">
+          <mxGeometry height="1093" width="150" x="1341" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-6" parent="1" style="shape=umlFrame;dashed=1;pointerEvents=0;dropTarget=0;strokeColor=#B3B3B3;height=20;width=30" value="alt" vertex="1">
+          <mxGeometry height="748" width="1028" x="399" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-7" parent="TwI1dIWoNsQ3Gp9lj_9O-6" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="[設定データあり]" vertex="1">
+          <mxGeometry height="20" width="998" x="30" as="geometry" />
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-8" parent="TwI1dIWoNsQ3Gp9lj_9O-6" style="shape=line;dashed=1;whiteSpace=wrap;verticalAlign=top;labelPosition=center;verticalLabelPosition=middle;align=center;strokeColor=#B3B3B3;" value="[設定データなし]" vertex="1">
+          <mxGeometry height="4" width="1028" y="646" as="geometry" />
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-9" parent="1" style="shape=umlFrame;dashed=1;pointerEvents=0;dropTarget=0;strokeColor=#B3B3B3;height=20;width=40" value="loop" vertex="1">
+          <mxGeometry height="865" width="1048" x="389" y="153" as="geometry" />
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-10" parent="TwI1dIWoNsQ3Gp9lj_9O-9" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" value="[10秒間隔 (常駐動作)]" vertex="1">
+          <mxGeometry height="20" width="1008" x="40" as="geometry" />
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-11" edge="1" parent="1" source="TwI1dIWoNsQ3Gp9lj_9O-1" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" target="TwI1dIWoNsQ3Gp9lj_9O-2" value="1. 制御パラメータを入力・保存">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="271" y="133" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-12" edge="1" parent="1" source="TwI1dIWoNsQ3Gp9lj_9O-3" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" target="TwI1dIWoNsQ3Gp9lj_9O-2" value="2. 実行すべき設定があるか問い合わせ (GET)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="614" y="240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-13" edge="1" parent="1" source="TwI1dIWoNsQ3Gp9lj_9O-2" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" target="TwI1dIWoNsQ3Gp9lj_9O-3" value="3. 設定用シェルスクリプトを応答">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="611" y="347" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-14" edge="1" parent="1" source="TwI1dIWoNsQ3Gp9lj_9O-3" style="curved=1;endArrow=block;rounded=0;" target="TwI1dIWoNsQ3Gp9lj_9O-3" value="4. スクリプトを /tmp に保存">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="847" y="405" />
+              <mxPoint x="847" y="435" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-15" edge="1" parent="1" source="TwI1dIWoNsQ3Gp9lj_9O-3" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" target="TwI1dIWoNsQ3Gp9lj_9O-4" value="5. スクリプトを実行 (bash)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="937" y="493" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-16" edge="1" parent="1" source="TwI1dIWoNsQ3Gp9lj_9O-4" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" target="TwI1dIWoNsQ3Gp9lj_9O-5" value="6. 変換したHexデータを送信・書き込み">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1247" y="619" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-17" edge="1" parent="1" source="TwI1dIWoNsQ3Gp9lj_9O-5" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" target="TwI1dIWoNsQ3Gp9lj_9O-4" value="完了応答">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1250" y="677" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-18" edge="1" parent="1" source="TwI1dIWoNsQ3Gp9lj_9O-4" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" target="TwI1dIWoNsQ3Gp9lj_9O-3" value="スクリプト実行完了">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="940" y="735" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-19" edge="1" parent="1" source="TwI1dIWoNsQ3Gp9lj_9O-3" style="curved=1;endArrow=block;rounded=0;" target="TwI1dIWoNsQ3Gp9lj_9O-3" value="7. 一時ファイルを削除">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="847" y="793" />
+              <mxPoint x="847" y="823" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-20" edge="1" parent="1" source="TwI1dIWoNsQ3Gp9lj_9O-3" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" target="TwI1dIWoNsQ3Gp9lj_9O-2" value="8. 実行結果ログを報告 (POST)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="614" y="881" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-21" edge="1" parent="1" source="TwI1dIWoNsQ3Gp9lj_9O-2" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" target="TwI1dIWoNsQ3Gp9lj_9O-3" value="&quot;0&quot;を応答 (スキップ)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="611" y="988" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TwI1dIWoNsQ3Gp9lj_9O-22" parent="1" style="fillColor=#ffff88;strokeColor=#9E916F;" value="パラメータをIntel Hexに変換し，&#xa;送信プログラムへ渡す" vertex="1">
+          <mxGeometry height="68" width="261" x="930" y="513" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
