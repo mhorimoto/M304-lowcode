@@ -58,49 +58,49 @@ int isOnSecond(int H1, int Mi1, int S1, int H2, int Mi2, int S2, long S0, long D
   long startTime = toSeconds(H1, Mi1, S1);
   long endTime = toSeconds(H2, Mi2, S2);
   long currentTime = toSeconds(TH, TMi, TS);
-  sprintf(t,"debug>S:%ld,E:%ld,C:%ld",startTime,endTime,currentTime);
-  debugUdpOut(t);
+  //sprintf(t,"debug>S:%ld,E:%ld,C:%ld",startTime,endTime,currentTime);
+  //debugUdpOut(t);
 
   // 開始時刻と終了時刻が逆転している場合の調整
   if (endTime < startTime) {
     endTime += 86400L; // 翌日までの時間を考慮
-    sprintf(t,"debug>endTime<startTime,E:%ld",endTime);
-    debugUdpOut(t);
+    //sprintf(t,"debug>endTime<startTime,E:%ld",endTime);
+    //debugUdpOut(t);
     if (currentTime < startTime) {
       currentTime += 86400L; // 現在時刻も調整
-      sprintf(t,"debug>currentTime<startTime,C:%ld",currentTime);
-      debugUdpOut(t);
+      //sprintf(t,"debug>currentTime<startTime,C:%ld",currentTime);
+      //debugUdpOut(t);
     }
   }
 
   // 現在の時刻が範囲外ならOFF
   if (currentTime < startTime || currentTime > endTime) {
-    sprintf(t,"debug>OTR=S:%ld,E:%ld,C:%ld",startTime,endTime,currentTime);
-    debugUdpOut(t);
+    //sprintf(t,"debug>OTR=S:%ld,E:%ld,C:%ld",startTime,endTime,currentTime);
+    //debugUdpOut(t);
     return 0; // OFF
   }
 
   // 範囲内ならサイクルに基づくON/OFF判定を行う
   long cycleTime = S0 + D0;   // サイクル全体の時間 (秒)
   if (cycleTime == 0) {
-    sprintf(t,"debug>CT=0");
-    debugUdpOut(t);
+    //sprintf(t,"debug>CT=0");
+    //debugUdpOut(t);
     return 2; // 開始・終了時間が合致し、周期・動作時間がともに0
   }
   long elapsedTime = (currentTime - startTime) % cycleTime; // 開始時刻からの経過時間 (秒)
 
   if (S0==0) {
-    sprintf(t,"debug>S0=0");
-    debugUdpOut(t);
+    //sprintf(t,"debug>S0=0");
+    //debugUdpOut(t);
     return 3;
   }
   if (elapsedTime < D0) {
-    sprintf(t,"debug>EPT<D0,EPT:%ld,D0:%d",elapsedTime,D0);
-    debugUdpOut(t);
+    //sprintf(t,"debug>EPT<D0,EPT:%ld,D0:%d",elapsedTime,D0);
+    //debugUdpOut(t);
     return 1; // ON
   } else {
-    sprintf(t,"debug>EPT>=D0,EPT:%ld,D0:%d",elapsedTime,D0);
-    debugUdpOut(t);
+    //sprintf(t,"debug>EPT>=D0,EPT:%ld,D0:%d",elapsedTime,D0);
+    //debugUdpOut(t);
     return 0; // OFF
   }
 }
