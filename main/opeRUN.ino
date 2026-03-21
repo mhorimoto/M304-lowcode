@@ -53,38 +53,54 @@ long toSeconds(int h, int m, int s) {
 // 3のときには時刻条件が許す範囲で最大D0秒を有効とする。
 
 int isOnSecond(int H1, int Mi1, int S1, int H2, int Mi2, int S2, long S0, long D0, int TH, int TMi, int TS) {
-
+  char t[81];
   // 開始時刻と終了時刻を秒に変換
   long startTime = toSeconds(H1, Mi1, S1);
   long endTime = toSeconds(H2, Mi2, S2);
   long currentTime = toSeconds(TH, TMi, TS);
+  sprintf(t,"debug>S:%ld,E:%ld,C:%ld",startTime,endTime,currentTime);
+  debugUdpOut(t);
 
   // 開始時刻と終了時刻が逆転している場合の調整
   if (endTime < startTime) {
-    endTime += 24 * 3600; // 翌日までの時間を考慮
+    endTime += 86400L; // 翌日までの時間を考慮
+    sprintf(t,"debug>endTime<startTime,E:%ld",endTime);
+    debugUdpOut(t);
     if (currentTime < startTime) {
-      currentTime += 24 * 3600; // 現在時刻も調整
+      currentTime += 86400L; // 現在時刻も調整
+      sprintf(t,"debug>currentTime<startTime,C:%ld",currentTime);
+      debugUdpOut(t);
     }
   }
 
   // 現在の時刻が範囲外ならOFF
   if (currentTime < startTime || currentTime > endTime) {
+    sprintf(t,"debug>OTR=S:%ld,E:%ld,C:%ld",startTime,endTime,currentTime);
+    debugUdpOut(t);
     return 0; // OFF
   }
 
   // 範囲内ならサイクルに基づくON/OFF判定を行う
   long cycleTime = S0 + D0;   // サイクル全体の時間 (秒)
   if (cycleTime == 0) {
+    sprintf(t,"debug>CT=0");
+    debugUdpOut(t);
     return 2; // 開始・終了時間が合致し、周期・動作時間がともに0
   }
   long elapsedTime = (currentTime - startTime) % cycleTime; // 開始時刻からの経過時間 (秒)
 
   if (S0==0) {
+    sprintf(t,"debug>S0=0");
+    debugUdpOut(t);
     return 3;
   }
   if (elapsedTime < D0) {
+    sprintf(t,"debug>EPT<D0,EPT:%ld,D0:%d",elapsedTime,D0);
+    debugUdpOut(t);
     return 1; // ON
   } else {
+    sprintf(t,"debug>EPT>=D0,EPT:%ld,D0:%d",elapsedTime,D0);
+    debugUdpOut(t);
     return 0; // OFF
   }
 }
@@ -116,17 +132,18 @@ void opeRUN(int hr, int mn, int sec) {
       //
       // 開始・終了・間隔・動作時間のすべてが合致したときは1を返す。
       // 開始・終了時間が合致し、間隔・動作時間がともに0のときは3を返す。
-      //            rt[id] = isOn(flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,
-      //                        flb_rx_ccm[id].dumn,flb_rx_ccm[id].inmn,hr,mn);
-      rt[id] = isOnSecond(flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].stsc,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,0,
+      rt[id] = isOnSecond(flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,
+                          flb_rx_ccm[id].stsc,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,0,
                           flb_rx_ccm[id].inmn,flb_rx_ccm[id].dumn,hr,mn,sec);
-      sprintf(t,"%d:%d=isOnSecond(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)\n",id,rt[id],
-              flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].stsc,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,0,
+      sprintf(t,"debug>%d:%d=isOnSecond(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)\n",id,rt[id],
+              flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].stsc,
+              flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,0,
               flb_rx_ccm[id].inmn,flb_rx_ccm[id].dumn,hr,mn,sec);
       debugUdpOut(t);
       if (rt[id]!=prt[id]) {
-        sprintf(t,"ID=%02d ST=%02d:%02d:%02d ED=%02d:%02d CUR=%02d:%02d IN=%02d DU=%02d RT=%d",
-                id,flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].stsc,flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,
+        sprintf(t,"debug>ID=%02d ST=%02d:%02d:%02d ED=%02d:%02d CUR=%02d:%02d IN=%02d DU=%02d RT=%d",
+                id,flb_rx_ccm[id].sthr,flb_rx_ccm[id].stmn,flb_rx_ccm[id].stsc,
+                flb_rx_ccm[id].edhr,flb_rx_ccm[id].edmn,
                 hr,mn,flb_rx_ccm[id].inmn,flb_rx_ccm[id].dumn,rt[id]);
         debugUdpOut(t);
         prt[id] = rt[id];
@@ -137,7 +154,7 @@ void opeRUN(int hr, int mn, int sec) {
         for (i=0;i<5;i++) {
           k = y[id];
           y[id] = combinationCompare(flb_rx_ccm[id].cmbcmp[i],flb_rx_ccm[id].match_result[i],k);
-          sprintf(t,"ID=%02d-%d:%d=combinationCompare(%d,%d,%d)",
+          sprintf(t,"debug>ID=%02d-%d:%d=combinationCompare(%d,%d,%d)",
                   id,i,y[id],flb_rx_ccm[id].cmbcmp[i],flb_rx_ccm[id].match_result[i],k);
           debugUdpOut(t);
         }
