@@ -21,7 +21,7 @@ void get_mcusr(void) {
     wdt_disable();
 }
 
-char *pgname = "M304 Ver3.2.@9";
+char *pgname = "M304 Ver3.2.@11";
 
 #define ELE_UECS      0b00000001
 #define ELE_NODESCAN  0b00000010
@@ -200,6 +200,7 @@ void setup(void) {
     }
     init_uecsTBL();
     UDP16520.begin(16520);
+    Serial.println(F("UPD16520 done."));
     UECS_UDP16529.begin(16529);
     UECS_UDP16528.begin(16528);   // for Debug Message
     httpd.begin();
