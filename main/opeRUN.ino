@@ -19,9 +19,9 @@ int isOn(int H1, int M1, int H2, int M2, int M0, int D0, int TH, int TM) {
     
     // 開始時刻と終了時刻が逆転している場合の調整
     if (endTime < startTime) {
-        endTime += 24 * 60; // 翌日までの時間を考慮
+        endTime += 86400L;  // 翌日までの時間を考慮
         if (currentTime < startTime) {
-            currentTime += 24 * 60; // 現在時刻も調整
+            currentTime += 86400L; // 現在時刻も調整
         }
     }
     

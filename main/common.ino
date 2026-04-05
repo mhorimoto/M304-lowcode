@@ -165,6 +165,9 @@ void _dump_flb(int k, int f) {
                 lv = "S-1M-0";
                 break;
             }
+            if (*(ptr_flb_tx->ccmtype)==0xff) {
+              *(ptr_flb_tx->ccmtype)=0;
+            }
             sprintf(lbftxt,"%2d,%d,%d,%d,%d,%d,%s(%d),%d,%s,%s",
                 i,ptr_flb_tx->valid,ptr_flb_tx->room,ptr_flb_tx->region,ptr_flb_tx->order,
                 ptr_flb_tx->priority,lv,ptr_flb_tx->lv,ptr_flb_tx->cast,
@@ -284,16 +287,19 @@ void init_uecsTBL(void) {
         a = LC_SCH_START+(j*LC_SCH_REC_SIZE);
         copyFromLC_uecsM304Sched(&flb_rx_ccm[j],a);
     }
+    wdt_reset();
     debugMsgOutput(2,w); // rx_ccm display
     for (j=0;j<CCM_TBL_CNT_TX;j++) {
         a = LC_SEND_START+(j*LC_SEND_REC_SIZE);
         copyFromLC_uecsM304Send(&flb_tx_ccm[j],a);
     }
     debugMsgOutput(3,w); // tx_ccm display
+    Serial.println(F("TX_CCM done"));
     for (j=0;j<CCM_TBL_CNT_CMP;j++) {
         a = LC_CMPOPE_START+(j*LC_CMPOPE_REC_SIZE);
         copyFromLC_uecsM304cmpope(&flb_cmpope[j],a);
     }
+    wdt_reset();
     debugMsgOutput(4,w); // cmpope display
 }
 
