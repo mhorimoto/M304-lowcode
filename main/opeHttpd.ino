@@ -1,10 +1,9 @@
-#define HTTPBUFSIZ 512 // 2.3.6D
+#define HTTPBUFSIZ 512  // 2.3.6D
 
-void opeHttpd(EthernetClient ec)
-{
+void opeHttpd(EthernetClient ec) {
     boolean currentLineIsBlank = true;
-    char c, d[5], htbuf[HTTPBUFSIZ], *p_htbuf, prnbuf[BUFSIZ]; // 2.3.6D
-    int mode;                                                  // 0:ignore, 1:Store to EEPROM, 2:Fetch from EEPROM, 3:END ope
+    char c, d[5], htbuf[HTTPBUFSIZ], *p_htbuf, prnbuf[BUFSIZ];  // 2.3.6D
+    int mode;  // 0:ignore, 1:Store to EEPROM, 2:Fetch from EEPROM, 3:END ope
     int bufcnt, i;
     int dlen, daddr, dtype, chksum;
     byte dbyte, flag2;
@@ -15,22 +14,21 @@ void opeHttpd(EthernetClient ec)
     flag2 = 0;
     p_htbuf = &htbuf[0];
     wdt_reset();
-    for (i = 0; i < 5; i++)
-        d[i] = (char)0;
+    for (i = 0; i < 5; i++) d[i] = (char)0;
     while (ec.connected()) {
         if (ec.available()) {
             c = ec.read();
             if (mode == MD_HT_IGNORE) {
                 switch (c) {
-                case ':':
-                    mode = MD_HT_STORE;
-                    continue;
-                case 'L':
-                    mode = MD_HT_FETCH;
-                    continue;
-                case 'R':
-                    mode = MD_HT_REMOCON;
-                    continue;
+                    case ':':
+                        mode = MD_HT_STORE;
+                        continue;
+                    case 'L':
+                        mode = MD_HT_FETCH;
+                        continue;
+                    case 'R':
+                        mode = MD_HT_REMOCON;
+                        continue;
                 }
             }
 
@@ -39,16 +37,17 @@ void opeHttpd(EthernetClient ec)
                 htbuf[bufcnt] = c;
                 bufcnt++;
                 if (bufcnt > HTTPBUFSIZ) {
-                    sendUECSpacket(0, "131073", 0); // Buffer overflow 0x20001
+                    sendUECSpacket(0, "131073", 0);  // Buffer overflow 0x20001
                     ec.stop();
-                    Serial.println(F("Bov1")); // 2.3.5D
+                    Serial.println(F("Bov1"));  // 2.3.5D
                     return;
                 }
-                sendUECSpacket(0, "131074", 0); // Success Store via httpd 0x20002
+                sendUECSpacket(0, "131074",
+                               0);  // Success Store via httpd 0x20002
                 htbuf[bufcnt] = (char)NULL;
 
                 if (c == '\n' && currentLineIsBlank) {
-                    sendHTTPheader(ec); // 2.3.5D
+                    sendHTTPheader(ec);  // 2.3.5D
                     //          ec.print("<h1>MOD</h1>");
                     //          ec.print("<pre>htbuf=");
                     ec.println(htbuf);
@@ -59,7 +58,8 @@ void opeHttpd(EthernetClient ec)
                     d[4] = (char)NULL;
                     daddr = strtol(d, NULL, 16);
 
-                    //          sprintf(prnbuf,"dlen=%d  chksum=0x%02X  addr=0x%04X",dlen,chksum,daddr);
+                    //          sprintf(prnbuf,"dlen=%d  chksum=0x%02X
+                    //          addr=0x%04X",dlen,chksum,daddr);
                     //          ec.println(prnbuf);
 
                     strncpy(d, &htbuf[2], 2);
@@ -72,7 +72,8 @@ void opeHttpd(EthernetClient ec)
                     dtype = strtol(d, NULL, 16);
                     chksum += dtype;
                     chksum &= 0xff;
-                    //          sprintf(prnbuf,"dty=%d  cs=0x%02X  %d  leng=%d  adr=%04X\n",
+                    //          sprintf(prnbuf,"dty=%d  cs=0x%02X  %d  leng=%d
+                    //          adr=%04X\n",
                     //                  dtype,chksum,strlen(p_htbuf),dlen,daddr);
                     //          ec.print(prnbuf);
 
@@ -88,7 +89,7 @@ void opeHttpd(EthernetClient ec)
                     }
                     strncpy(d, &htbuf[(i * 2) + 8], 2);
                     d[2] = (char)NULL;
-                    dbyte = strtol(d, NULL, 16); //>> 8;
+                    dbyte = strtol(d, NULL, 16);  //>> 8;
                     chksum += dbyte;
                     htbuf[(i * 2) + 10] = (char)0;
                     ec.print(p_htbuf);
@@ -96,8 +97,7 @@ void opeHttpd(EthernetClient ec)
                     break;
                 }
                 /* FETCH ROUTINE */
-            }
-            else if (mode == MD_HT_FETCH) {
+            } else if (mode == MD_HT_FETCH) {
                 if (c == 0x20) {
                     htbuf[bufcnt] = (char)NULL;
                     flag2 = 1;
@@ -107,29 +107,26 @@ void opeHttpd(EthernetClient ec)
                     bufcnt++;
                 }
                 if (bufcnt > HTTPBUFSIZ) {
-                    sendUECSpacket(0, "131075", 0); // Buffer overflow 0x20003
+                    sendUECSpacket(0, "131075", 0);  // Buffer overflow 0x20003
                     ec.stop();
                     Serial.print(bufcnt);
-                    Serial.println(F(" Bov2")); // 2.3.5D
+                    Serial.println(F(" Bov2"));  // 2.3.5D
                     return;
                 }
-                sendUECSpacket(0, "131076", 0); // Success fetch via httpd 0x20004
+                sendUECSpacket(0, "131076",
+                               0);  // Success fetch via httpd 0x20004
                 htbuf[bufcnt] = (char)NULL;
                 if (c == '\n' && currentLineIsBlank) {
                     sendHTTPheader(ec);
                     if (!strcmp(&htbuf[0], "0A")) {
                         fetch_EEPROM(0, 0, 8, ec);
-                    }
-                    else if (!strcmp(&htbuf[0], "0B")) {
+                    } else if (!strcmp(&htbuf[0], "0B")) {
                         fetch_EEPROM(0x1000, 0, (CCM_TBL_CNT_RX * 4), ec);
-                    }
-                    else if (!strcmp(&htbuf[0], "0C")) {
+                    } else if (!strcmp(&htbuf[0], "0C")) {
                         fetch_EEPROM(0x3000, 0, (CCM_TBL_CNT_TX * 4), ec);
-                    }
-                    else if (!strcmp(&htbuf[0], "0D")) {
+                    } else if (!strcmp(&htbuf[0], "0D")) {
                         fetch_EEPROM(0x5000, 0, (CCM_TBL_CNT_CMP * 2), ec);
-                    }
-                    else if (!strcmp(&htbuf[0], "0V")) {
+                    } else if (!strcmp(&htbuf[0], "0V")) {
                         fetch_EEPROM(0x7ff0, 0, 1, ec);
                     } else {
                         strncpy(d, &htbuf[2], 4);
@@ -184,22 +181,22 @@ void (*resetFunc)(void) = 0;
 
 void remocon_exec(unsigned int cnum, EthernetClient ec) {
     extern void ntpAccess(void);
-    extern void sendUECSpacket(int, char *, int);
+    extern void sendUECSpacket(int, char*, int);
 
     switch (cnum) {
-    case 0x7700:
-        sendUECSpacket(0, "135167", 0); // 0x20FFF
-        delay(10);
-        resetFunc();
-        break;
-    case 0x7001:
-        sendUECSpacket(0, "132865", 0); // 0x20701
-        ntpAccess();
-        break;
-    case 0x7500:
-        sendUECSpacket(0, "132944", 0); // 0x20750
-        init_uecsTBL();
-        break;
+        case 0x7700:
+            sendUECSpacket(0, "135167", 0);  // 0x20FFF
+            delay(10);
+            resetFunc();
+            break;
+        case 0x7001:
+            sendUECSpacket(0, "132865", 0);  // 0x20701
+            ntpAccess();
+            break;
+        case 0x7500:
+            sendUECSpacket(0, "132944", 0);  // 0x20750
+            init_uecsTBL();
+            break;
     }
 }
 
@@ -222,7 +219,8 @@ void mod_EEPROM(unsigned int addr, byte dt, EthernetClient ec) {
     return;
 }
 
-void fetch_EEPROM(unsigned int addr, int addrflag, int lines, EthernetClient ec) {
+void fetch_EEPROM(unsigned int addr, int addrflag, int lines,
+                  EthernetClient ec) {
     int x, y, a;
     uint8_t d;
     char prnbuf[BUFSIZ];
