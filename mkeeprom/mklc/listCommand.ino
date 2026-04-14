@@ -78,4 +78,4 @@ void listCommand(void) {
     Serial.print("Debug message: ");
     Serial.println(lbf);
 }
-                    
+/* -*- mode: c; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

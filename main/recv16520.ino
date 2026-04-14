@@ -34,29 +34,14 @@ void copyRXdata2flb_cmpope(void) {
     for (int i = 0; i < CCM_TBL_CNT_CMP; i++) {
         wdt_reset();
         if (flb_cmpope[i].valid != 0xff) {
-            if (!strncmp(flb_cmpope[i].ccm_type, ptr_uecsxmldata->type,
-                         20)) {  // CCMTYPEが合致したら
-                if ((ptr_uecsxmldata->room == 0) ||
-                    (ptr_uecsxmldata->room ==
-                     flb_cmpope[i].room)) {  // ROOMが合致したら
-                    if ((ptr_uecsxmldata->region == 0) ||
-                        (ptr_uecsxmldata->region ==
-                         flb_cmpope[i].region)) {  // REGIONが合致したら
-                        if ((ptr_uecsxmldata->order == 0) ||
-                            (ptr_uecsxmldata->order ==
-                             flb_cmpope[i].order)) {  // ORDERが合致したら
-                            if (ptr_uecsxmldata->priority <=
-                                flb_cmpope[i]
-                                    .priority) {  // 優先順位が同じか高かったら
-                                flb_cmpope[i].fval = float(
-                                    ptr_uecsxmldata
-                                        ->fval);  // 受信したデータをflb_cmpope.fvalに記録する
-                                flb_cmpope[i].priority =
-                                    ptr_uecsxmldata
-                                        ->priority;  // 受信した優先順位を記録する
-                                flb_cmpope[i].remain =
-                                    flb_cmpope[i]
-                                        .lifecnt;  // flb_cmpopeにある生存時間をremainにコピーする
+            if (!strncmp(flb_cmpope[i].ccm_type, ptr_uecsxmldata->type, 20)) {  // CCMTYPEが合致したら
+                if ((ptr_uecsxmldata->room == 0) || (ptr_uecsxmldata->room == flb_cmpope[i].room)) {  // ROOMが合致したら
+                    if ((ptr_uecsxmldata->region == 0) || (ptr_uecsxmldata->region == flb_cmpope[i].region)) {  // REGIONが合致したら
+                        if ((ptr_uecsxmldata->order == 0) || (ptr_uecsxmldata->order == flb_cmpope[i].order)) {  // ORDERが合致したら
+                            if (ptr_uecsxmldata->priority <= flb_cmpope[i].priority) {  // 優先順位が同じか高かったら
+                                flb_cmpope[i].fval = float(ptr_uecsxmldata->fval);  // 受信したデータをflb_cmpope.fvalに記録する
+                                flb_cmpope[i].priority = ptr_uecsxmldata->priority;  // 受信した優先順位を記録する
+                                flb_cmpope[i].remain = flb_cmpope[i].lifecnt;  // flb_cmpopeにある生存時間をremainにコピーする
                             }
                         }
                     }
@@ -65,3 +50,4 @@ void copyRXdata2flb_cmpope(void) {
         }
     }
 }
+/* -*- mode: c; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

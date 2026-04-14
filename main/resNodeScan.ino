@@ -88,3 +88,4 @@ void debug_uecsxmldata(void) {
     Serial.print(F("FVAL="));
     Serial.println(ptr_uecsxmldata->fval);
 }
+/* -*- mode: c; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

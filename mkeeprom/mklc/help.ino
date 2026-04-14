@@ -15,3 +15,4 @@ void help(void) {
     Serial.println(F("setnodename [name]: Set node name, which is ascii code 15 characters or less"));
     Serial.println(F("clearpage [page]: Initialize with 0xff in 256-byte page units."));
 }
+/* -*- mode: c; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

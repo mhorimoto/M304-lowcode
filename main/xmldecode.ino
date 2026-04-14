@@ -215,3 +215,4 @@ void uecsxmldata_init(void) {
     ptr_uecsxmldata->fval = 0.0;
     ptr_uecsxmldata->ip = IPAddress(0, 0, 0, 0);
 }
+/* -*- mode: c; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

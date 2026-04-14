@@ -26,7 +26,6 @@ void setup(void) {
     cnt = 0;
 }
 
-
 void loop(void) {
     char ch,sc[3];
     byte r;
@@ -124,3 +123,4 @@ void loop(void) {
     }
 }
 #endif
+/* -*- mode: c; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

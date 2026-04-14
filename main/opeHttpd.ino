@@ -240,3 +240,4 @@ void fetch_EEPROM(unsigned int addr, int addrflag, int lines,
         wdt_reset();
     }
 }
+/* -*- mode: c; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

@@ -13,3 +13,4 @@ char bytemap(unsigned char p) {
     if (p >= 0x7f) return ('.');
     return bm[(p - 0x20)];
 }
+/* -*- mode: c; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

@@ -326,8 +326,4 @@ void conv_relay(byte a,char o[]) {
     }
     o[4] = (char)NULL;
 }
- 
-// Local Variables:
-// tab-width: 4
-// indent-tabs-mode: nil
-// End:
+/* -*- mode: c; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

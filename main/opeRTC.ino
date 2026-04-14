@@ -121,3 +121,4 @@ unsigned long sendNTPpacket(EthernetUDP Udp, char* address) {
     Udp.write(packetBuffer, NTP_PACKET_SIZE);
     Udp.endPacket();
 }
+/* -*- mode: c; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

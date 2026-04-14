@@ -254,3 +254,4 @@ void getSCHData(int p, int id) {
     Serial.println(lcdbuf);                // debug 2.2.1
     Serial.println(F("getSCHData exit"));  // debug 2.2.1
 }
+/* -*- mode: c; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
