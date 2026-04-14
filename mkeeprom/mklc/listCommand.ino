@@ -71,6 +71,12 @@ void listCommand(void) {
         case 0x20:
             sprintf(lbf,"UDP outout.");
             break;
+        case 0x02:
+            sprintf(lbf,"Info Serial output.");
+            break;
+        case 0x00:
+            sprintf(lbf,"No debug output.");
+            break;
         default:
             sprintf(lbf,"Defined unknown data %02X",b);
             break;

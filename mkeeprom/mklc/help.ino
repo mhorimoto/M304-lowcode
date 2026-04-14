@@ -13,6 +13,9 @@ void help(void) {
     Serial.println(F("setdns [IP]: Set DNS address, which is like as 192.168.31.254"));
     Serial.println(F("setvender [name]: Set vendor name, which is ascii code 15 characters or less"));
     Serial.println(F("setnodename [name]: Set node name, which is ascii code 15 characters or less"));
+    Serial.println(F("setdbgmsg [flag]: Set debug message output flag, which is a 2-digit hex number."));
+    Serial.println(F("              0x80: Serial output, 0x40: LCD output, 0x20: UDP outout, "));
+    Serial.println(F("              0x02: Info Serial output, 0x00: No debug output"));
     Serial.println(F("clearpage [page]: Initialize with 0xff in 256-byte page units."));
 }
 /* -*- mode: c; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

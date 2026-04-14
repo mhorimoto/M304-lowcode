@@ -3,7 +3,7 @@
 void setCommand(char *p, int c, int a) {
     byte r, d[4];
     int l, i;
-    char sc[3], tc[17], *ptc;
+    char sc[3], tc[17], *ptc, *endp;
     while (*p == 0x20) {
         p++;
     }
@@ -50,6 +50,12 @@ void setCommand(char *p, int c, int a) {
         for (i = 0; i < 16; i++) {
             atmem.write(a + i, tc[i]);
         }
+        break;
+    case LC_DBGMSG:
+        r = (byte)strtol(p, &endp, 0);
+        Serial.print("Debug message output is ");
+        Serial.println(r, HEX);
+        atmem.write(LC_DBGMSG, r);
         break;
     default:
         if (l == c) {
