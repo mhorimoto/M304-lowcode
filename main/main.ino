@@ -18,7 +18,7 @@ void get_mcusr(void) {
     wdt_disable();
 }
 
-char* pgname = "M304 Ver3.2.@11";
+char* pgname = "M304 Ver3.2.@12";
 
 #define ELE_UECS 0b00000001
 #define ELE_NODESCAN 0b00000010
@@ -92,6 +92,7 @@ int cmode = RUN;
 int cmenu = NETCONFIG;
 int rlyttl[8], p_rlyttl[8];
 
+char paraVer[16];
 bool cf, fsf = true;
 
 char lbf[81];
