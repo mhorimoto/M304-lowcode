@@ -5,8 +5,8 @@
 #include <string.h>
 #include <yxml.h>
 
-#if _M304_H_V < 1319
-#error "Library M304 is old. Version 1.3.19 or higher is required."
+#if _M304_H_V < 1322
+#error "Library M304 is old. Version 1.3.22 or higher is required."
 
 #else
 
@@ -144,7 +144,7 @@ void setup(void) {
     float tesfval;
     tmElements_t tm;
 
-    copyVersionCode(0x7ff0, pgname);
+    copyVersionCode(LC_FIRM_VER, pgname);
     m304Init();
     Serial.begin(115200);
     clear_uecsbuf();
@@ -309,7 +309,8 @@ void loop(void) {
                 if (minsec > 0) {
                     snprintf(line1, 21, "REMAINING=%3d", minsec);
                 } else {
-                    strcpy_P(line1, (char*)pgm_read_word(&(str_main[12])));
+                  // strcpy_P(line1, (char*)pgm_read_word(&(str_main[12])));
+                  snprintf(line1, 21, "RUN:%-16s", paraVer);
                 }
                 lcdd.setLine(cposp, 3, line1);
                 lcdd.LineWrite(cposp, 3);
@@ -556,6 +557,10 @@ void msgRun1st(void) {
         cposx = 3;
         lcdd.IPWrite(0, cposx, 2, st_m.ip);
     }
+    loadParamVer();
+    snprintf(line1,21,"RUN:%-16s",paraVer);
+    lcdd.setLine(0,3,line1);
+    lcdd.LineWrite(0,3);
 }
 
 void msgCmnd1st(void) {
@@ -689,6 +694,20 @@ IPAddress getIPAddressFromEEPROM(int a) {
     r = IPAddress(atmem.read(a), atmem.read(a + 1), atmem.read(a + 2),
                   atmem.read(a + 3));
     return (r);
+}
+
+void loadParamVer(void) {
+    int i;
+    char b;
+    for (i = 0; i < 14; i++) {
+        b = atmem.read(LC_PARAM_VER + i);
+        if (b >= '0' && b <= '9') {
+            paraVer[i] = b;
+        } else {
+            paraVer[i] = '-'; // 未書込時はハイフン等でマスク
+        }
+    }
+    paraVer[14] = '\0';
 }
 
 void configure_wdt(void) {

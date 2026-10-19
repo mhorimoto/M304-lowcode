@@ -50,3 +50,5 @@ tmp/*
 # Environment
 .env
 
+# define file
+m304gw/getihex.conf
