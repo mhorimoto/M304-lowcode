@@ -77,25 +77,25 @@ function modify_blk_b_with_pkgid_id($pdo,$p,$mode="") {
     $fval4 = (@$p['CMPVAL4']=="") ? 'null' : $p['CMPVAL4'];
     $mnflag = 255;
     if ($mode=="") {
-        $query = 'UPDATE blk_b SET PKG_ID=%d,M304ID=%d,ID=%d,VALID=%s,STHR=%d,STMN=%d,EDHR=%d,EDMN=%d,'.
+        $query = 'UPDATE blk_b SET PKG_ID=%d,M304ID=%d,ID=%d,VALID=%s,STHR=%d,STMN=%d,STSC=%d,EDHR=%d,EDMN=%d,'.
             'MNFLAG=%d,INMN=%d,DUMN=%d,OPE_ID=%d,CMPCCMID0=%d,CMPOPE0=%d,CMPVAL0=%s,CMBCMP1=%d,'.
             'CMPCCMID1=%d,CMPOPE1=%d,CMPVAL1=%s,CMBCMP2=%d,CMPCCMID2=%d,CMPOPE2=%d,CMPVAL2=%s,'.
             'CMBCMP3=%d,CMPCCMID3=%d,CMPOPE3=%d,CMPVAL3=%s,CMBCMP4=%d,CMPCCMID4=%d,CMPOPE4=%d,CMPVAL4=%s '.
             'WHERE SEQ=%d';
-        $query1   = sprintf($query,$pkgid,$m304id,$p['ID'],$vld,$p['STHR'],$p['STMN'],$p['EDHR'],$p['EDMN'],
+        $query1   = sprintf($query,$pkgid,$m304id,$p['ID'],$vld,$p['STHR'],$p['STMN'],$p['STSC'],$p['EDHR'],$p['EDMN'],
             $mnflag,$p['INMN'],$p['DUMN'],$p['OPE_ID'],$p['CMPCCMID0'],$p['CMPOPE0'],$fval0,$p['CMBCMP1'],
             $p['CMPCCMID1'],$p['CMPOPE1'],$fval1,$p['CMBCMP2'],$p['CMPCCMID2'],$p['CMPOPE2'],$fval2,
             $p['CMBCMP3'],$p['CMPCCMID3'],$p['CMPOPE3'],$fval3,$p['CMBCMP4'],$p['CMPCCMID4'],$p['CMPOPE4'],$fval4,
             $p['SEQ']);
     } else {
         // For Insert
-        $query = 'INSERT INTO blk_b (PKG_ID,M304ID,ID,VALID,STHR,STMN,EDHR,EDMN,MNFLAG,INMN,DUMN,OPE_ID,'.
+        $query = 'INSERT INTO blk_b (PKG_ID,M304ID,ID,VALID,STHR,STMN,STSC,EDHR,EDMN,MNFLAG,INMN,DUMN,OPE_ID,'.
             'CMPCCMID0,CMPOPE0,CMPVAL0,CMBCMP1,CMPCCMID1,CMPOPE1,CMPVAL1,CMBCMP2,CMPCCMID2,'.
             'CMPOPE2,CMPVAL2,CMBCMP3,CMPCCMID3,CMPOPE3,CMPVAL3,CMBCMP4,CMPCCMID4,CMPOPE4,CMPVAL4) '.
-            'VALUES (%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,%d,'.
+            'VALUES (%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,'.
             '%d,%d,%s,%d,%d,%d,%s,%d,%d,'.
             '%d,%s,%d,%d,%d,%s,%d,%d,%d,%s)';
-        $query1   = sprintf($query,$pkgid,$m304id,$p['ID'],$vld,$p['STHR'],$p['STMN'],$p['EDHR'],$p['EDMN'],
+        $query1   = sprintf($query,$pkgid,$m304id,$p['ID'],$vld,$p['STHR'],$p['STMN'],$p['STSC'],$p['EDHR'],$p['EDMN'],
             $mnflag,$p['INMN'],$p['DUMN'],$p['OPE_ID'],$p['CMPCCMID0'],$p['CMPOPE0'],$fval0,$p['CMBCMP1'],
             $p['CMPCCMID1'],$p['CMPOPE1'],$fval1,$p['CMBCMP2'],$p['CMPCCMID2'],$p['CMPOPE2'],$fval2,
             $p['CMBCMP3'],$p['CMPCCMID3'],$p['CMPOPE3'],$fval3,$p['CMBCMP4'],$p['CMPCCMID4'],$p['CMPOPE4'],$fval4);

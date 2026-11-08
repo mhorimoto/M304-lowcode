@@ -1,4 +1,6 @@
 <?php
+ob_start();
+
 require_once('m304.inc');
 
 // GETパラメータからM304IDを取得
@@ -12,6 +14,14 @@ if (!isset($_GET['ID'])) {
     }
 } else {
     // M304IDで見つける場合
+    try {
+        $pdo = new PDO($dsn, $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    } catch (PDOException $e) {
+        echo 'Connection failed: ' . $e->getMessage();
+    }
+
+    $m304id = @$_GET['ID'];
     $query = sprintf("select hex(MACADDR) as MACADDR from blk_a where m304id=%d",$m304id);
     try {
         $reply = $pdo->query($query);
@@ -21,18 +31,19 @@ if (!isset($_GET['ID'])) {
     }
     $today = getdate();
     $macaddr = $reply->fetch(PDO::FETCH_ASSOC);
-    $filename = $macaddr['MACADDR'].".sh";
+    $fileName = $macaddr['MACADDR'].".sh";
 }
 $filePath = $ihexdir . $fileName;
 
 // ファイルの存在を確認
 if (!file_exists($filePath)) {
-    header('Content-Description: File Transfer');
-    header('Content-Type: ' . $mimeType);
-    header('Content-Disposition: attachment; filename="filenotfound"');
-    header('Content-Length: 0');
-    header('Cache-Control: must-revalidate');
-    header('Pragma: public');
+    //    header('Content-Description: File Transfer');
+    //    header('Content-Type: ' . $mimeType);
+    //    header('Content-Disposition: attachment; filename="filenotfound"');
+    //    header('Content-Length: 0');
+    //    header('Cache-Control: must-revalidate');
+    //    header('Pragma: public');
+    echo 0;
     exit;
 }
 
@@ -49,6 +60,7 @@ if (ob_get_level()) {
     ob_end_clean();
 }
 
+
 // ダウンロード用のHTTPヘッダーを設定
 header('Content-Description: File Transfer');
 header('Content-Type: ' . $mimeType);
@@ -56,6 +68,8 @@ header('Content-Disposition: attachment; filename="' . $fileName . '"');
 header('Content-Length: ' . $fileSize);
 header('Cache-Control: must-revalidate');
 header('Pragma: public');
+
+ob_end_flush();
 
 // ファイルの内容を出力
 readfile($filePath);

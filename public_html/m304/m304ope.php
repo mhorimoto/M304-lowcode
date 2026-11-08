@@ -30,6 +30,16 @@ if ((@$_POST['EXEC']=="変更")&&(@$_POST['TBL']=="blk_ope")) {
 }
 
     // List 表示
+$m304id = $pkg_id;
+$rlyfilename = sprintf("rly-table/RLYs-%s.php",$m304id);
+if (file_exists($rlyfilename)) {
+    require_once($rlyfilename);
+} else {
+    for ($i=1;$i<9;$i++) {
+        $RLYname[$i]="";
+    }
+}
+$smarty->assign("RLYname",$RLYname);
 $dt = select_blk_ope($pdo,"",$pkg_id);
 $displ = "m304_blk_ope.tpl";
 $smarty->assign("return_PTR",$pkg_id);

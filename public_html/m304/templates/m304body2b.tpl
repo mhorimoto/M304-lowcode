@@ -57,7 +57,14 @@
         {$dhcpf = "DHCP"}
         {/if}
         <input type="hidden" name="MACADDR" value="{$data_a.MACADDR}">
-        <tr><th rowspan="4">機台番号<br><span style="font-size: 32px;">{$data_a.M304ID}</span></th>
+        <tr>
+	  <th rowspan="4">
+	    機台番号<br>
+	    <span style="font-size: 32px;">{$data_a.M304ID}</span><br>
+	    <a href="m304console.php?ID={$data_a.M304ID}" target="_self">
+	      <input type="button" value="状態監視">
+	    </a>
+	  </th>
           <th colspan="2">{$data_a.NODE_NAME}</th><th colspan="3">{$data_custom.NAME}</th></tr>
         <tr><th>{$dhcpf}</th><th>IP:{$data_a.FIXED_IPADDRESS}</th>
           <th>NETMASK:{$data_a.FIXED_NETMASK}</th><th>GW:{$data_a.FIXED_DEFGW}</th><th>DNS:{$data_a.FIXED_DNS}</th></tr>
