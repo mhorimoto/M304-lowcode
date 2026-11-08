@@ -1,4 +1,10 @@
 <?php
+/////////////////////////////////////////////////
+//
+//  Create by mh@ys-lab.tech
+//  Version 1.01 (2026-11-08)
+//
+/////////////////////////////////////////////////
 function select_blk_b($pdo,$s) {
     $ccmtl = mk_datalist("ccmlist");
     $s->assign("ccmlist",$ccmtl);
@@ -65,40 +71,49 @@ function select_blk_b_with_pkgid($pdo,$pkg_id="") {
 }
 
 function modify_blk_b_with_pkgid_id($pdo,$p,$mode="") {
-    $pkgid = $p['PKG_ID'];
+    $pkgid = $p['PKG_ID'] ?? 0;
     $m304id= $pkgid;
     $log = new M304log($pdo,$m304id);
     $log->store(8,'blk_b','modify_blk_b_with_pkgid_id',$mode);
     $vld   = isset($p['VALID']) ? 'true' : 'false';
-    $fval0 = (@$p['CMPVAL0']=="") ? 'null' : $p['CMPVAL0'];
-    $fval1 = (@$p['CMPVAL1']=="") ? 'null' : $p['CMPVAL1'];
-    $fval2 = (@$p['CMPVAL2']=="") ? 'null' : $p['CMPVAL2'];
-    $fval3 = (@$p['CMPVAL3']=="") ? 'null' : $p['CMPVAL3'];
-    $fval4 = (@$p['CMPVAL4']=="") ? 'null' : $p['CMPVAL4'];
+    // 時刻パラメータの安全な取得（STSC未指定時は0）
+    $sthr  = (int)($p['STHR'] ?? 0);
+    $stmn  = (int)($p['STMN'] ?? 0);
+    $stsc  = (int)($p['STSC'] ?? 0); // YS-MH-20261108 v1.01
+    $edhr  = (int)($p['EDHR'] ?? 0);
+    $edmn  = (int)($p['EDMN'] ?? 0);
+    $fval0 = (($p['CMPVAL0'] ?? '') === '') ? 'null' : $p['CMPVAL0'];
+    $fval1 = (($p['CMPVAL1'] ?? '') === '') ? 'null' : $p['CMPVAL1'];
+    $fval2 = (($p['CMPVAL2'] ?? '') === '') ? 'null' : $p['CMPVAL2'];
+    $fval3 = (($p['CMPVAL3'] ?? '') === '') ? 'null' : $p['CMPVAL3'];
+    $fval4 = (($p['CMPVAL4'] ?? '') === '') ? 'null' : $p['CMPVAL4'];
     $mnflag = 255;
     if ($mode=="") {
-        $query = 'UPDATE blk_b SET PKG_ID=%d,M304ID=%d,ID=%d,VALID=%s,STHR=%d,STMN=%d,EDHR=%d,EDMN=%d,'.
-            'MNFLAG=%d,INMN=%d,DUMN=%d,OPE_ID=%d,CMPCCMID0=%d,CMPOPE0=%d,CMPVAL0=%s,CMBCMP1=%d,'.
-            'CMPCCMID1=%d,CMPOPE1=%d,CMPVAL1=%s,CMBCMP2=%d,CMPCCMID2=%d,CMPOPE2=%d,CMPVAL2=%s,'.
-            'CMBCMP3=%d,CMPCCMID3=%d,CMPOPE3=%d,CMPVAL3=%s,CMBCMP4=%d,CMPCCMID4=%d,CMPOPE4=%d,CMPVAL4=%s '.
-            'WHERE SEQ=%d';
-        $query1   = sprintf($query,$pkgid,$m304id,$p['ID'],$vld,$p['STHR'],$p['STMN'],$p['EDHR'],$p['EDMN'],
-            $mnflag,$p['INMN'],$p['DUMN'],$p['OPE_ID'],$p['CMPCCMID0'],$p['CMPOPE0'],$fval0,$p['CMBCMP1'],
-            $p['CMPCCMID1'],$p['CMPOPE1'],$fval1,$p['CMBCMP2'],$p['CMPCCMID2'],$p['CMPOPE2'],$fval2,
-            $p['CMBCMP3'],$p['CMPCCMID3'],$p['CMPOPE3'],$fval3,$p['CMBCMP4'],$p['CMPCCMID4'],$p['CMPOPE4'],$fval4,
-            $p['SEQ']);
+        $query = 'UPDATE blk_b SET PKG_ID=%d,M304ID=%d,ID=%d,VALID=%s,STHR=%d,STMN=%d,'.
+               'STSC=%d,EDHR=%d,EDMN=%d,MNFLAG=%d,INMN=%d,DUMN=%d,OPE_ID=%d,CMPCCMID0=%d,'.
+               'CMPOPE0=%d,CMPVAL0=%s,CMBCMP1=%d,CMPCCMID1=%d,CMPOPE1=%d,CMPVAL1=%s,'.
+               'CMBCMP2=%d,CMPCCMID2=%d,CMPOPE2=%d,CMPVAL2=%s,CMBCMP3=%d,CMPCCMID3=%d,'.
+               'CMPOPE3=%d,CMPVAL3=%s,CMBCMP4=%d,CMPCCMID4=%d,CMPOPE4=%d,CMPVAL4=%s '.
+               'WHERE SEQ=%d';
+        $query1 = sprintf($query,$pkgid,$m304id,$p['ID'],$vld,$sthr,$stmn,$stsc,$edhr,$edmn,
+                            $mnflag,$p['INMN'],$p['DUMN'],$p['OPE_ID'],$p['CMPCCMID0'],
+                            $p['CMPOPE0'],$fval0,$p['CMBCMP1'],$p['CMPCCMID1'],$p['CMPOPE1'],
+                            $fval1,$p['CMBCMP2'],$p['CMPCCMID2'],$p['CMPOPE2'],$fval2,
+                            $p['CMBCMP3'],$p['CMPCCMID3'],$p['CMPOPE3'],$fval3,$p['CMBCMP4'],
+                            $p['CMPCCMID4'],$p['CMPOPE4'],$fval4,$p['SEQ']);
     } else {
         // For Insert
-        $query = 'INSERT INTO blk_b (PKG_ID,M304ID,ID,VALID,STHR,STMN,EDHR,EDMN,MNFLAG,INMN,DUMN,OPE_ID,'.
-            'CMPCCMID0,CMPOPE0,CMPVAL0,CMBCMP1,CMPCCMID1,CMPOPE1,CMPVAL1,CMBCMP2,CMPCCMID2,'.
-            'CMPOPE2,CMPVAL2,CMBCMP3,CMPCCMID3,CMPOPE3,CMPVAL3,CMBCMP4,CMPCCMID4,CMPOPE4,CMPVAL4) '.
-            'VALUES (%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,%d,'.
-            '%d,%d,%s,%d,%d,%d,%s,%d,%d,'.
-            '%d,%s,%d,%d,%d,%s,%d,%d,%d,%s)';
-        $query1   = sprintf($query,$pkgid,$m304id,$p['ID'],$vld,$p['STHR'],$p['STMN'],$p['EDHR'],$p['EDMN'],
-            $mnflag,$p['INMN'],$p['DUMN'],$p['OPE_ID'],$p['CMPCCMID0'],$p['CMPOPE0'],$fval0,$p['CMBCMP1'],
-            $p['CMPCCMID1'],$p['CMPOPE1'],$fval1,$p['CMBCMP2'],$p['CMPCCMID2'],$p['CMPOPE2'],$fval2,
-            $p['CMBCMP3'],$p['CMPCCMID3'],$p['CMPOPE3'],$fval3,$p['CMBCMP4'],$p['CMPCCMID4'],$p['CMPOPE4'],$fval4);
+        $query = 'INSERT INTO blk_b (PKG_ID,M304ID,ID,VALID,STHR,STMN,STSC,EDHR,EDMN,MNFLAG,'.
+               'INMN,DUMN,OPE_ID,CMPCCMID0,CMPOPE0,CMPVAL0,CMBCMP1,CMPCCMID1,CMPOPE1,CMPVAL1,'.
+               'CMBCMP2,CMPCCMID2,CMPOPE2,CMPVAL2,CMBCMP3,CMPCCMID3,CMPOPE3,CMPVAL3,CMBCMP4,'.
+               'CMPCCMID4,CMPOPE4,CMPVAL4) VALUES (%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,'.
+               '%d,%d,%s,%d,%d,%d,%s,%d,%d,%d,%s,%d,%d,%d,%s,%d,%d,%d,%s)';
+        $query1 = sprintf($query,$pkgid,$m304id,$p['ID'],$vld,$sthr,$stmn,$stsc,$edhr,$edmn,
+                          $mnflag,$p['INMN'],$p['DUMN'],$p['OPE_ID'],$p['CMPCCMID0'],
+                          $p['CMPOPE0'],$fval0,$p['CMBCMP1'],$p['CMPCCMID1'],$p['CMPOPE1'],
+                          $fval1,$p['CMBCMP2'],$p['CMPCCMID2'],$p['CMPOPE2'],$fval2,
+                          $p['CMBCMP3'],$p['CMPCCMID3'],$p['CMPOPE3'],$fval3,$p['CMBCMP4'],
+                          $p['CMPCCMID4'],$p['CMPOPE4'],$fval4);
     }
                             
     try {
