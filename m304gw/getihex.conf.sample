@@ -1,6 +1,7 @@
 [COMMON]
 server=https://XXXXX/YYYYYY/getihex.php
 logserver=https://XXXXX/YYYYYY/m304log.php
+getinfoserver=https://XXXXX/YYYYYY/getinfo.php
 [1]
 m304id=1
 [2]
