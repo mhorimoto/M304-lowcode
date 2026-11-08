@@ -3,7 +3,7 @@
 #pragma message("Library M304 is old. Version 1.3.11 or higher is required.")
 #else
 
-char *pgname = "M304 makelc Ver1.10 ";
+char *pgname = "M304 makelc Ver1.35 ";
 char inputbuf[BUFSIZ],*ptr_inputbuf;
 int  cnt;
 
@@ -25,7 +25,6 @@ void setup(void) {
     ptr_inputbuf = &inputbuf[0];
     cnt = 0;
 }
-
 
 void loop(void) {
     char ch,sc[3];
@@ -109,7 +108,7 @@ void loop(void) {
             setCommand(ptr_inputbuf,16,NODE_NAME);
         }
         if ( !strncmp(ptr_inputbuf,"setdbgmsg ",10) ) {
-            ptr_inputbuf += 12;
+            ptr_inputbuf += 10;
             setCommand(ptr_inputbuf,16,LC_DBGMSG);
         }
         if ( !strncmp(ptr_inputbuf,"clearpage ",10) ) {
@@ -124,3 +123,4 @@ void loop(void) {
     }
 }
 #endif
+/* -*- mode: c; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

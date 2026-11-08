@@ -1,4 +1,5 @@
 *~
+**/.$*.drawio.bkp
 *.code-workspace
 
 # Prerequisites
@@ -49,3 +50,5 @@ tmp/*
 # Environment
 .env
 
+# define file
+m304gw/getihex.conf

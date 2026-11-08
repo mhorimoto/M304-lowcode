@@ -49,7 +49,7 @@ function modify_blk_c($pdo,$p) {
            "LIFECOUNT=%d,CCMTYPE=%s,NAME=%s WHERE PKG_ID=%d AND ID=%d";
     $pkgid = $p['PKGID'];
     for ($id=0;$id<10;$id++) {
-        $vid    = (@$p['VALID'][$id]==1) ? 'true' : 'false';
+        $vid    = (@$p['VALID'][$id]=='on') ? 'true' : 'false';
         $room   = ((@$p['ROOM'][$id]>0)&&(@$p['ROOM'][$id]<128)) ? $p['ROOM'][$id] : 1;
         $region = ((@$p['REGION'][$id]>0)&&(@$p['REGION'][$id]<128)) ? $p['REGION'][$id] : 1;
         $ord    = ((@$p['ORD'][$id]>0)&&(@$p['ORD'][$id]<30000)) ? $p['ORD'][$id] : 1;
@@ -73,7 +73,7 @@ function insert_blk_c($pdo,$p) {
     $query = 'INSERT INTO blk_c(PKG_ID,M304ID,ID,VALID,ROOM,REGION,ORD,LIFECOUNT,CCMTYPE,NAME) VALUES';
     $query1= '';
     for ($id=0; $id < 10; $id++) {
-        $vld    = (@$p['VALID'][$id]==1) ? 'true' : 'false';
+        $vld    = (@$p['VALID'][$id]=='on') ? 'true' : 'false';
         $room   = ((@$p['ROOM'][$id]>0)&&(@$p['ROOM'][$id]<128)) ? $p['ROOM'][$id] : 1;
         $region = ((@$p['REGION'][$id]>0)&&(@$p['REGION'][$id]<128)) ? $p['REGION'][$id] : 1;
         $ord    = ((@$p['ORD'][$id]>0)&&(@$p['ORD'][$id]<30000)) ? $p['ORD'][$id] : 1;
@@ -128,7 +128,7 @@ function mk_select_blk_c($pdo,$pkg_id="",$id="",&$sele,&$selj) {
 
 function modify_blk_c_with_pkgid_id($pdo,$p,$mode="") {
     $id     = @$p['ID'];
-    $vld    = (@$p['VALID']==1) ? 'true' : 'false';
+    $vld    = (@$p['VALID']=='on') ? 'true' : 'false';
     $room   = ((@$p['ROOM']>0)&&(@$p['ROOM']<128)) ? $p['ROOM'] : 1;
     $region = ((@$p['REGION']>0)&&(@$p['REGION']<128)) ? $p['REGION'] : 1;
     $ord    = ((@$p['ORD']>0)&&(@$p['ORD']<30000)) ? $p['ORD'] : 1;
@@ -146,7 +146,7 @@ function modify_blk_c_with_pkgid_id($pdo,$p,$mode="") {
         $m304id = $p['M304ID'];
         $query = sprintf("UPDATE blk_c SET PKG_ID=%d,M304ID=%d,ID=%d,VALID=%s,ROOM=%d,REGION=%d,ORD=%d,".
                 "LIFECOUNT=%d,CCMTYPE=%s,NAME=%s WHERE PKG_ID=%d AND ID=%d",
-                $pkgid,$m304id,$id,$vld,$room,$region,$ord,$p['LIFECOUNT'],$ccmtype,$name,$pkgid,$id);
+                $pkgid,$pkgid,$id,$vld,$room,$region,$ord,$p['LIFECOUNT'],$ccmtype,$name,$pkgid,$id);
     }
     echo "<pre>\n".$query."</pre>\n";
     try {
