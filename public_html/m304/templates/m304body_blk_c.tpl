@@ -18,7 +18,7 @@
 	      {else}
 	      {$checked=""}
 	      {/if}
-	      <input type=CHECKBOX class="borderless" name="VALID[{$row.ID}]" {$checked} value="{$row.VALID}"></td>
+	      <input type=CHECKBOX class="borderless" name="VALID[{$row.ID}]" {$checked}></td>
 	    <td class="center-align">
 	      <input type=NUMBER class="borderless num3c r_12" name="ROOM[{$row.ID}]"  min=0 max=127 step=1 value="{$row.ROOM}">/
 	      <input type=NUMBER class="borderless num3c r_12" name="REGION[{$row.ID}]" min=0 max=127 step=1 value="{$row.REGION}">/

@@ -1,4 +1,17 @@
 <?php
+ob_start();
+//
+// Version: 1.40
+//
+// 2026/11/07
+//  $msg初期化徹底
+// 2025/10/10
+//  Version 3.2.@8 BLK_BでDBで時刻データがNULLの際の誤動作を回避するために $valid をチェック
+// 2025/05/05
+//  Version 3.2.* 用開始時刻を秒まで変換する。終了時刻は00秒
+// 2025/04/30
+// BLK_Bで最初にすべてのレコードを無効化してから有効データを書き込む
+//
 function conv2ihex($pdo,$prg,$pkg_id,$id="") {
     $query = sprintf("select inet_ntoa(FIXED_IPADDRESS) as IPA from blk_a where pkg_id=%d",$pkg_id);
     try {
@@ -10,6 +23,10 @@ function conv2ihex($pdo,$prg,$pkg_id,$id="") {
     $ipaddr = $reply->fetch(PDO::FETCH_ASSOC,1);
     switch($prg) {
         case 'BLK_B':
+            for($i=0x1000;$i<0x1800;$i+=0x40) {
+                $row = sprintf(":01%04X00FFFF",$i); // 無効化データ
+                $a3send[] = sprintf("a2sender http://%s/%s",$ipaddr['IPA'],$row);
+            }
             $dt_blk_b = select_blk_b_with_pkgid($pdo,$pkg_id);
             foreach($dt_blk_b as $dbb) {
                 $ope0 = '';
@@ -22,8 +39,10 @@ function conv2ihex($pdo,$prg,$pkg_id,$id="") {
                 $valid = ($dbb['VALID']=='1')? 'e' : 'd' ;
                 $sthr = $dbb['STHR'];
                 $stmn = $dbb['STMN'];
+                $stsc = $dbb['STSC'];
                 $edhr = $dbb['EDHR'];
                 $edmn = $dbb['EDMN'];
+                $edsc = 0;
                 $inmn = $dbb['INMN'];
                 $dumn = $dbb['DUMN'];
                 $cmpccmid0 = ($dbb['CMPCCMID0']!=255)? $dbb['CMPCCMID0']:'';
@@ -47,13 +66,19 @@ function conv2ihex($pdo,$prg,$pkg_id,$id="") {
                     }
                 }
                 $dt_blk_ope = select_blk_ope_with_ope_id($pdo,$dbb['OPE_ID'],"oneline");
-                $cmnd = sprintf("/usr/local/bin/a3b.py %d %s %d %d %d %d M %d %d %s %s %s %s %s %s",
-                                $id,$valid,$sthr,$stmn,$edhr,$edmn,$inmn,$dumn,$dt_blk_ope,
-                                $ope0,$ope1,$ope2,$ope3,$ope4);
-                exec($cmnd,$outp,$retv);
-                foreach($outp as $row) {
-                    $a3send[] = sprintf("a2sender http://%s/%s",$ipaddr['IPA'],$row);
-                    //printf("%s\n",$a3send);
+                if ($valid!='d') {
+                    $cmnd = sprintf("/usr/local/bin/a3b2.py %d %s %d %d %d %d %d %d %s %s %s %s %s %s",
+                                    $id,$valid,$sthr,$stmn,$stsc,$edhr,$edmn,$edsc,$inmn,$dumn,$dt_blk_ope,
+                                    $ope0,$ope1,$ope2,$ope3,$ope4);
+                    exec($cmnd,$outp,$retv);
+                    foreach($outp as $row) {
+                        if ($row[0]!='#') {
+                            $a3send[] = sprintf("a2sender http://%s/%s",$ipaddr['IPA'],$row);
+                        } else {
+                            $a3send[] = $row;
+                        }
+                        //printf("%s\n",$a3send);
+                    }
                 }
             }
             break;
@@ -107,10 +132,12 @@ function conv2ihex($pdo,$prg,$pkg_id,$id="") {
     //print("</pre>\n");
 }
 
-if (@$_GET['PRG']!="") {
+$prg    = $_GET['PRG'] ?? '';    // YS-MH-20261107 v1.40
+$pkg_id = $_GET['PKG_ID'] ?? ''; // YS-MH-20261107 v1.40
+$od     = $_GET['OD'] ?? '';     // YS-MH-20261107 v1.40
+
+if ($prg !== "") {
     require_once('m304.inc');
-    //require_once('maketestdata.php');
-    //require_once('lib_blk_d.php');
     
     try {
         $pdo = new PDO($dsn, $username, $password);
@@ -119,14 +146,13 @@ if (@$_GET['PRG']!="") {
         echo 'Connection failed: ' . $e->getMessage();
     }
     $a = conv2ihex($pdo,$_GET['PRG'],$_GET['PKG_ID']);
-    if (@$_GET['OD']!='F') {
-        $OD='';
-    } else {
-        $id = $_GET['PKG_ID'];
+    $msg = "";  // YS-MH-20261107 v1.40
+    $filename = ""; // YS-MH-20261107 v1.40
+    if ($od === 'F') {
+        $id = $pkg_id;
         $query = sprintf("select hex(MACADDR) as MACADDR from blk_a where m304id=%d",$id);
         try {
             $reply = $pdo->query($query);
-            $msg = "";
         } catch(PDOException $e) {
             $msg = $e->getMessage();
         }
@@ -142,8 +168,9 @@ if (@$_GET['PRG']!="") {
             fwrite($handle,$a[$i]."\n");
         }
         fclose($handle);
-        $OD='F';
+        $msg = $filename;
     }
+    $smarty->assign("msg",$filename);  // YS-MH-20261107 v1.40
     $smarty->assign("IHEXDATA",$a);
     $smarty->display("conv2ihex.tpl");
 }
