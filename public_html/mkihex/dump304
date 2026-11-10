@@ -2,16 +2,36 @@
 <?php
 //
 //  dump304
-//    Version 3.01
+//    Version 3.06
+//      -V オプション（スクリプトバージョン表示）追加
+//    Version 3.05
+//      _LCBitSW()の不具合改修
+//    Version 3.04
+//      Version表記にF/WとPARAMの両対応
+//    Version 3.03
+//      Version表記の正常化
+//    Version 3.02
 //       M304 Version 3.x.x 対応
 //            Version 2.x.x に対しては、-2 オプションをつける。
 //
+
+define('APP_NAME', 'dump304');
+define('APP_VERSION', '3.06');
+
 global $n;
 $n = 0;
+$opts = getopt("d:u2V", ["version"], $ri);
+
+// -V または --version が指定された場合はバージョンを表示して終了
+if (isset($opts['V']) || isset($opts['version'])) {
+    printf("%s version %s\n", APP_NAME, APP_VERSION);
+    exit(0);
+}
+
 if (!empty($argv[1])) {
     $opts = getopt("d:u2",[],$ri);
-    $host = @$argv[$ri];
-    $optd = $opts['d'];
+    $host = $argv[$ri];
+    $optd = @$opts['d'];
     $ausm = @$opts['u'];
     $uasm = isset($ausm);
     if (isset($opts['2'])) {
@@ -19,6 +39,12 @@ if (!empty($argv[1])) {
     } else {
         $verc = 3;
     }  // Version 2.x.x なら2がセットされる
+
+    if (empty($optd)) {
+        fprintf(STDERR, "Error: -d option is required.\n");
+        show_usage();
+        exit(1);
+    }
 
     switch ($optd) {
     case 'rx':
@@ -38,8 +64,13 @@ if (!empty($argv[1])) {
         $addr = 0x0000;
         $lcnt = 1;
         break;
+    default:
+        fprintf(STDERR, "Error: Invalid target '%s' for -d.\n", $optd);
+        show_usage();
+        exit(1);
     }
-    $ver = getVersion($host);
+    
+    $vers = getVersions($host);
     $f = "";
     for ($lc=0;$lc<$lcnt;$lc++) {
         $a = $addr+($lc*0x100);
@@ -49,7 +80,7 @@ if (!empty($argv[1])) {
             if ($uasm==1) {
                 switch($optd) {
                 case 'info':
-                    display_info($f,$verc);
+                    display_info($f,$verc,$vers);
                     break;
                 case 'rx':
                     display_rx($f,$verc);
@@ -64,17 +95,20 @@ if (!empty($argv[1])) {
             } else {
                 normal_dump($f);
             }
+            fclose($f);
+        } else {
+            fprintf(STDERR, "Error: Cannot connect to %s\n", $url);
         }
-        fclose($f);
     }
 } else {
-    echo "You need argument.";
+    show_usage();
+    exit(1);
 }
 
 
 ////////////////////////////////////////////////////////////////////
 
-function display_info($fp,$ver) {
+function display_info($fp,$verc,$vers) {
     for($y=0;$y<8;$y++) {
         $buffer = fgets($fp,80);
         for($x=0;$x<16;$x++) {
@@ -82,17 +116,18 @@ function display_info($fp,$ver) {
             $hexdata[$y*0x10+$x] = $z;
         }
     }
-    printf("     UECS-ID: %s\n",prt_LC_INFO($hexdata,"uecsid"));
-    printf("     VERSION: %s\n",$ver);
-    printf(" MAC ADDRESS: %s\n",prt_LC_INFO($hexdata,"mac"));
-    printf("   IP ASSIGN: %s\n",prt_LC_INFO($hexdata,"dhcpf"));
-    printf("    FIXED IP: %s\n",prt_LC_INFO($hexdata,"ipaddress"));
-    printf("     NETMASK: %s\n",prt_LC_INFO($hexdata,"netmask"));
-    printf("     GATEWAY: %s\n",prt_LC_INFO($hexdata,"defgw"));
-    printf("         DNS: %s\n",prt_LC_INFO($hexdata,"dns"));
-    printf("      VENDER: %s\n",prt_LC_INFO($hexdata,"vender"));
-    printf("   NODE NAME: %s\n",prt_LC_INFO($hexdata,"nodename"));
-    printf("   DEBUG MSG: %s\n",prt_LC_INFO($hexdata,"dbgmsg"));
+    printf("      UECS-ID: %s\n",prt_LC_INFO($hexdata,"uecsid"));
+    printf("  F/W VERSION: %s\n",$vers['fw']);
+    printf("PARAM VERSION: %s\n",$vers['param']);
+    printf("  MAC ADDRESS: %s\n",prt_LC_INFO($hexdata,"mac"));
+    printf("    IP ASSIGN: %s\n",prt_LC_INFO($hexdata,"dhcpf"));
+    printf("     FIXED IP: %s\n",prt_LC_INFO($hexdata,"ipaddress"));
+    printf("      NETMASK: %s\n",prt_LC_INFO($hexdata,"netmask"));
+    printf("      GATEWAY: %s\n",prt_LC_INFO($hexdata,"defgw"));
+    printf("          DNS: %s\n",prt_LC_INFO($hexdata,"dns"));
+    printf("       VENDER: %s\n",prt_LC_INFO($hexdata,"vender"));
+    printf("    NODE NAME: %s\n",prt_LC_INFO($hexdata,"nodename"));
+    printf("    DEBUG MSG: %s\n",prt_LC_INFO($hexdata,"dbgmsg"));
 }
 
 function display_rx($fp,$verc) {
@@ -127,7 +162,7 @@ function display_rx($fp,$verc) {
                     prt_LC_RTX($hexdata,"cond",$verc));
                 break;
             case 3:
-                printf("%02d:%s,%02d:%02d,%02d:%02d,%s,%02d,%02d,%s,%s,%s,%s,%s,%s,%s,%s,".
+                printf("%02d:%s,%02d:%02d,%02d:%02d,%s,%d,%d,%s,%s,%s,%s,%s,%s,%s,%s,".
                     "%d,%s,%f, %s,%d,%s, %f, %s,%d,%s, %f, %s,%d,%s, %f, %s,%d,%s, %f\n",
                     $n,
                     prt_LC_RTX($hexdata,"valid",$verc),
@@ -226,21 +261,54 @@ function display_ope($fp,$verc) {
 // Subroutines
 //
 
-function getVersion($url) {
-    $vul = sprintf("http://%s/L007F0000",$url);
-    $f = fopen($vul,"r");
+function getVersions($url) {
+    // 0x7F00 ページを取得（0x7F00 - 0x7FFF）
+    $vul = sprintf("http://%s/L007F00", $url);
+    $f = @fopen($vul, "r");
+    $res = [
+        'fw' => '',
+        'param' => 'NONE'
+    ];
+
     if ($f) {
-        for ($y=0;$y<15;$y++) {
-            $buffer = fgets($f,80);
+        while (($buffer = fgets($f, 80)) !== false) {
+            // PARAM VERSION: 0x7FE0 - 0x7FEF (16 bytes)
+            if (strpos($buffer, "0x7FE0:") !== false) {
+                $is_all_ff = true;
+                $p_str = "";
+                for ($x = 0; $x < 16; $x++) {
+                    $val = hexdec(substr($buffer, (3 * $x + 8), 3)) & 0xff;
+                    if ($val !== 0xff) {
+                        $is_all_ff = false;
+                    }
+                    if ($val === 0x00 || $val === 0xff) {
+                        break;
+                    }
+                    $p_str .= chr($val);
+                }
+                if (!$is_all_ff && strlen($p_str) > 0) {
+                    $res['param'] = $p_str;
+                } else {
+                    $res['param'] = "NONE (Not set)";
+                }
+            }
+
+            // F/W VERSION: 0x7FF0 - 0x7FFF (16 bytes)
+            if (strpos($buffer, "0x7FF0:") !== false) {
+                $fw_str = "";
+                for ($x = 0; $x < 16; $x++) {
+                    $val = hexdec(substr($buffer, (3 * $x + 8), 3)) & 0xff;
+                    if ($val === 0x00 || $val === 0xff) {
+                        break;
+                    }
+                    $fw_str .= chr($val);
+                }
+                $res['fw'] = $fw_str;
+            }
         }
-        $buffer = fgets($f,80);
-        $ver = "";
-        for($x=0;$x<16;$x++) {
-            $z = chr(0xff & hexdec(substr($buffer,(3*$x+8),3)));
-            $ver .= $z;
-        }
+        fclose($f);
     }
-    return($ver);
+    return $res;
 }
 
 function normal_dump($fp) {
@@ -386,14 +454,18 @@ function prt_LC_RTX($dt,$k,$verc) {
         if ($verc==2) {
             return($dt[0x2b]&0xff);
         } else if ($verc==3) {
-            return(($dt[0x07]&0xff*0x100)+$dt[0x06]&0xff);
+	    $inmnh = $dt[0x07]&0xff;
+	    $inmnl = $dt[0x06]&0xff;
+	    return(($inmnh*0x100)+$inmnl);
         }
         break;
     case "dumn":
         if ($verc==2) {
             return($dt[0x2c]&0xff);
         } else if ($verc==3) {
-            return(($dt[0x09]&0xff*0x100)+$dt[0x08]&0xff);
+            $dumnh = $dt[0x09]&0xff;
+	    $dumnl = $dt[0x08]&0xff;
+	    return(($dumnh*0x100)+$dumnl);
         }
         break;
     case "rly1":
@@ -571,10 +643,10 @@ function _LCFloat($dt,$ofs) {
     return($r);
 }
 
-function _LCBitSW($dt,$ofs) {
+function _LCBitSW($dt, $ofs) {
     $d = $dt[$ofs];
-    $odt = substr("00000000".decbin($d),-0,8);
-    return($odt);
+    $odt = substr("00000000" . decbin($d), -8);
+    return $odt;
 }
 
 function _LCText($dt,$ofs,$len) {
@@ -635,6 +707,13 @@ function ieee754_32($v) {
     return($fv);
 }
 
+function show_usage() {
+    printf("Usage: %s [-V] [-2] [-u] -d <info|rx|tx|ope> <host>\n", APP_NAME);
+    printf("  -V, --version  Show version\n");
+    printf("  -d <target>    Dump target (info, rx, tx, ope)\n");
+    printf("  -u             Human-readable formatted output\n");
+    printf("  -2             Version 2.x mode (default: 3.x)\n");
+}
 # -*- mode: php-mode; -*-
 ?>
 
